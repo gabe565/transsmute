@@ -2,7 +2,7 @@ package tmpl
 
 import (
 	_ "embed"
-	"github.com/gabe565/tuberss/internal/template_funcs"
+	"github.com/gabe565/transsmute/internal/template_funcs"
 	"html/template"
 )
 

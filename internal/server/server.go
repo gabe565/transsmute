@@ -1,8 +1,8 @@
 package server
 
 import (
-	"github.com/gabe565/tuberss/internal/feed"
-	"github.com/gabe565/tuberss/internal/youtube"
+	"github.com/gabe565/transsmute/internal/feed"
+	"github.com/gabe565/transsmute/internal/youtube"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 )

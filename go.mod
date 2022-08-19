@@ -1,4 +1,4 @@
-module github.com/gabe565/tuberss
+module github.com/gabe565/transsmute
 
 go 1.18
 

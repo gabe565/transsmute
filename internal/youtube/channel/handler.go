@@ -3,9 +3,9 @@ package channel
 import (
 	"context"
 	"errors"
-	"github.com/gabe565/tuberss/internal/feed"
-	"github.com/gabe565/tuberss/internal/youtube/middleware"
-	"github.com/gabe565/tuberss/internal/youtube/playlist"
+	"github.com/gabe565/transsmute/internal/feed"
+	"github.com/gabe565/transsmute/internal/youtube/middleware"
+	"github.com/gabe565/transsmute/internal/youtube/playlist"
 	"github.com/go-chi/chi/v5"
 	"github.com/spf13/viper"
 	"google.golang.org/api/option"

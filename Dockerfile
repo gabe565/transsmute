@@ -12,7 +12,7 @@ COPY . .
 
 # Set Golang build envs based on Docker platform string
 ARG TARGETPLATFORM
-RUN --mount=type=cache,id="tuberss-$TARGETPLATFORM",target=/root/.cache \
+RUN --mount=type=cache,id="transsmute-$TARGETPLATFORM",target=/root/.cache \
     set -x \
     && case "$TARGETPLATFORM" in \
         'linux/amd64') export GOARCH=amd64 ;; \
@@ -25,10 +25,10 @@ RUN --mount=type=cache,id="tuberss-$TARGETPLATFORM",target=/root/.cache \
 
 
 FROM alpine
-LABEL org.opencontainers.image.source="https://github.com/gabe565/tuberss"
+LABEL org.opencontainers.image.source="https://github.com/gabe565/transsmute"
 WORKDIR /app
 
-COPY --from=go-builder /app/tuberss ./
+COPY --from=go-builder /app/transsmute ./
 
 ENV TUBERSS_ADDRESS=":80"
-CMD ["./tuberss"]
+CMD ["./transsmute"]

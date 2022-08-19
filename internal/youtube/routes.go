@@ -1,9 +1,9 @@
 package youtube
 
 import (
-	"github.com/gabe565/tuberss/internal/youtube/channel"
-	"github.com/gabe565/tuberss/internal/youtube/middleware"
-	"github.com/gabe565/tuberss/internal/youtube/playlist"
+	"github.com/gabe565/transsmute/internal/youtube/channel"
+	"github.com/gabe565/transsmute/internal/youtube/middleware"
+	"github.com/gabe565/transsmute/internal/youtube/playlist"
 	"github.com/go-chi/chi/v5"
 )
 

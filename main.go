@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/gabe565/tuberss/internal/server"
+	"github.com/gabe565/transsmute/internal/server"
 	flag "github.com/spf13/pflag"
 	"github.com/spf13/viper"
 	"log"
@@ -18,14 +18,14 @@ func init() {
 }
 
 func main() {
-	viper.SetConfigName("tuberss")
+	viper.SetConfigName("transsmute")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath("$HOME/.config/")
 	viper.AddConfigPath("$HOME/")
-	viper.AddConfigPath("/etc/tuberss/")
+	viper.AddConfigPath("/etc/transsmute/")
 
 	viper.AutomaticEnv()
-	viper.SetEnvPrefix("tuberss")
+	viper.SetEnvPrefix("transsmute")
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
 
 	if err := viper.ReadInConfig(); err != nil {
