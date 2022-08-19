@@ -30,5 +30,5 @@ WORKDIR /app
 
 COPY --from=go-builder /app/transsmute ./
 
-ENV TUBERSS_ADDRESS=":80"
+ENV TRANSSMUTE_ADDRESS=":80"
 CMD ["./transsmute"]
