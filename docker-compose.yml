@@ -1,0 +1,8 @@
+version: "3.9"
+
+services:
+  app:
+    image: "ghcr.io/gabe565/tuberss"
+    build: .
+    ports:
+      - "80:80"
