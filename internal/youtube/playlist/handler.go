@@ -1,0 +1,38 @@
+package playlist
+
+import (
+	"context"
+	"errors"
+	"github.com/gabe565/tuberss/internal/feed"
+	"github.com/gabe565/tuberss/internal/youtube/config"
+	"github.com/gabe565/tuberss/internal/youtube/middleware"
+	"github.com/go-chi/chi/v5"
+	"google.golang.org/api/option"
+	"google.golang.org/api/youtube/v3"
+	"net/http"
+)
+
+func Handler(w http.ResponseWriter, r *http.Request) {
+	service, err := youtube.NewService(r.Context(), option.WithAPIKey(config.ApiKey))
+	if err != nil {
+		panic(err)
+	}
+
+	identifier := chi.URLParam(r, "id")
+	plist := New(service, r.Context(), identifier)
+
+	f, err := plist.Feed(r.Context().Value(middleware.DisableIframeKey).(bool))
+	if err != nil {
+		if errors.Is(err, ErrInvalid) {
+			http.Error(w, "404 playlist not found", http.StatusNotFound)
+			return
+		}
+		panic(err)
+	}
+
+	r = r.WithContext(context.WithValue(r.Context(), feed.FeedKey, f))
+
+	if err := feed.WriteFeed(w, r); err != nil {
+		panic(err)
+	}
+}

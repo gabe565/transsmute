@@ -1,0 +1,13 @@
+{{- if not .DisableIframe -}}
+<div>
+    <iframe
+        type="text/html"
+        width="640"
+        height="390"
+        src="http://www.youtube.com/embed/{{ .Item.ResourceId.VideoId }}"
+        frameborder="0"></iframe>
+</div>
+{{- end }}
+<p>
+    {{- .Item.Description | escape | formatUrls | formatHashtags | formatTimestamps .Item.ResourceId.VideoId | nl2br | html -}}
+</p>
