@@ -5,6 +5,7 @@ go 1.18
 require (
 	github.com/go-chi/chi/v5 v5.0.7
 	github.com/gorilla/feeds v1.1.1
+	github.com/n0madic/twitter-scraper v0.0.0-20220616082230-d75fe13dd628
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.12.0
 	google.golang.org/api v0.93.0
