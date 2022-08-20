@@ -93,7 +93,7 @@ func (p Playlist) Items() ([]*Item, error) {
 	}
 
 	sort.Slice(items, func(i, j int) bool {
-		return items[i].PublishedAt < items[j].PublishedAt
+		return items[i].PublishedAt > items[j].PublishedAt
 	})
 
 	return items, nil
