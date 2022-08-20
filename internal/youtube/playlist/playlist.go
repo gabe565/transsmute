@@ -86,8 +86,10 @@ func (p Playlist) Items() ([]*Item, error) {
 		}
 		return nil
 	})
-	if !errors.Is(err, ErrLimit) {
-		return items, err
+	if err != nil {
+		if !errors.Is(err, ErrLimit) {
+			return items, err
+		}
 	}
 
 	sort.Slice(items, func(i, j int) bool {
