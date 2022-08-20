@@ -20,7 +20,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	f := &feeds.Feed{
-		Title:       "Twitter @" + profile.Username,
+		Title:       "Twitter - @" + profile.Username,
 		Link:        &feeds.Link{Href: profile.URL},
 		Description: profile.Biography,
 		Author:      &feeds.Author{Name: profile.Name},

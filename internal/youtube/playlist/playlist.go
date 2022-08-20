@@ -48,7 +48,7 @@ func (p Playlist) Feed(disableIframe bool) (*feeds.Feed, error) {
 	}
 
 	feed := &feeds.Feed{
-		Title:       meta.Title,
+		Title:       "YouTube - " + meta.Title,
 		Link:        &feeds.Link{Href: "https://youtube.com/playlist?list=" + p.Id},
 		Description: meta.Description,
 		Created:     time.Now(),
