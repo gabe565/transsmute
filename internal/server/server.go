@@ -1,6 +1,7 @@
 package server
 
 import (
+	"github.com/gabe565/transsmute/internal/docker"
 	"github.com/gabe565/transsmute/internal/feed"
 	"github.com/gabe565/transsmute/internal/twitter"
 	"github.com/gabe565/transsmute/internal/youtube"
@@ -34,7 +35,8 @@ type RoutesFunc func(r chi.Router, prefix string)
 
 func Routers() map[string]RoutesFunc {
 	return map[string]RoutesFunc{
-		"youtube": youtube.Routes,
+		"docker":  docker.Routes,
 		"twitter": twitter.Routes,
+		"youtube": youtube.Routes,
 	}
 }

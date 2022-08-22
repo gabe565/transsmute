@@ -5,7 +5,9 @@ go 1.18
 require (
 	github.com/go-chi/chi/v5 v5.0.7
 	github.com/gorilla/feeds v1.1.1
+	github.com/heroku/docker-registry-client v0.0.0-20211012143308-9463674c8930
 	github.com/n0madic/twitter-scraper v0.0.0-20220616082230-d75fe13dd628
+	github.com/sirupsen/logrus v1.9.0
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.12.0
 	google.golang.org/api v0.93.0
@@ -14,6 +16,8 @@ require (
 
 require (
 	cloud.google.com/go/compute v1.9.0 // indirect
+	github.com/docker/distribution v2.8.1+incompatible // indirect
+	github.com/docker/libtrust v0.0.0-20160708172513-aabc10ec26b7 // indirect
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
@@ -23,6 +27,8 @@ require (
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
+	github.com/opencontainers/go-digest v1.0.0 // indirect
+	github.com/opencontainers/image-spec v1.0.2 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.3 // indirect
 	github.com/spf13/afero v1.9.2 // indirect
