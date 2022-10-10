@@ -28,6 +28,8 @@ FROM alpine
 LABEL org.opencontainers.image.source="https://github.com/gabe565/transsmute"
 WORKDIR /app
 
+RUN apk add --no-cache tzdata
+
 COPY --from=go-builder /app/transsmute ./
 
 ARG USERNAME=transsmute
