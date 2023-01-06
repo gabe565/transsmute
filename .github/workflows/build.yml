@@ -1,56 +1,43 @@
 name: Build
 
-on: push
-
-env:
-  go_version: "1.18"
+on:
+  push: {}
 
 jobs:
-  backend-lint:
-    name: Backend Lint
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      - name: Set up Go
-        uses: actions/setup-go@v3
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
         with:
-          go-version: ~${{ env.go_version }}
-      - run: go generate
-      - name: Lint
-        uses: golangci/golangci-lint-action@v3
+          go-version-file: go.mod
+          cache: true
+      - uses: golangci/golangci-lint-action@v3
         with:
           args: --timeout=5m
           skip-build-cache: true
           skip-pkg-cache: true
 
-  backend-test:
-    name: Backend Test
+  test:
+    name: Test
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      - name: Set up Go
-        uses: actions/setup-go@v3
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
         with:
-          go-version: ~${{ env.go_version }}
-      - uses: actions/cache@v3
-        with:
-          path: ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-go-
-      - run: go generate
-      - name: Test
-        run: go test ./...
+          go-version-file: go.mod
+          cache: true
+      - run: go test ./...
 
   build:
     name: Build Image
     runs-on: ubuntu-latest
-    needs: [backend-lint, backend-test]
+    needs: [lint, test]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v4
@@ -64,18 +51,21 @@ jobs:
             type=semver,pattern={{major}}
             type=ref,event=branch
             type=sha
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
+
       - name: Set up Buildx
         uses: docker/setup-buildx-action@v2
+
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Build and Push
-        id: docker_build
         uses: docker/build-push-action@v3
         with:
           context: .
