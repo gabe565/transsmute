@@ -6,7 +6,7 @@ require (
 	github.com/go-chi/chi/v5 v5.0.8
 	github.com/gorilla/feeds v1.1.1
 	github.com/heroku/docker-registry-client v0.0.0-20211012143308-9463674c8930
-	github.com/n0madic/twitter-scraper v0.0.0-20230216091513-b45c4ec7520b
+	github.com/n0madic/twitter-scraper v0.0.0-20230302095927-1465501fd1d7
 	github.com/sirupsen/logrus v1.9.0
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.15.0
