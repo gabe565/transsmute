@@ -1,7 +1,12 @@
 package docker
 
-import "github.com/go-chi/chi/v5"
+import (
+	"github.com/go-chi/chi/v5"
+	"github.com/spf13/viper"
+)
 
 func Routes(r chi.Router, prefix string) {
-	r.Get("/"+prefix+"/tags/*", Handler)
+	if viper.GetBool("docker.enabled") {
+		r.Get("/"+prefix+"/tags/*", Handler)
+	}
 }

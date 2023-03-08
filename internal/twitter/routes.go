@@ -1,7 +1,12 @@
 package twitter
 
-import "github.com/go-chi/chi/v5"
+import (
+	"github.com/go-chi/chi/v5"
+	"github.com/spf13/viper"
+)
 
 func Routes(r chi.Router, prefix string) {
-	r.Get("/"+prefix+"/user/{username}", Handler)
+	if viper.GetBool("twitter.enabled") {
+		r.Get("/"+prefix+"/user/{username}", Handler)
+	}
 }

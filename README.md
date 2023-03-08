@@ -42,11 +42,14 @@ For more information, go to
 | Flag                   | Environment Variable            | Description                                           | Default                          |
 |------------------------|---------------------------------|-------------------------------------------------------|----------------------------------|
 | `--address`            | `TRANSSMUTE_ADDRESS`            | Listen address                                        | `":3000"` (`":80"` in container) |
+| `--youtube-enabled`    | `TRANSSMUTE_YOUTUBE_ENABLED`    | YouTube API enabled.                                  | `true`                           |
 | `--youtube-key`        | `TRANSSMUTE_YOUTUBE_KEY`        | YouTube API key. Required to enable YouTube routes!   | `""`                             |
+| `--docker-enabled`     | `TRANSSMUTE_DOCKER_ENABLED`     | Docker API enabled.                                   | `true`                           |
 | `--dockerhub-username` | `TRANSSMUTE_DOCKERHUB_USERNAME` | DockerHub username for private repos.                 | `""`                             |
 | `--dockerhub-password` | `TRANSSMUTE_DOCKERHUB_PASSWORD` | DockerHub password for private repos.                 | `""`                             |
 | `--ghcr-username`      | `TRANSSMUTE_GHCR_USERNAME`      | GitHub username for [ghcr.io](https://ghcr.io) repos. | `""`                             |
 | `--ghcr-password`      | `TRANSSMUTE_GHCR_PASSWORD`      | GitHub PAT for [ghcr.io](https://ghcr.io) repos.      | `""`                             |
+| `--twitter-enabled`    | `TRANSSMUTE_TWITTER_ENABLED`    | Twitter API enabled.                                  | `true`                           |
 
 ### DockerHub
 
