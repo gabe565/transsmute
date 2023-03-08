@@ -20,6 +20,6 @@ yarn-error.log*
 *.sln
 *.sw?
 
-/out/
+/dist/
 /vendor/
 /transsmute
