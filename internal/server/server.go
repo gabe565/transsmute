@@ -1,12 +1,14 @@
 package server
 
 import (
+	"github.com/gabe565/transsmute/assets"
 	"github.com/gabe565/transsmute/internal/docker"
 	"github.com/gabe565/transsmute/internal/feed"
 	"github.com/gabe565/transsmute/internal/twitter"
 	"github.com/gabe565/transsmute/internal/youtube"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"net/http"
 )
 
 func New() Server {
@@ -22,8 +24,10 @@ func (s Server) Handler() *chi.Mux {
 	r.Use(middleware.Heartbeat("/api/health"))
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
-
 	r.Use(feed.SetType)
+
+	r.Get("/*", http.FileServer(http.FS(assets.Assets)).ServeHTTP)
+
 	for prefix, registerFunc := range Routers() {
 		r.Route("/"+prefix, func(r chi.Router) {
 			registerFunc(r)

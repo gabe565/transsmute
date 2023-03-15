@@ -27,17 +27,19 @@ const (
 func SetType(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		ext := path.Ext(r.URL.Path)
-		output := OutputUnknown
+		var output OutputFormat
 		switch ext {
 		case ".json":
 			output = OutputJSON
-		case ".atom", "":
+		case ".atom":
 			output = OutputAtom
 		case ".rss":
 			output = OutputRSS
 		}
 		r = r.WithContext(context.WithValue(r.Context(), TypeKey, output))
-		r.URL.Path = strings.TrimSuffix(r.URL.Path, ext)
+		if output != OutputUnknown {
+			r.URL.Path = strings.TrimSuffix(r.URL.Path, ext)
+		}
 
 		next.ServeHTTP(w, r)
 	}
@@ -49,7 +51,7 @@ func WriteFeed(w http.ResponseWriter, r *http.Request) (err error) {
 	feed := r.Context().Value(FeedKey).(*feeds.Feed)
 
 	switch format {
-	case OutputAtom:
+	case OutputAtom, OutputUnknown:
 		if err := feed.WriteAtom(w); err != nil {
 			return err
 		}
