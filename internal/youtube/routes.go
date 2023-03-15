@@ -8,13 +8,13 @@ import (
 	"github.com/spf13/viper"
 )
 
-func Routes(r chi.Router, prefix string) {
+func Routes(r chi.Router) {
 	if viper.GetBool("youtube.enabled") {
 		r.Group(func(r chi.Router) {
 			r.Use(middleware.DisableIframe)
 
-			r.Get("/"+prefix+"/channel/{id}", channel.Handler)
-			r.Get("/"+prefix+"/playlist/{id}", playlist.Handler)
+			r.Get("/channel/{id}", channel.Handler)
+			r.Get("/playlist/{id}", playlist.Handler)
 		})
 	}
 }

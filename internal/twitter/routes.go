@@ -5,8 +5,8 @@ import (
 	"github.com/spf13/viper"
 )
 
-func Routes(r chi.Router, prefix string) {
+func Routes(r chi.Router) {
 	if viper.GetBool("twitter.enabled") {
-		r.Get("/"+prefix+"/user/{username}", Handler)
+		r.Get("/user/{username}", Handler)
 	}
 }

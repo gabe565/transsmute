@@ -24,14 +24,16 @@ func (s Server) Handler() *chi.Mux {
 	r.Use(middleware.Recoverer)
 
 	r.Use(feed.SetType)
-	for name, router := range Routers() {
-		router(r, name)
+	for prefix, registerFunc := range Routers() {
+		r.Route("/"+prefix, func(r chi.Router) {
+			registerFunc(r)
+		})
 	}
 
 	return r
 }
 
-type RoutesFunc func(r chi.Router, prefix string)
+type RoutesFunc func(r chi.Router)
 
 func Routers() map[string]RoutesFunc {
 	return map[string]RoutesFunc{

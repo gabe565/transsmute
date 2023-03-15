@@ -5,8 +5,8 @@ import (
 	"github.com/spf13/viper"
 )
 
-func Routes(r chi.Router, prefix string) {
+func Routes(r chi.Router) {
 	if viper.GetBool("docker.enabled") {
-		r.Get("/"+prefix+"/tags/*", Handler)
+		r.Get("/tags/*", Handler)
 	}
 }
