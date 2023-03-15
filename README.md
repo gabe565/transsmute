@@ -10,6 +10,7 @@ Currently, the following feed types are supported:
 
 - YouTube (channel, playlist)
 - Twitter (user)
+- Container registries (DockerHub, ghcr.io)
 
 ## Installation
 
