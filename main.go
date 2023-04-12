@@ -2,12 +2,13 @@ package main
 
 import (
 	"fmt"
-	"github.com/gabe565/transsmute/internal/server"
-	flag "github.com/spf13/pflag"
-	"github.com/spf13/viper"
 	"log"
 	"net/http"
 	"strings"
+
+	"github.com/gabe565/transsmute/internal/server"
+	flag "github.com/spf13/pflag"
+	"github.com/spf13/viper"
 )
 
 func init() {

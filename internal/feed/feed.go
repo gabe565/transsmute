@@ -2,10 +2,11 @@ package feed
 
 import (
 	"context"
-	"github.com/gorilla/feeds"
 	"net/http"
 	"path"
 	"strings"
+
+	"github.com/gorilla/feeds"
 )
 
 type OutputFormat uint8

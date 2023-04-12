@@ -1,6 +1,8 @@
 package server
 
 import (
+	"net/http"
+
 	"github.com/gabe565/transsmute/assets"
 	"github.com/gabe565/transsmute/internal/docker"
 	"github.com/gabe565/transsmute/internal/feed"
@@ -8,7 +10,6 @@ import (
 	"github.com/gabe565/transsmute/internal/youtube"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"net/http"
 )
 
 func New() Server {

@@ -2,12 +2,13 @@ package twitter
 
 import (
 	"context"
+	"net/http"
+	"time"
+
 	"github.com/gabe565/transsmute/internal/feed"
 	"github.com/go-chi/chi/v5"
 	"github.com/gorilla/feeds"
 	twitterscraper "github.com/n0madic/twitter-scraper"
-	"net/http"
-	"time"
 )
 
 func Handler(w http.ResponseWriter, r *http.Request) {

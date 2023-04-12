@@ -3,10 +3,11 @@ package template_funcs
 import (
 	"fmt"
 	"html/template"
-	"mvdan.cc/xurls/v2"
 	"regexp"
 	"strconv"
 	"strings"
+
+	"mvdan.cc/xurls/v2"
 )
 
 func Escape(s string) string {

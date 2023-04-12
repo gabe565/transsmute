@@ -2,14 +2,15 @@ package docker
 
 import (
 	"context"
+	"net/http"
+	"strings"
+	"time"
+
 	"github.com/gabe565/transsmute/internal/feed"
 	"github.com/go-chi/chi/v5"
 	"github.com/gorilla/feeds"
 	"github.com/heroku/docker-registry-client/registry"
 	"github.com/sirupsen/logrus"
-	"net/http"
-	"strings"
-	"time"
 )
 
 func Handler(w http.ResponseWriter, r *http.Request) {

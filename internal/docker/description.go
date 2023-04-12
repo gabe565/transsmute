@@ -2,8 +2,9 @@ package docker
 
 import (
 	_ "embed"
-	"github.com/gabe565/transsmute/internal/template_funcs"
 	"html/template"
+
+	"github.com/gabe565/transsmute/internal/template_funcs"
 )
 
 //go:embed description.html.gotmpl

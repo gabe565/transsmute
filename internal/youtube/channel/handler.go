@@ -3,6 +3,8 @@ package channel
 import (
 	"context"
 	"errors"
+	"net/http"
+
 	"github.com/gabe565/transsmute/internal/feed"
 	"github.com/gabe565/transsmute/internal/youtube/middleware"
 	"github.com/gabe565/transsmute/internal/youtube/playlist"
@@ -10,7 +12,6 @@ import (
 	"github.com/spf13/viper"
 	"google.golang.org/api/option"
 	"google.golang.org/api/youtube/v3"
-	"net/http"
 )
 
 func Handler(w http.ResponseWriter, r *http.Request) {

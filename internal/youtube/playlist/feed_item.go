@@ -1,11 +1,12 @@
 package playlist
 
 import (
+	"strings"
+	"time"
+
 	"github.com/gabe565/transsmute/internal/youtube/tmpl"
 	"github.com/gorilla/feeds"
 	"google.golang.org/api/youtube/v3"
-	"strings"
-	"time"
 )
 
 type Item youtube.PlaylistItemSnippet

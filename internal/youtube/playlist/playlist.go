@@ -4,10 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/gorilla/feeds"
-	"google.golang.org/api/youtube/v3"
 	"sort"
 	"time"
+
+	"github.com/gorilla/feeds"
+	"google.golang.org/api/youtube/v3"
 )
 
 func New(service *youtube.Service, ctx context.Context, id string) Playlist {
