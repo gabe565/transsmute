@@ -22,7 +22,7 @@ RUN --mount=type=cache,id="transsmute-$TARGETPLATFORM",target=/root/.cache \
     && go build -ldflags='-w -s' -trimpath
 
 
-FROM alpine
+FROM alpine:3.18
 LABEL org.opencontainers.image.source="https://github.com/gabe565/transsmute"
 WORKDIR /app
 
