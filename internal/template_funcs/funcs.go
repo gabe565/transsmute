@@ -54,7 +54,7 @@ func FormatUrls(s string) string {
 var (
 	hashtagRe   = regexp.MustCompile("(^|\n| )#[A-Za-z0-9]+")
 	hashtagTmpl = template.Must(
-		template.New("").Parse(`{{ .prefix }}<a href="https://youtube.com/hashtag/{{ .hashtag }}">{{ .text }}</a>`),
+		template.New("").Parse(`{{ .prefix }}<a href="https://youtube.com/hashtag/{{ .slug }}">{{ .text }}</a>`),
 	)
 )
 
@@ -66,10 +66,20 @@ func FormatHashtags(s string) string {
 
 	var buf bytes.Buffer
 	for _, hashtag := range hashtags {
+		prefix := string(hashtag[0])
+		slug := hashtag[2:]
+		text := hashtag[1:]
+
+		if prefix == "#" {
+			prefix = ""
+			slug = text
+			text = hashtag
+		}
+
 		if err := hashtagTmpl.Execute(&buf, map[string]string{
-			"prefix":  string(hashtag[0]),
-			"hashtag": hashtag[2:],
-			"text":    hashtag[1:],
+			"prefix": prefix,
+			"slug":   slug,
+			"text":   text,
 		}); err != nil {
 			continue
 		}

@@ -36,6 +36,7 @@ func TestFormatHashtags(t *testing.T) {
 	}{
 		{"no change", args{"test"}, "test"},
 		{"hashtag", args{" #test"}, ` <a href="https://youtube.com/hashtag/test">#test</a>`},
+		{"no prefix", args{"#test"}, `<a href="https://youtube.com/hashtag/test">#test</a>`},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
