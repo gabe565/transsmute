@@ -6,7 +6,7 @@ require (
 	github.com/go-chi/chi/v5 v5.0.10
 	github.com/gorilla/feeds v1.1.1
 	github.com/heroku/docker-registry-client v0.0.0-20211012143308-9463674c8930
-	github.com/n0madic/twitter-scraper v0.0.0-20230315084105-10459557fb56
+	github.com/n0madic/twitter-scraper v0.0.0-20230711213008-94503a2bc36c
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.15.0
@@ -36,10 +36,10 @@ require (
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/subosito/gotenv v1.4.2 // indirect
 	go.opencensus.io v0.24.0 // indirect
-	golang.org/x/net v0.8.0 // indirect
-	golang.org/x/oauth2 v0.6.0 // indirect
-	golang.org/x/sys v0.6.0 // indirect
-	golang.org/x/text v0.8.0 // indirect
+	golang.org/x/net v0.11.0 // indirect
+	golang.org/x/oauth2 v0.9.0 // indirect
+	golang.org/x/sys v0.9.0 // indirect
+	golang.org/x/text v0.10.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto v0.0.0-20230303212802-e74f57abe488 // indirect
 	google.golang.org/grpc v1.53.0 // indirect
