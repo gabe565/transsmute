@@ -59,21 +59,21 @@ var (
 )
 
 func FormatHashtags(s string) string {
-	hashtags := hashtagRe.FindAllString(s, -1)
-	if hashtags == nil {
+	matches := hashtagRe.FindAllString(s, -1)
+	if matches == nil {
 		return s
 	}
 
 	var buf bytes.Buffer
-	for _, hashtag := range hashtags {
-		prefix := string(hashtag[0])
-		slug := hashtag[2:]
-		text := hashtag[1:]
+	for _, match := range matches {
+		prefix := string(match[0])
+		slug := match[2:]
+		text := match[1:]
 
 		if prefix == "#" {
 			prefix = ""
 			slug = text
-			text = hashtag
+			text = match
 		}
 
 		if err := hashtagTmpl.Execute(&buf, map[string]string{
@@ -86,7 +86,7 @@ func FormatHashtags(s string) string {
 
 		s = strings.Replace(
 			s,
-			hashtag,
+			match,
 			buf.String(),
 			1,
 		)
