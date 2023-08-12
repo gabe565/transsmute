@@ -1,7 +1,9 @@
 package feed
 
 import (
+	"bytes"
 	"context"
+	"io"
 	"net/http"
 	"path"
 	"strings"
@@ -51,22 +53,28 @@ func WriteFeed(w http.ResponseWriter, r *http.Request) (err error) {
 	format := r.Context().Value(TypeKey).(OutputFormat)
 	feed := r.Context().Value(FeedKey).(*feeds.Feed)
 
+	var buf bytes.Buffer
+
 	switch format {
 	case OutputAtom, OutputUnknown:
-		if err := feed.WriteAtom(w); err != nil {
+		if err := feed.WriteAtom(&buf); err != nil {
 			return err
 		}
 	case OutputJSON:
-		if err := feed.WriteJSON(w); err != nil {
+		if err := feed.WriteJSON(&buf); err != nil {
 			return err
 		}
 	case OutputRSS:
-		if err := feed.WriteRss(w); err != nil {
+		if err := feed.WriteRss(&buf); err != nil {
 			return err
 		}
 	default:
 		http.Error(w, "400 invalid format", http.StatusBadRequest)
 		return nil
+	}
+
+	if _, err := io.Copy(w, &buf); err != nil {
+		return err
 	}
 
 	return nil
