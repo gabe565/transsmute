@@ -60,14 +60,17 @@ func WriteFeed(w http.ResponseWriter, r *http.Request) (err error) {
 		if err := feed.WriteAtom(&buf); err != nil {
 			return err
 		}
+		w.Header().Set("Content-Type", "application/rss+xml")
 	case OutputJSON:
 		if err := feed.WriteJSON(&buf); err != nil {
 			return err
 		}
+		w.Header().Set("Content-Type", "application/json")
 	case OutputRSS:
 		if err := feed.WriteRss(&buf); err != nil {
 			return err
 		}
+		w.Header().Set("Content-Type", "application/rss+xml")
 	default:
 		http.Error(w, "400 invalid format", http.StatusBadRequest)
 		return nil
