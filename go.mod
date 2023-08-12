@@ -3,7 +3,7 @@ module github.com/gabe565/transsmute
 go 1.20
 
 require (
-	github.com/go-chi/chi/v5 v5.0.8
+	github.com/go-chi/chi/v5 v5.0.10
 	github.com/gorilla/feeds v1.1.1
 	github.com/heroku/docker-registry-client v0.0.0-20211012143308-9463674c8930
 	github.com/n0madic/twitter-scraper v0.0.0-20230315084105-10459557fb56
