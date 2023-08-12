@@ -1,7 +1,7 @@
 package template_funcs
 
 import (
-	"fmt"
+	"bytes"
 	"html/template"
 	"regexp"
 	"strconv"
@@ -19,28 +19,44 @@ func Nl2br(s string) string {
 	return s
 }
 
+var linkTmpl = template.Must(
+	template.New("").Parse(`<a href="{{ . }}">{{ . }}</a>`),
+)
+
 func FormatUrls(s string) string {
 	urls := xurls.Relaxed().FindAllString(s, -1)
 	if urls == nil {
 		return s
 	}
 
+	var buf bytes.Buffer
 	for _, url := range urls {
 		if strings.Contains(url, "@") {
 			continue
 		}
+
+		if err := linkTmpl.Execute(&buf, url); err != nil {
+			continue
+		}
+
 		s = strings.Replace(
 			s,
 			url,
-			fmt.Sprintf(`<a href="%s">%s</a>`, url, url),
+			buf.String(),
 			1,
 		)
+		buf.Reset()
 	}
 
 	return s
 }
 
-var hashtagRe = regexp.MustCompile("(^|\n| )#[A-Za-z0-9]+")
+var (
+	hashtagRe   = regexp.MustCompile("(^|\n| )#[A-Za-z0-9]+")
+	hashtagTmpl = template.Must(
+		template.New("").Parse(`{{ .prefix }}<a href="https://youtube.com/hashtag/{{ .hashtag }}">{{ .text }}</a>`),
+	)
+)
 
 func FormatHashtags(s string) string {
 	hashtags := hashtagRe.FindAllString(s, -1)
@@ -48,25 +64,42 @@ func FormatHashtags(s string) string {
 		return s
 	}
 
+	var buf bytes.Buffer
 	for _, hashtag := range hashtags {
+		if err := hashtagTmpl.Execute(&buf, map[string]string{
+			"prefix":  string(hashtag[0]),
+			"hashtag": hashtag[2:],
+			"text":    hashtag[1:],
+		}); err != nil {
+			continue
+		}
+
 		s = strings.Replace(
 			s,
 			hashtag,
-			fmt.Sprintf(`%c<a href="https://youtube.com/hashtag/%s">%s</a>`, hashtag[0], hashtag[2:], hashtag[1:]),
+			buf.String(),
 			1,
 		)
+		buf.Reset()
 	}
 
 	return s
 }
 
-var timestampRe = regexp.MustCompile("([0-9]:)?[0-9]+:[0-9]+")
+var (
+	timestampRe   = regexp.MustCompile("([0-9]:)?[0-9]+:[0-9]+")
+	timestampTmpl = template.Must(
+		template.New("").Parse(`<a href="https://youtube.com/watch?v={{ .id }}&t={{ .seconds }}s">{{ .time }}</a>`),
+	)
+)
 
 func FormatTimestamps(id, s string) string {
 	times := timestampRe.FindAllString(s, -1)
 	if times == nil {
 		return s
 	}
+
+	var buf bytes.Buffer
 
 	for _, time := range times {
 		segments := strings.Split(time, ":")
@@ -90,12 +123,21 @@ func FormatTimestamps(id, s string) string {
 			seconds += hour * 60 * 60
 		}
 
+		if err := timestampTmpl.Execute(&buf, map[string]any{
+			"id":      id,
+			"seconds": seconds,
+			"time":    time,
+		}); err != nil {
+			continue
+		}
+
 		s = strings.Replace(
 			s,
 			time,
-			fmt.Sprintf(`<a href="https://youtube.com/watch?v=%s&t=%ds">%s</a>`, id, seconds, time),
+			buf.String(),
 			1,
 		)
+		buf.Reset()
 	}
 
 	return s
