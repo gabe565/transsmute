@@ -40,9 +40,10 @@ func FormatUrls(s string) string {
 	return s
 }
 
+var hashtagRe = regexp.MustCompile("(^|\n| )#[A-Za-z0-9]+")
+
 func FormatHashtags(s string) string {
-	re := regexp.MustCompile("(^|\n| )#[A-Za-z0-9]+")
-	hashtags := re.FindAllString(s, -1)
+	hashtags := hashtagRe.FindAllString(s, -1)
 	if hashtags == nil {
 		return s
 	}
@@ -59,9 +60,10 @@ func FormatHashtags(s string) string {
 	return s
 }
 
+var timestampRe = regexp.MustCompile("([0-9]:)?[0-9]+:[0-9]+")
+
 func FormatTimestamps(id, s string) string {
-	re := regexp.MustCompile("([0-9]:)?[0-9]+:[0-9]+")
-	times := re.FindAllString(s, -1)
+	times := timestampRe.FindAllString(s, -1)
 	if times == nil {
 		return s
 	}
