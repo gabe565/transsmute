@@ -71,19 +71,19 @@ func FormatTimestamps(id, s string) string {
 
 		seconds, err := strconv.Atoi(segments[len(segments)-1])
 		if err != nil {
-			return s
+			continue
 		}
 
 		min, err := strconv.Atoi(segments[len(segments)-2])
 		if err != nil {
-			return s
+			continue
 		}
 		seconds += min * 60
 
 		if len(segments) == 3 {
 			hour, err := strconv.Atoi(segments[len(segments)-3])
 			if err != nil {
-				panic(err)
+				continue
 			}
 			seconds += hour * 60 * 60
 		}
