@@ -36,9 +36,9 @@ is provided.
 ### Kubernetes
 
 A Helm chart is available for Kubernetes deployment.
-For more information, go to
-[Artifact Hub](https://artifacthub.io/packages/helm/gabe565/transsmute) or
-[gabe565/charts](https://github.com/gabe565/charts/tree/main/charts/transsmute).
+For more information, see
+[charts.gabe565.com](https://charts.gabe565.com/charts/transsmute/) or
+[Artifact Hub](https://artifacthub.io/packages/helm/gabe565/transsmute).
 
 ## Configuration
 
