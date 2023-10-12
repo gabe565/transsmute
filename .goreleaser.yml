@@ -22,8 +22,8 @@ changelog:
   sort: asc
   filters:
     exclude:
-      - "^:pencil:"
-      - "^:white_check_mark:"
+      - '^docs'
+      - '^test'
 dockers:
   - &dockers
     image_templates:
