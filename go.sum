@@ -231,8 +231,8 @@ github.com/mitchellh/mapstructure v0.0.0-20180220230111-00c29f56e238/go.mod h1:F
 github.com/mitchellh/mapstructure v1.5.0 h1:jeMsZIYE/09sWLaz43PL7Gy6RuMjD2eJVyuac5Z2hdY=
 github.com/mitchellh/mapstructure v1.5.0/go.mod h1:bFUtVrKA4DC2yAKiSyO/QUcy7e+RRV2QTWOzhPopBRo=
 github.com/mozilla/tls-observatory v0.0.0-20180409132520-8791a200eb40/go.mod h1:SrKMQvPiws7F7iqYp8/TX+IhxCYhzr6N/1yb8cwHsGk=
-github.com/n0madic/twitter-scraper v0.0.0-20231012104931-652b5b5115a4 h1:U+UOzbyHe3Y5I/rSCUPsBKfVDq5YaMHWyLpljFU+B3I=
-github.com/n0madic/twitter-scraper v0.0.0-20231012104931-652b5b5115a4/go.mod h1:qoLNLwgpaGspT8E82iwzof9xGsQTg35j36PlXrD3R4o=
+github.com/n0madic/twitter-scraper v0.0.0-20231104223941-296710769dd8 h1:yToM7p7HL/WwEESkupFV3Nf7a8d80CHaKRoFNstGA2U=
+github.com/n0madic/twitter-scraper v0.0.0-20231104223941-296710769dd8/go.mod h1:qoLNLwgpaGspT8E82iwzof9xGsQTg35j36PlXrD3R4o=
 github.com/nbutton23/zxcvbn-go v0.0.0-20160627004424-a22cb81b2ecd/go.mod h1:o96djdrsSGy3AWPyBgZMAGfxZNfgntdJG+11KU4QvbU=
 github.com/nbutton23/zxcvbn-go v0.0.0-20171102151520-eafdab6b0663/go.mod h1:o96djdrsSGy3AWPyBgZMAGfxZNfgntdJG+11KU4QvbU=
 github.com/onsi/ginkgo v0.0.0-20170829012221-11459a886d9c/go.mod h1:lLunBs/Ym6LB5Z9jYTR76FiuTmxDTDusOGeTQH+WWjE=
