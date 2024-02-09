@@ -49,6 +49,11 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 	tags, err := hub.Tags(repo)
 	if err != nil {
+		var errStatus *registry.HTTPStatusError
+		if ok := errors.As(err, &errStatus); ok && errStatus.Response != nil {
+			http.Error(w, http.StatusText(errStatus.Response.StatusCode), errStatus.Response.StatusCode)
+			return
+		}
 		panic(err)
 	}
 
