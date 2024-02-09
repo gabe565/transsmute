@@ -24,8 +24,8 @@ func init() {
 
 type DockerHub struct{}
 
-func (d DockerHub) Name() string {
-	return ""
+func (d DockerHub) Names() []string {
+	return []string{"", "docker.io"}
 }
 
 func (d DockerHub) ApiUrl() string {
@@ -46,6 +46,7 @@ func (d DockerHub) Transport(_ context.Context, repo string) (http.RoundTripper,
 }
 
 func (d DockerHub) NormalizeRepo(repo string) string {
+	repo = strings.TrimPrefix(repo, "docker.io/")
 	if !strings.Contains(repo, "/") {
 		return "library/" + repo
 	}

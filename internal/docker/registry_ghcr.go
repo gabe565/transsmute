@@ -107,8 +107,8 @@ type Ghcr struct {
 	refreshedAt    time.Time
 }
 
-func (g Ghcr) Name() string {
-	return "ghcr.io"
+func (g Ghcr) Names() []string {
+	return []string{"ghcr.io"}
 }
 
 func (g Ghcr) ApiUrl() string {

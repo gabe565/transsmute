@@ -9,7 +9,7 @@ import (
 )
 
 type Registry interface {
-	Name() string
+	Names() []string
 
 	ApiUrl() string
 	TokenUrl(repo string) string
@@ -41,8 +41,10 @@ var ErrInvalidRegistry = errors.New("no registry for repo")
 
 func FindRegistry(repo string) (Registry, error) {
 	for _, registry := range registries {
-		if strings.HasPrefix(repo, registry.Name()) {
-			return registry, nil
+		for _, name := range registry.Names() {
+			if strings.HasPrefix(repo, name) {
+				return registry, nil
+			}
 		}
 	}
 	return nil, fmt.Errorf("%w: %s", ErrInvalidRegistry, repo)
