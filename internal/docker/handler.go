@@ -2,6 +2,7 @@ package docker
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"strings"
 	"time"
@@ -16,9 +17,13 @@ import (
 func Handler(w http.ResponseWriter, r *http.Request) {
 	repo := chi.URLParam(r, "*")
 
-	reg := FindRegistry(repo)
-	if reg == nil {
-		panic("invalid registry")
+	reg, err := FindRegistry(repo)
+	if err != nil {
+		if errors.Is(err, ErrInvalidRegistry) {
+			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+			return
+		}
+		panic(err)
 	}
 
 	repo = reg.NormalizeRepo(repo)

@@ -2,6 +2,8 @@ package docker
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"net/http"
 	"strings"
 )
@@ -35,11 +37,13 @@ func SetupRegistries() error {
 	return nil
 }
 
-func FindRegistry(repo string) Registry {
+var ErrInvalidRegistry = errors.New("no registry for repo")
+
+func FindRegistry(repo string) (Registry, error) {
 	for _, registry := range registries {
 		if strings.HasPrefix(repo, registry.Name()) {
-			return registry
+			return registry, nil
 		}
 	}
-	return nil
+	return nil, fmt.Errorf("%w: %s", ErrInvalidRegistry, repo)
 }
