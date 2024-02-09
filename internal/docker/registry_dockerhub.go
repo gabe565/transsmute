@@ -1,6 +1,7 @@
 package docker
 
 import (
+	"context"
 	"net/http"
 	"strings"
 
@@ -35,13 +36,13 @@ func (d DockerHub) TokenUrl(repo string) string {
 	return "https://auth.docker.io/token?service=registry.hub.docker.com&scope=repository:" + repo + ":pull"
 }
 
-func (d DockerHub) Transport(repo string) http.RoundTripper {
+func (d DockerHub) Transport(_ context.Context, repo string) (http.RoundTripper, error) {
 	return registry.WrapTransport(
 		http.DefaultTransport,
 		d.TokenUrl(repo),
 		viper.GetString("dockerhub.username"),
 		viper.GetString("dockerhub-password"),
-	)
+	), nil
 }
 
 func (d DockerHub) NormalizeRepo(repo string) string {

@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/gabe565/transsmute/internal/docker"
 	"github.com/gabe565/transsmute/internal/server"
 	flag "github.com/spf13/pflag"
 	"github.com/spf13/viper"
@@ -39,6 +40,10 @@ func main() {
 	}
 
 	flag.Parse()
+
+	if err := docker.SetupRegistries(); err != nil {
+		panic(err)
+	}
 
 	s := server.New()
 	address := viper.GetString("address")

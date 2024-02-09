@@ -24,9 +24,14 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	repo = reg.NormalizeRepo(repo)
 	owner := &feeds.Author{Name: reg.GetOwner(repo)}
 
+	tr, err := reg.Transport(r.Context(), repo)
+	if err != nil {
+		panic(err)
+	}
+
 	hub := registry.Registry{
 		URL:    reg.ApiUrl(),
-		Client: &http.Client{Transport: reg.Transport(repo)},
+		Client: &http.Client{Transport: tr},
 		Logf:   logrus.StandardLogger().Debugf,
 	}
 
