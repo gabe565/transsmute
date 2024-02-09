@@ -104,7 +104,7 @@ type Ghcr struct {
 
 	client         *github.Client
 	installationId int64
-	refreshedAt    time.Time
+	expiresAt      time.Time
 }
 
 func (g Ghcr) Names() []string {
@@ -120,7 +120,7 @@ func (g Ghcr) TokenUrl(repo string) string {
 }
 
 func (g Ghcr) Transport(ctx context.Context, repo string) (http.RoundTripper, error) {
-	if g.authMethod == AuthApp && time.Since(g.refreshedAt) >= 45*time.Minute {
+	if g.authMethod == AuthApp && time.Until(g.expiresAt) < time.Minute {
 		if err := g.RefreshAppToken(ctx); err != nil {
 			return nil, err
 		}
@@ -151,8 +151,6 @@ func (g Ghcr) GetOwner(repo string) string {
 }
 
 func (g *Ghcr) RefreshAppToken(ctx context.Context) error {
-	g.refreshedAt = time.Now()
-
 	token, _, err := g.client.Apps.CreateInstallationToken(ctx, g.installationId, &github.InstallationTokenOptions{
 		Permissions: &github.InstallationPermissions{
 			Packages: github.String("read"),
@@ -163,5 +161,8 @@ func (g *Ghcr) RefreshAppToken(ctx context.Context) error {
 	}
 
 	g.password = token.GetToken()
+	if token.ExpiresAt != nil {
+		g.expiresAt = *token.ExpiresAt.GetTime()
+	}
 	return nil
 }
