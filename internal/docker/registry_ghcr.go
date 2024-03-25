@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/bradleyfalzon/ghinstallation/v2"
-	"github.com/google/go-github/v58/github"
+	"github.com/google/go-github/v60/github"
 	"github.com/heroku/docker-registry-client/registry"
 	flag "github.com/spf13/pflag"
 	"github.com/spf13/viper"
