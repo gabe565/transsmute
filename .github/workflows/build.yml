@@ -22,8 +22,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Change Cache Key
-        run: echo '// ${{ github.job }}' >> go.sum
       - uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
