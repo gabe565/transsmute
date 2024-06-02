@@ -11,7 +11,7 @@ require (
 	github.com/n0madic/twitter-scraper v0.0.0-20231104223941-296710769dd8
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/pflag v1.0.5
-	github.com/spf13/viper v1.18.2
+	github.com/spf13/viper v1.19.0
 	google.golang.org/api v0.182.0
 	mvdan.cc/xurls/v2 v2.5.0
 )
@@ -40,7 +40,7 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.0.2 // indirect
-	github.com/pelletier/go-toml/v2 v2.1.0 // indirect
+	github.com/pelletier/go-toml/v2 v2.2.2 // indirect
 	github.com/sagikazarmark/locafero v0.4.0 // indirect
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect
