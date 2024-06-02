@@ -5,7 +5,7 @@ go 1.22.3
 require (
 	github.com/bradleyfalzon/ghinstallation/v2 v2.11.0
 	github.com/go-chi/chi/v5 v5.0.12
-	github.com/google/go-github/v58 v58.0.0
+	github.com/google/go-github/v62 v62.0.0
 	github.com/gorilla/feeds v1.1.2
 	github.com/heroku/docker-registry-client v0.0.0-20211012143308-9463674c8930
 	github.com/n0madic/twitter-scraper v0.0.0-20231104223941-296710769dd8
@@ -29,7 +29,6 @@ require (
 	github.com/golang-jwt/jwt/v4 v4.5.0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
-	github.com/google/go-github/v62 v62.0.0 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/google/s2a-go v0.1.7 // indirect
 	github.com/google/uuid v1.6.0 // indirect
