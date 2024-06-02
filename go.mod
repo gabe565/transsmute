@@ -3,7 +3,7 @@ module github.com/gabe565/transsmute
 go 1.21.6
 
 require (
-	github.com/bradleyfalzon/ghinstallation/v2 v2.9.0
+	github.com/bradleyfalzon/ghinstallation/v2 v2.11.0
 	github.com/go-chi/chi/v5 v5.0.12
 	github.com/google/go-github/v58 v58.0.0
 	github.com/gorilla/feeds v1.1.2
@@ -29,7 +29,7 @@ require (
 	github.com/golang-jwt/jwt/v4 v4.5.0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
-	github.com/google/go-github/v57 v57.0.0 // indirect
+	github.com/google/go-github/v62 v62.0.0 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/google/s2a-go v0.1.7 // indirect
 	github.com/google/uuid v1.6.0 // indirect
