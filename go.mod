@@ -1,6 +1,6 @@
 module github.com/gabe565/transsmute
 
-go 1.21.6
+go 1.22.3
 
 require (
 	github.com/bradleyfalzon/ghinstallation/v2 v2.9.0
