@@ -15,7 +15,11 @@ import (
 )
 
 func Handler(w http.ResponseWriter, r *http.Request) {
-	service, err := youtube.NewService(r.Context(), option.WithAPIKey(viper.GetString("youtube.key")))
+	service, err := youtube.NewService(
+		r.Context(),
+		option.WithAPIKey(viper.GetString("youtube.key")),
+		option.WithTelemetryDisabled(),
+	)
 	if err != nil {
 		panic(err)
 	}
