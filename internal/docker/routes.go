@@ -7,6 +7,6 @@ import (
 
 func Routes(r chi.Router) {
 	if viper.GetBool("docker.enabled") {
-		r.Get("/tags/*", Handler)
+		r.Get("/docker/tags/*", Handler)
 	}
 }

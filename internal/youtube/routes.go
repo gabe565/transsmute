@@ -13,8 +13,8 @@ func Routes(r chi.Router) {
 		r.Group(func(r chi.Router) {
 			r.Use(middleware.DisableIframe)
 
-			r.Get("/channel/{id}", channel.Handler)
-			r.Get("/playlist/{id}", playlist.Handler)
+			r.Get("/youtube/channel/{id}", channel.Handler)
+			r.Get("/youtube/playlist/{id}", playlist.Handler)
 		})
 	}
 }

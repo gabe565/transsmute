@@ -29,21 +29,9 @@ func (s Server) Handler() *chi.Mux {
 
 	r.Get("/*", http.FileServer(http.FS(assets.Assets)).ServeHTTP)
 
-	for prefix, registerFunc := range Routers() {
-		r.Route("/"+prefix, func(r chi.Router) {
-			registerFunc(r)
-		})
-	}
+	docker.Routes(r)
+	twitter.Routes(r)
+	youtube.Routes(r)
 
 	return r
-}
-
-type RoutesFunc func(r chi.Router)
-
-func Routers() map[string]RoutesFunc {
-	return map[string]RoutesFunc{
-		"docker":  docker.Routes,
-		"twitter": twitter.Routes,
-		"youtube": youtube.Routes,
-	}
 }

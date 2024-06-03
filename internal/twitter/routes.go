@@ -7,6 +7,6 @@ import (
 
 func Routes(r chi.Router) {
 	if viper.GetBool("twitter.enabled") {
-		r.Get("/user/{username}", Handler)
+		r.Get("/twitter/user/{username}", Handler)
 	}
 }
