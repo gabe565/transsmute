@@ -3,6 +3,7 @@ package kemono
 import (
 	"net/url"
 	"path"
+	"strconv"
 
 	flag "github.com/spf13/pflag"
 	"github.com/spf13/viper"
@@ -34,10 +35,14 @@ func postURL(host string, c Creator, p Post) *url.URL {
 	return u
 }
 
-func postAPIURL(host string, c Creator) *url.URL {
-	return &url.URL{
-		Scheme: "https",
-		Host:   host,
-		Path:   path.Join("api/v1", c.Service, "user", c.ID),
+func postAPIURL(host string, c Creator, page uint64) *url.URL {
+	q := url.Values{}
+	q.Set("o", strconv.FormatUint(page*50, 10))
+	u := &url.URL{
+		Scheme:   "https",
+		Host:     host,
+		Path:     path.Join("api/v1", c.Service, "user", c.ID),
+		RawQuery: q.Encode(),
 	}
+	return u
 }

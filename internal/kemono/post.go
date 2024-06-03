@@ -10,6 +10,7 @@ import (
 	"io"
 	"net/http"
 	"slices"
+	"strconv"
 	"strings"
 	"time"
 
@@ -61,31 +62,10 @@ func postHandler(host string) http.HandlerFunc {
 			panic(err)
 		}
 
-		req, err := http.NewRequestWithContext(r.Context(), http.MethodGet, postAPIURL(host, creator).String(), nil)
-		if err != nil {
-			panic(err)
-		}
-
-		resp, err := http.DefaultClient.Do(req)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusServiceUnavailable)
-			panic(err)
-		}
-		defer func() {
-			_, _ = io.Copy(io.Discard, resp.Body)
-			_ = resp.Body.Close()
-		}()
-
-		var posts []Post
-		if err := json.NewDecoder(resp.Body).Decode(&posts); err != nil {
-			http.Error(w, err.Error(), http.StatusServiceUnavailable)
-			panic(err)
-		}
-
 		f := &feeds.Feed{
 			Title: formatServiceName(creator.Service) + " - " + creator.Name,
 			Link:  &feeds.Link{Href: publicURL(host, creator).String()},
-			Items: make([]*feeds.Item, 0, len(posts)),
+			Items: make([]*feeds.Item, 0, 50),
 		}
 		if creator.Indexed != 0 {
 			f.Created = time.Unix(int64(creator.Indexed), 0)
@@ -94,34 +74,56 @@ func postHandler(host string) http.HandlerFunc {
 			f.Updated = time.Unix(int64(creator.Updated), 0)
 		}
 
-		for _, post := range posts {
-			item := feeds.Item{
-				Id:    post.ID,
-				Link:  &feeds.Link{Href: postURL(host, creator, post).String()},
-				Title: post.Title,
+		pagesRaw := r.URL.Query().Get("pages")
+		pages := uint64(1)
+		if pagesRaw != "" {
+			if pages, err = strconv.ParseUint(pagesRaw, 10, 64); err != nil || pages == 0 {
+				http.Error(w, "pages must be a positive integer", http.StatusBadRequest)
+				return
 			}
-			if parsed, err := time.Parse("2006-01-02T15:04:05", post.Published); err == nil {
-				item.Created = parsed
-			}
-			if parsed, err := time.Parse("2006-01-02T15:04:05", post.Edited); err == nil {
-				item.Updated = parsed
-			}
+		}
 
-			slices.SortStableFunc(post.Attachments, func(a, b Attachment) int {
-				return cmp.Compare(a.Name, b.Name)
-			})
-			post.Attachments = slices.Compact(post.Attachments)
-
-			var buf strings.Builder
-			if err := postTmpl.Execute(&buf, map[string]any{
-				"Host": host,
-				"Post": post,
-			}); err != nil {
+		for page := range pages {
+			posts, err := fetchPostPage(r.Context(), postAPIURL(host, creator, page).String())
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusServiceUnavailable)
 				panic(err)
 			}
-			item.Content = buf.String()
+			f.Items = slices.Grow(f.Items, len(posts))
 
-			f.Items = append(f.Items, &item)
+			for _, post := range posts {
+				item := feeds.Item{
+					Id:    post.ID,
+					Link:  &feeds.Link{Href: postURL(host, creator, post).String()},
+					Title: post.Title,
+				}
+				if parsed, err := time.Parse("2006-01-02T15:04:05", post.Published); err == nil {
+					item.Created = parsed
+				}
+				if parsed, err := time.Parse("2006-01-02T15:04:05", post.Edited); err == nil {
+					item.Updated = parsed
+				}
+
+				slices.SortStableFunc(post.Attachments, func(a, b Attachment) int {
+					return cmp.Compare(a.Name, b.Name)
+				})
+				post.Attachments = slices.Compact(post.Attachments)
+
+				var buf strings.Builder
+				if err := postTmpl.Execute(&buf, map[string]any{
+					"Host": host,
+					"Post": post,
+				}); err != nil {
+					panic(err)
+				}
+				item.Content = buf.String()
+
+				f.Items = append(f.Items, &item)
+			}
+
+			if len(posts) < 50 {
+				break
+			}
 		}
 
 		r = r.WithContext(context.WithValue(r.Context(), feed.FeedKey, f))
@@ -129,4 +131,27 @@ func postHandler(host string) http.HandlerFunc {
 			panic(err)
 		}
 	}
+}
+
+func fetchPostPage(ctx context.Context, url string) ([]Post, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		_, _ = io.Copy(io.Discard, resp.Body)
+		_ = resp.Body.Close()
+	}()
+
+	var posts []Post
+	if err := json.NewDecoder(resp.Body).Decode(&posts); err != nil {
+		return nil, err
+	}
+
+	return posts, nil
 }
