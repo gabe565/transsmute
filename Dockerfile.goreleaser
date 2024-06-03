@@ -1,16 +1,5 @@
-FROM alpine:3.20
-WORKDIR /data
-
-RUN apk add --no-cache tzdata
-
-COPY transsmute /usr/local/bin
-
-ARG USERNAME=transsmute
-ARG UID=1000
-ARG GID=$UID
-RUN addgroup -g "$GID" "$USERNAME" \
-    && adduser -S -u "$UID" -G "$USERNAME" "$USERNAME"
-USER $UID
-
+FROM gcr.io/distroless/static:nonroot
+WORKDIR /
+COPY transsmute /
 ENV TRANSSMUTE_ADDRESS=":80"
-CMD ["transsmute"]
+CMD ["/transsmute"]

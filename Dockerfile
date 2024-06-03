@@ -22,20 +22,8 @@ RUN --mount=type=cache,id="transsmute-$TARGETPLATFORM",target=/root/.cache \
     && go build -ldflags='-w -s' -trimpath
 
 
-FROM alpine:3.20
-LABEL org.opencontainers.image.source="https://github.com/gabe565/transsmute"
-WORKDIR /app
-
-RUN apk add --no-cache tzdata
-
+FROM gcr.io/distroless/static:nonroot
+WORKDIR /
 COPY --from=go-builder /app/transsmute ./
-
-ARG USERNAME=transsmute
-ARG UID=1000
-ARG GID=$UID
-RUN addgroup -g "$GID" "$USERNAME" \
-    && adduser -S -u "$UID" -G "$USERNAME" "$USERNAME"
-USER $UID
-
 ENV TRANSSMUTE_ADDRESS=":80"
-CMD ["./transsmute"]
+CMD ["/transsmute"]
