@@ -83,8 +83,10 @@ func postHandler(host string) http.HandlerFunc {
 			}
 		}
 
+		query := r.URL.Query().Get("q")
+
 		for page := range pages {
-			posts, err := fetchPostPage(r.Context(), postAPIURL(host, creator, page).String())
+			posts, err := fetchPostPage(r.Context(), postAPIURL(host, creator, page, query).String())
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusServiceUnavailable)
 				panic(err)
