@@ -9,9 +9,9 @@ import (
 
 	"github.com/gabe565/transsmute/internal/feed"
 	"github.com/go-chi/chi/v5"
+	"github.com/google/go-containerregistry/pkg/crane"
+	"github.com/google/go-containerregistry/pkg/v1/remote/transport"
 	"github.com/gorilla/feeds"
-	"github.com/heroku/docker-registry-client/registry"
-	"github.com/sirupsen/logrus"
 )
 
 func Handler(w http.ResponseWriter, r *http.Request) {
@@ -29,15 +29,21 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	repo = reg.NormalizeRepo(repo)
 	owner := &feeds.Author{Name: reg.GetOwner(repo)}
 
-	tr, err := reg.Transport(r.Context(), repo)
+	auth, err := reg.Authenticator(r.Context(), repo)
 	if err != nil {
 		panic(err)
 	}
 
-	hub := registry.Registry{
-		URL:    reg.ApiUrl(),
-		Client: &http.Client{Transport: tr},
-		Logf:   logrus.StandardLogger().Debugf,
+	tags, err := crane.ListTags(repo, crane.WithContext(r.Context()), crane.WithAuth(auth))
+	if err != nil {
+		var transportErr *transport.Error
+		if errors.As(err, &transportErr) {
+			http.Error(w, http.StatusText(transportErr.StatusCode), transportErr.StatusCode)
+			if transportErr.StatusCode == http.StatusNotFound {
+				return
+			}
+		}
+		panic(err)
 	}
 
 	f := &feeds.Feed{
@@ -45,16 +51,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		Link:    &feeds.Link{Href: reg.GetRepoUrl(repo)},
 		Author:  owner,
 		Created: time.Now(),
-	}
-
-	tags, err := hub.Tags(repo)
-	if err != nil {
-		var errStatus *registry.HTTPStatusError
-		if ok := errors.As(err, &errStatus); ok && errStatus.Response != nil {
-			http.Error(w, http.StatusText(errStatus.Response.StatusCode), errStatus.Response.StatusCode)
-			return
-		}
-		panic(err)
+		Items:   make([]*feeds.Item, 0, len(tags)),
 	}
 
 	for _, tag := range tags {

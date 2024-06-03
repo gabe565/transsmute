@@ -2,10 +2,9 @@ package docker
 
 import (
 	"context"
-	"net/http"
 	"strings"
 
-	"github.com/heroku/docker-registry-client/registry"
+	"github.com/google/go-containerregistry/pkg/authn"
 	flag "github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
@@ -36,13 +35,11 @@ func (d DockerHub) TokenUrl(repo string) string {
 	return "https://auth.docker.io/token?service=registry.hub.docker.com&scope=repository:" + repo + ":pull"
 }
 
-func (d DockerHub) Transport(_ context.Context, repo string) (http.RoundTripper, error) {
-	return registry.WrapTransport(
-		http.DefaultTransport,
-		d.TokenUrl(repo),
-		viper.GetString("dockerhub.username"),
-		viper.GetString("dockerhub-password"),
-	), nil
+func (d DockerHub) Authenticator(_ context.Context, _ string) (authn.Authenticator, error) {
+	return &authn.Basic{
+		Username: viper.GetString("dockerhub.username"),
+		Password: viper.GetString("dockerhub-password"),
+	}, nil
 }
 
 func (d DockerHub) NormalizeRepo(repo string) string {

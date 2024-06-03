@@ -4,8 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"net/http"
 	"strings"
+
+	"github.com/google/go-containerregistry/pkg/authn"
 )
 
 type Registry interface {
@@ -14,7 +15,7 @@ type Registry interface {
 	ApiUrl() string
 	TokenUrl(repo string) string
 
-	Transport(ctx context.Context, repo string) (http.RoundTripper, error)
+	Authenticator(ctx context.Context, repo string) (authn.Authenticator, error)
 
 	NormalizeRepo(repo string) string
 	GetRepoUrl(repo string) string

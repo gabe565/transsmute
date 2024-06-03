@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/bradleyfalzon/ghinstallation/v2"
+	"github.com/google/go-containerregistry/pkg/authn"
 	"github.com/google/go-github/v62/github"
-	"github.com/heroku/docker-registry-client/registry"
 	flag "github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
@@ -119,19 +119,17 @@ func (g Ghcr) TokenUrl(repo string) string {
 	return g.ApiUrl() + "/token?service=ghcr.io&scope=repository:" + repo + ":pull"
 }
 
-func (g Ghcr) Transport(ctx context.Context, repo string) (http.RoundTripper, error) {
+func (g Ghcr) Authenticator(ctx context.Context, _ string) (authn.Authenticator, error) {
 	if g.authMethod == AuthApp && time.Until(g.expiresAt) < time.Minute {
 		if err := g.RefreshAppToken(ctx); err != nil {
 			return nil, err
 		}
 	}
 
-	return registry.WrapTransport(
-		http.DefaultTransport,
-		g.TokenUrl(repo),
-		g.username,
-		g.password,
-	), nil
+	return &authn.Basic{
+		Username: g.username,
+		Password: g.password,
+	}, nil
 }
 
 func (g Ghcr) NormalizeRepo(repo string) string {
