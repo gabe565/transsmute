@@ -1,14 +1,20 @@
 package template_funcs
 
-import "html/template"
+import (
+	"html/template"
+
+	"github.com/Masterminds/sprig/v3"
+)
 
 func FuncMap() template.FuncMap {
-	return template.FuncMap{
-		"escape":           Escape,
-		"nl2br":            Nl2br,
-		"formatUrls":       FormatUrls,
-		"formatHashtags":   FormatHashtags,
-		"formatTimestamps": FormatTimestamps,
-		"html":             Html,
-	}
+	funcs := sprig.FuncMap()
+
+	funcs["escape"] = Escape
+	funcs["nl2br"] = Nl2br
+	funcs["formatUrls"] = FormatUrls
+	funcs["formatHashtags"] = FormatHashtags
+	funcs["formatTimestamps"] = FormatTimestamps
+	funcs["html"] = Html
+
+	return funcs
 }

@@ -1,0 +1,26 @@
+<h3>Content</h3>
+{{- html .Post.Content }}
+
+{{- with .Post.Attachments }}
+<h3>Files</h3>
+{{- range . }}
+<p>
+  <a href="https://{{ $.Host }}/data{{ .Path }}">
+    {{- $ext := ext .Path }}
+    {{- if or (eq $ext ".png") (eq $ext ".jpg") (eq $ext ".jpeg") (eq $ext ".gif") }}
+      <img src="https://img.{{ $.Host }}/thumbnail/data{{ .Path }}" alt="{{ .Name }}">
+    {{- else }}
+      {{- .Name }}
+    {{- end }}
+  </a>
+</p>
+{{- end }}
+{{- end }}
+
+{{- with .Post.Embed }}
+{{- if and .Subject .URL }}
+<p>
+  <a href="{{ .URL }}"><strong>{{ .Subject }}</strong></a>
+</p>
+{{- end }}
+{{- end }}

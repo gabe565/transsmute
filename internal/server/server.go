@@ -6,6 +6,7 @@ import (
 	"github.com/gabe565/transsmute/assets"
 	"github.com/gabe565/transsmute/internal/docker"
 	"github.com/gabe565/transsmute/internal/feed"
+	"github.com/gabe565/transsmute/internal/kemono"
 	"github.com/gabe565/transsmute/internal/twitter"
 	"github.com/gabe565/transsmute/internal/youtube"
 	"github.com/go-chi/chi/v5"
@@ -32,6 +33,7 @@ func (s Server) Handler() *chi.Mux {
 	docker.Routes(r)
 	twitter.Routes(r)
 	youtube.Routes(r)
+	kemono.Routes(r)
 
 	return r
 }
