@@ -97,6 +97,11 @@ func postHandler(host string) http.HandlerFunc {
 			Link:    &feeds.Link{Href: publicURL(host, creator).String()},
 			Updated: time.Now(),
 			Items:   make([]*feeds.Item, 0, 50),
+			Image: &feeds.Image{
+				Url:   creator.ImageURL(host).String(),
+				Title: creator.Name,
+				Link:  publicURL(host, creator).String(),
+			},
 		}
 		if creator.Indexed != 0 {
 			f.Created = time.Unix(int64(creator.Updated), 0)

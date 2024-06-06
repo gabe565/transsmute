@@ -6,6 +6,8 @@ import (
 	"errors"
 	"io"
 	"net/http"
+	"net/url"
+	"path"
 	"reflect"
 )
 
@@ -15,6 +17,14 @@ type Creator struct {
 	Service string `json:"service"`
 	Indexed uint   `json:"indexed"`
 	Updated uint   `json:"updated"`
+}
+
+func (c *Creator) ImageURL(host string) *url.URL {
+	return &url.URL{
+		Scheme: "https",
+		Host:   "img." + host,
+		Path:   path.Join("icons", c.Service, c.ID),
+	}
 }
 
 var ErrCreatorNotFound = errors.New("creator not found")
