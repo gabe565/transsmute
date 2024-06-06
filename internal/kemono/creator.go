@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"path"
 	"reflect"
+	"slices"
 	"strconv"
 	"time"
 
@@ -81,6 +82,14 @@ func (c *Creator) FetchPostPage(ctx context.Context, page uint64, query string) 
 
 	for _, post := range posts {
 		post.creator = c
+		seen := make([]string, 0, len(post.Attachments))
+		post.Attachments = slices.DeleteFunc(post.Attachments, func(attachment *Attachment) bool {
+			if slices.Contains(seen, attachment.Path) {
+				return true
+			}
+			seen = append(seen, attachment.Path)
+			return false
+		})
 		for _, attachment := range post.Attachments {
 			attachment.post = post
 		}
