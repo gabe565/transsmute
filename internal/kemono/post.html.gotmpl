@@ -7,10 +7,9 @@
 <h3>Files</h3>
 {{- range . }}
 <p>
-  <a href="https://{{ $.Host }}/data{{ .Path }}?f={{ .Name }}">
-    {{- $ext := ext .Path }}
-    {{- if or (eq $ext ".png") (eq $ext ".jpg") (eq $ext ".jpeg") (eq $ext ".gif") }}
-      <img src="https://img.{{ $.Host }}/thumbnail/data{{ .Path }}?f={{ .Name }}" alt="{{ .Name }}">
+  <a href="{{ .URL $.Host }}">
+    {{- if .IsImage }}
+      <img src="{{ .ThumbURL $.Host }}" alt="{{ .Name }}">
     {{- else }}
       {{- .Name }}
     {{- end }}

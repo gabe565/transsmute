@@ -8,6 +8,8 @@ import (
 	"html/template"
 	"io"
 	"net/http"
+	"net/url"
+	"path"
 	"slices"
 	"strconv"
 	"strings"
@@ -41,6 +43,29 @@ type Embed struct {
 type Attachment struct {
 	Name string `json:"name"`
 	Path string `json:"path"`
+}
+
+func (a *Attachment) IsImage() bool {
+	ext := path.Ext(a.Path)
+	return ext == ".jpg" || ext == ".jpeg" || ext == ".png" || ext == ".gif"
+}
+
+func (a *Attachment) ThumbURL(host string) *url.URL {
+	u := a.URL("img." + host)
+	u.Path = path.Join("thumbnail", a.Path)
+	u.RawQuery = ""
+	return u
+}
+
+func (a *Attachment) URL(host string) *url.URL {
+	u := &url.URL{
+		Scheme:   "https",
+		Host:     host,
+		Path:     path.Join("data", a.Path),
+		RawQuery: url.Values{"f": []string{a.Name}}.Encode(),
+	}
+	u.RawQuery = strings.ReplaceAll(u.RawQuery, "+", "%20")
+	return u
 }
 
 //go:embed post.html.gotmpl
