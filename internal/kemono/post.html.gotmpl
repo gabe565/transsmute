@@ -1,5 +1,7 @@
+{{- with .Post.Content }}
 <h3>Content</h3>
-{{- html .Post.Content }}
+{{- html . }}
+{{- end }}
 
 {{- with .Post.Attachments }}
 <h3>Files</h3>
