@@ -1,29 +1,29 @@
-{{- with .Post.Content }}
+{{- with .Content }}
 <h3>Content</h3>
 {{- html . }}
 {{- end }}
 
-{{- with .Post.Attachments }}
+{{- with .Attachments }}
 <h3>Files</h3>
 {{- range . }}
 <p>
-  <a href="{{ .URL $.Host }}">
+  <a href="{{ .URL }}">
     {{- if .IsImage }}
-      <img src="{{ .ThumbURL $.Host }}" alt="{{ .Name }}" title="{{ .Name }}">
+      <img src="{{ .ThumbURL }}" alt="{{ .Name }}" title="{{ .Name }}">
     {{- else }}
       {{- .Name }}
     {{- end }}
   </a>
   {{- if .IsVideo }}
     <video controls>
-      <source src="{{ .URL $.Host }}">
+      <source src="{{ .URL }}">
     </video>
   {{- end }}
 </p>
 {{- end }}
 {{- end }}
 
-{{- with .Post.Embed }}
+{{- with .Embed }}
 {{- if and .Subject .URL }}
 <p>
   <a href="{{ .URL }}"><strong>{{ .Subject }}</strong></a>
