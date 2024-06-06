@@ -3,6 +3,7 @@ package feed
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"io"
 	"net/http"
 	"path"
@@ -57,12 +58,22 @@ func WriteFeed(w http.ResponseWriter, r *http.Request) error {
 
 	switch format {
 	case OutputAtom, OutputUnknown:
-		if err := feed.WriteAtom(&buf); err != nil {
+		atomFeed := (&feeds.Atom{Feed: feed}).AtomFeed()
+		if feed.Image != nil {
+			atomFeed.Icon = feed.Image.Url
+		}
+		if err := feeds.WriteXML(atomFeed, &buf); err != nil {
 			return err
 		}
 		w.Header().Set("Content-Type", "application/rss+xml")
 	case OutputJSON:
-		if err := feed.WriteJSON(&buf); err != nil {
+		jsonFeed := (&feeds.JSON{Feed: feed}).JSONFeed()
+		if feed.Image != nil {
+			jsonFeed.Icon = feed.Image.Url
+		}
+		e := json.NewEncoder(&buf)
+		e.SetIndent("", "  ")
+		if err := e.Encode(jsonFeed); err != nil {
 			return err
 		}
 		w.Header().Set("Content-Type", "application/json")
