@@ -1,7 +1,6 @@
 package kemono
 
 import (
-	"cmp"
 	"context"
 	_ "embed"
 	"encoding/json"
@@ -105,11 +104,6 @@ func postHandler(host string) http.HandlerFunc {
 				if parsed, err := time.Parse("2006-01-02T15:04:05", post.Edited); err == nil {
 					item.Updated = parsed
 				}
-
-				slices.SortStableFunc(post.Attachments, func(a, b Attachment) int {
-					return cmp.Compare(a.Name, b.Name)
-				})
-				post.Attachments = slices.Compact(post.Attachments)
 
 				var buf strings.Builder
 				if err := postTmpl.Execute(&buf, map[string]any{
