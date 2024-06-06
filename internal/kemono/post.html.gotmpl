@@ -9,7 +9,7 @@
 <p>
   <a href="{{ .URL $.Host }}">
     {{- if .IsImage }}
-      <img src="{{ .ThumbURL $.Host }}" alt="{{ .Name }}">
+      <img src="{{ .ThumbURL $.Host }}" alt="{{ .Name }}" title="{{ .Name }}">
     {{- else }}
       {{- .Name }}
     {{- end }}
