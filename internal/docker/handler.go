@@ -48,7 +48,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 	f := &feeds.Feed{
 		Title:   "Docker - " + repo,
-		Link:    &feeds.Link{Href: reg.GetRepoUrl(repo)},
+		Link:    &feeds.Link{Href: reg.GetRepoURL(repo)},
 		Author:  owner,
 		Created: time.Now(),
 		Items:   make([]*feeds.Item, 0, len(tags)),
@@ -69,7 +69,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 		item := &feeds.Item{
 			Title:       tag,
-			Link:        &feeds.Link{Href: reg.GetTagUrl(repo, tag)},
+			Link:        &feeds.Link{Href: reg.GetTagURL(repo, tag)},
 			Author:      owner,
 			Id:          tag,
 			Description: description.String(),

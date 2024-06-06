@@ -11,32 +11,32 @@ import (
 	"google.golang.org/api/youtube/v3"
 )
 
-func New(service *youtube.Service, ctx context.Context, id string) Playlist {
+func New(ctx context.Context, service *youtube.Service, id string) Playlist {
 	return Playlist{
 		Service: service,
 		Context: ctx,
-		Id:      id,
+		ID:      id,
 	}
 }
 
 type Playlist struct {
 	Service *youtube.Service
 	Context context.Context
-	Id      string
+	ID      string
 }
 
 var ErrInvalid = errors.New("invalid playlist")
 
 func (p Playlist) Meta() (*youtube.PlaylistSnippet, error) {
 	call := p.Service.Playlists.List([]string{"snippet"})
-	call.Id(p.Id)
+	call.Id(p.ID)
 	resp, err := call.Do()
 	if err != nil {
 		return nil, err
 	}
 
 	if len(resp.Items) < 1 {
-		return nil, fmt.Errorf("%s: %w", p.Id, ErrInvalid)
+		return nil, fmt.Errorf("%s: %w", p.ID, ErrInvalid)
 	}
 
 	return resp.Items[0].Snippet, nil
@@ -50,7 +50,7 @@ func (p Playlist) Feed(disableIframe bool) (*feeds.Feed, error) {
 
 	feed := &feeds.Feed{
 		Title:       "YouTube - " + meta.Title,
-		Link:        &feeds.Link{Href: "https://youtube.com/playlist?list=" + p.Id},
+		Link:        &feeds.Link{Href: "https://youtube.com/playlist?list=" + p.ID},
 		Description: meta.Description,
 		Created:     time.Now(),
 	}
@@ -68,7 +68,7 @@ var ErrLimit = errors.New("exceeded fetch limit")
 func (p Playlist) Items() ([]*Item, error) {
 	call := p.Service.PlaylistItems.List([]string{"snippet", "status"})
 	call.MaxResults(50)
-	call.PlaylistId(p.Id)
+	call.PlaylistId(p.ID)
 	limit := 200
 
 	items := make([]*Item, 0)
@@ -80,7 +80,7 @@ func (p Playlist) Items() ([]*Item, error) {
 			}
 			items = append(items, (*Item)(item.Snippet))
 
-			i += 1
+			i++
 			if i >= limit {
 				return ErrLimit
 			}

@@ -4,14 +4,15 @@ import (
 	_ "embed"
 	"html/template"
 
-	"github.com/gabe565/transsmute/internal/template_funcs"
+	"github.com/gabe565/transsmute/internal/templatefuncs"
 )
 
 //go:embed description.html.gotmpl
 var descriptionTmplStr string
 
+//nolint:gochecknoglobals
 var descriptionTmpl = template.Must(
-	template.New("").Funcs(template_funcs.FuncMap()).Parse(descriptionTmplStr),
+	template.New("").Funcs(templatefuncs.FuncMap()).Parse(descriptionTmplStr),
 )
 
 type DescriptionValues struct {

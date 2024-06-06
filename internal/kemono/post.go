@@ -16,7 +16,7 @@ import (
 	"time"
 
 	"github.com/gabe565/transsmute/internal/feed"
-	"github.com/gabe565/transsmute/internal/template_funcs"
+	"github.com/gabe565/transsmute/internal/templatefuncs"
 	"github.com/go-chi/chi/v5"
 	"github.com/gorilla/feeds"
 )
@@ -76,8 +76,9 @@ func (a *Attachment) URL(host string) *url.URL {
 //go:embed post.html.gotmpl
 var postTmplStr string
 
+//nolint:gochecknoglobals
 var postTmpl = template.Must(
-	template.New("").Funcs(template_funcs.FuncMap()).Parse(postTmplStr),
+	template.New("").Funcs(templatefuncs.FuncMap()).Parse(postTmplStr),
 )
 
 func postHandler(host string) http.HandlerFunc {

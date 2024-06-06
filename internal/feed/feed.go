@@ -49,7 +49,7 @@ func SetType(next http.Handler) http.Handler {
 	return http.HandlerFunc(fn)
 }
 
-func WriteFeed(w http.ResponseWriter, r *http.Request) (err error) {
+func WriteFeed(w http.ResponseWriter, r *http.Request) error {
 	format := r.Context().Value(TypeKey).(OutputFormat)
 	feed := r.Context().Value(FeedKey).(*feeds.Feed)
 

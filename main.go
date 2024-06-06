@@ -1,10 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/gabe565/transsmute/internal/docker"
 	"github.com/gabe565/transsmute/internal/server"
@@ -31,11 +31,10 @@ func main() {
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
 
 	if err := viper.ReadInConfig(); err != nil {
-		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
-			// Config file not found; ignore error
-		} else {
+		//nolint:errorlint
+		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
 			// Config file was found but another error was produced
-			panic(fmt.Errorf("Fatal error reading config file: %w \n", err))
+			panic("fatal error reading config file:" + err.Error())
 		}
 	}
 
@@ -48,7 +47,13 @@ func main() {
 	s := server.New()
 	address := viper.GetString("address")
 	log.Println("Listening on " + address)
-	if err := http.ListenAndServe(address, s.Handler()); err != nil {
+
+	srv := http.Server{
+		Addr:        address,
+		Handler:     s.Handler(),
+		ReadTimeout: 3 * time.Second,
+	}
+	if err := srv.ListenAndServe(); err != nil {
 		panic(err)
 	}
 }

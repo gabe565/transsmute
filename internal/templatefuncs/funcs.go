@@ -1,4 +1,4 @@
-package template_funcs
+package templatefuncs
 
 import (
 	"bytes"
@@ -19,6 +19,7 @@ func Nl2br(s string) string {
 	return s
 }
 
+//nolint:gochecknoglobals
 var linkTmpl = template.Must(
 	template.New("").Parse(`<a href="{{ . }}">{{ . }}</a>`),
 )
@@ -51,6 +52,7 @@ func FormatUrls(s string) string {
 	return s
 }
 
+//nolint:gochecknoglobals
 var (
 	hashtagRe   = regexp.MustCompile("(^|\n| )#[A-Za-z0-9]+")
 	hashtagTmpl = template.Must(
@@ -96,6 +98,7 @@ func FormatHashtags(s string) string {
 	return s
 }
 
+//nolint:gochecknoglobals
 var (
 	timestampRe   = regexp.MustCompile("([0-9]:)?[0-9]+:[0-9]+")
 	timestampTmpl = template.Must(
@@ -153,6 +156,7 @@ func FormatTimestamps(id, s string) string {
 	return s
 }
 
-func Html(s string) template.HTML {
+//nolint:gosec
+func HTML(s string) template.HTML {
 	return template.HTML(s)
 }

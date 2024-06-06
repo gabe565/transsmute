@@ -60,9 +60,9 @@ func NewGhcr() (*Ghcr, error) {
 		username: viper.GetString("ghcr.username"),
 		password: viper.GetString("ghcr.password"),
 
-		installationId: viper.GetInt64("ghcr.installation-id"),
+		installationID: viper.GetInt64("ghcr.installation-id"),
 	}
-	appId := viper.GetInt64("ghcr.app-id")
+	appID := viper.GetInt64("ghcr.app-id")
 	privateKey := []byte(viper.GetString("ghcr.private-key"))
 	if len(privateKey) == 0 {
 		privateKeyPath := viper.GetString("ghcr.private-key-path")
@@ -75,14 +75,14 @@ func NewGhcr() (*Ghcr, error) {
 		}
 	}
 
-	if ghcr.authMethod == AuthNone && appId != 0 && ghcr.installationId != 0 && len(privateKey) != 0 {
-		itr, err := ghinstallation.NewAppsTransport(http.DefaultTransport, appId, privateKey)
+	if ghcr.authMethod == AuthNone && appID != 0 && ghcr.installationID != 0 && len(privateKey) != 0 {
+		itr, err := ghinstallation.NewAppsTransport(http.DefaultTransport, appID, privateKey)
 		if err != nil {
 			return ghcr, err
 		}
 
 		ghcr.client = github.NewClient(&http.Client{Transport: itr})
-		ghcr.username = strconv.Itoa(int(ghcr.installationId))
+		ghcr.username = strconv.Itoa(int(ghcr.installationID))
 		ghcr.authMethod = AuthApp
 		if err := ghcr.RefreshAppToken(context.Background()); err != nil {
 			return ghcr, err
@@ -103,7 +103,7 @@ type Ghcr struct {
 	password string
 
 	client         *github.Client
-	installationId int64
+	installationID int64
 	expiresAt      time.Time
 }
 
@@ -111,12 +111,12 @@ func (g Ghcr) Names() []string {
 	return []string{"ghcr.io"}
 }
 
-func (g Ghcr) ApiUrl() string {
+func (g Ghcr) APIURL() string {
 	return "https://ghcr.io"
 }
 
-func (g Ghcr) TokenUrl(repo string) string {
-	return g.ApiUrl() + "/token?service=ghcr.io&scope=repository:" + repo + ":pull"
+func (g Ghcr) TokenURL(repo string) string {
+	return g.APIURL() + "/token?service=ghcr.io&scope=repository:" + repo + ":pull"
 }
 
 func (g Ghcr) Authenticator(ctx context.Context, _ string) (authn.Authenticator, error) {
@@ -136,12 +136,12 @@ func (g Ghcr) NormalizeRepo(repo string) string {
 	return repo
 }
 
-func (g Ghcr) GetRepoUrl(repo string) string {
+func (g Ghcr) GetRepoURL(repo string) string {
 	return "https://" + repo
 }
 
-func (g Ghcr) GetTagUrl(repo, tag string) string {
-	return g.GetRepoUrl(repo)
+func (g Ghcr) GetTagURL(repo, _ string) string {
+	return g.GetRepoURL(repo)
 }
 
 func (g Ghcr) GetOwner(repo string) string {
@@ -149,7 +149,7 @@ func (g Ghcr) GetOwner(repo string) string {
 }
 
 func (g *Ghcr) RefreshAppToken(ctx context.Context) error {
-	token, _, err := g.client.Apps.CreateInstallationToken(ctx, g.installationId, &github.InstallationTokenOptions{
+	token, _, err := g.client.Apps.CreateInstallationToken(ctx, g.installationID, &github.InstallationTokenOptions{
 		Permissions: &github.InstallationPermissions{
 			Packages: github.String("read"),
 		},

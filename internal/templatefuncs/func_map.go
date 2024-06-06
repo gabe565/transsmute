@@ -1,4 +1,4 @@
-package template_funcs
+package templatefuncs
 
 import (
 	"html/template"
@@ -14,7 +14,7 @@ func FuncMap() template.FuncMap {
 	funcs["formatUrls"] = FormatUrls
 	funcs["formatHashtags"] = FormatHashtags
 	funcs["formatTimestamps"] = FormatTimestamps
-	funcs["html"] = Html
+	funcs["html"] = HTML
 
 	return funcs
 }

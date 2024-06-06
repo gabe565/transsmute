@@ -12,17 +12,18 @@ import (
 type Registry interface {
 	Names() []string
 
-	ApiUrl() string
-	TokenUrl(repo string) string
+	APIURL() string
+	TokenURL(repo string) string
 
 	Authenticator(ctx context.Context, repo string) (authn.Authenticator, error)
 
 	NormalizeRepo(repo string) string
-	GetRepoUrl(repo string) string
-	GetTagUrl(repo, tag string) string
+	GetRepoURL(repo string) string
+	GetTagURL(repo, tag string) string
 	GetOwner(repo string) string
 }
 
+//nolint:gochecknoglobals
 var registries []Registry
 
 func SetupRegistries() error {

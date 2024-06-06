@@ -7,6 +7,7 @@ import (
 	"golang.org/x/text/language"
 )
 
+//nolint:gochecknoglobals
 var serviceNameReplacer = strings.NewReplacer(
 	"fans", "Fans",
 	"star", "Star",

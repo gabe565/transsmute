@@ -10,32 +10,32 @@ import (
 	"google.golang.org/api/youtube/v3"
 )
 
-func New(service *youtube.Service, ctx context.Context, id string) Channel {
+func New(ctx context.Context, service *youtube.Service, id string) Channel {
 	return Channel{
 		Service: service,
 		Context: ctx,
-		Id:      id,
+		ID:      id,
 	}
 }
 
 type Channel struct {
 	Service *youtube.Service
 	Context context.Context
-	Id      string
+	ID      string
 }
 
 var ErrInvalid = errors.New("invalid channel")
 
 func (p Channel) Meta() (*youtube.Channel, error) {
 	call := p.Service.Channels.List([]string{"snippet", "contentDetails"})
-	call.Id(p.Id)
+	call.Id(p.ID)
 	resp, err := call.Do()
 	if err != nil {
 		return nil, err
 	}
 
 	if len(resp.Items) < 1 {
-		return nil, fmt.Errorf("%s: %w", p.Id, ErrInvalid)
+		return nil, fmt.Errorf("%s: %w", p.ID, ErrInvalid)
 	}
 
 	return resp.Items[0], nil
@@ -48,8 +48,8 @@ func (p Channel) Feed(disableIframe bool) (*feeds.Feed, error) {
 	}
 
 	pl := playlist.New(
-		p.Service,
 		p.Context,
+		p.Service,
 		meta.ContentDetails.RelatedPlaylists.Uploads,
 	)
 	return pl.Feed(disableIframe)

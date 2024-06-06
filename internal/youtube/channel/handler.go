@@ -25,7 +25,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	identifier := chi.URLParam(r, "id")
-	ch := New(service, r.Context(), identifier)
+	ch := New(r.Context(), service, identifier)
 
 	f, err := ch.Feed(r.Context().Value(middleware.DisableIframeKey).(bool))
 	if err != nil {

@@ -21,17 +21,17 @@ func init() {
 	}
 }
 
-type DockerHub struct{}
+type DockerHub struct{} //nolint:revive
 
 func (d DockerHub) Names() []string {
 	return []string{"", "docker.io"}
 }
 
-func (d DockerHub) ApiUrl() string {
+func (d DockerHub) APIURL() string {
 	return "https://registry.hub.docker.com"
 }
 
-func (d DockerHub) TokenUrl(repo string) string {
+func (d DockerHub) TokenURL(repo string) string {
 	return "https://auth.docker.io/token?service=registry.hub.docker.com&scope=repository:" + repo + ":pull"
 }
 
@@ -50,15 +50,15 @@ func (d DockerHub) NormalizeRepo(repo string) string {
 	return repo
 }
 
-func (d DockerHub) GetRepoUrl(repo string) string {
+func (d DockerHub) GetRepoURL(repo string) string {
 	if strings.HasPrefix(repo, "library/") {
 		return "https://hub.docker.com/_/" + strings.TrimPrefix(repo, "library/")
 	}
 	return "https://hub.docker.com/r/" + repo
 }
 
-func (d DockerHub) GetTagUrl(repo, tag string) string {
-	return d.GetRepoUrl(repo) + "/tags?name=" + tag
+func (d DockerHub) GetTagURL(repo, tag string) string {
+	return d.GetRepoURL(repo) + "/tags?name=" + tag
 }
 
 func (d DockerHub) GetOwner(repo string) string {
