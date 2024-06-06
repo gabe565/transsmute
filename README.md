@@ -8,10 +8,11 @@
 Transsmute (transmute + RSS) is a server written in Go that builds RSS
 feeds for websites that don't provide them.
 
-Currently, the following feed types are supported:
+Currently, the following feed providers are supported:
 
 - YouTube (channel, playlist)
 - Container registries (DockerHub, ghcr.io)
+- Kemono
 
 ## Installation
 
