@@ -14,6 +14,11 @@
       {{- .Name }}
     {{- end }}
   </a>
+  {{- if .IsVideo }}
+    <video controls>
+      <source src="{{ .URL $.Host }}">
+    </video>
+  {{- end }}
 </p>
 {{- end }}
 {{- end }}

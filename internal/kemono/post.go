@@ -50,6 +50,11 @@ func (a *Attachment) IsImage() bool {
 	return ext == ".jpg" || ext == ".jpeg" || ext == ".png" || ext == ".gif"
 }
 
+func (a *Attachment) IsVideo() bool {
+	ext := path.Ext(a.Path)
+	return ext == ".mp4" || ext == ".webm"
+}
+
 func (a *Attachment) ThumbURL(host string) *url.URL {
 	u := a.URL("img." + host)
 	u.Path = path.Join("thumbnail", a.Path)
