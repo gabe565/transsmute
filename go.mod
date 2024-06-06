@@ -9,7 +9,6 @@ require (
 	github.com/google/go-containerregistry v0.19.1
 	github.com/google/go-github/v62 v62.0.0
 	github.com/gorilla/feeds v1.1.2
-	github.com/n0madic/twitter-scraper v0.0.0-20231104223941-296710769dd8
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.19.0
 	golang.org/x/text v0.16.0
