@@ -28,12 +28,15 @@ changelog:
       - '^docs'
       - '^test'
   groups:
-    - title: Features
+    - title: Breaking Changes
       order: 0
-      regexp: "(feat)"
-    - title: Fixes
+      regexp: "!:"
+    - title: Features
       order: 1
-      regexp: "(fix|perf)"
+      regexp: "(feat).*:"
+    - title: Fixes
+      order: 2
+      regexp: "(fix|perf).*:"
     - title: Others
       order: 999
 dockers:
