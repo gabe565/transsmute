@@ -9,7 +9,7 @@ require (
 	github.com/google/go-containerregistry v0.19.1
 	github.com/google/go-github/v62 v62.0.0
 	github.com/gorilla/feeds v1.1.2
-	github.com/spf13/cobra v1.7.0
+	github.com/spf13/cobra v1.8.1
 	github.com/spf13/pflag v1.0.5
 	golang.org/x/sync v0.7.0
 	golang.org/x/text v0.16.0
