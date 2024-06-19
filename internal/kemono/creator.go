@@ -99,20 +99,20 @@ func (c *Creator) FetchPostPage(ctx context.Context, page uint64, query string) 
 
 var ErrCreatorNotFound = errors.New("creator not found")
 
-func GetCreatorInfo(ctx context.Context, host, name, service string) (Creator, error) {
-	creator := Creator{host: host}
+func GetCreatorInfo(ctx context.Context, host, name, service string) (*Creator, error) {
+	creator := &Creator{host: host}
 
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "https://"+host+"/api/v1/creators", nil)
 	if err != nil {
-		return creator, err
+		return nil, err
 	}
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return creator, err
+		return nil, err
 	}
 	defer func() {
 		_, _ = io.Copy(io.Discard, resp.Body)
@@ -122,14 +122,14 @@ func GetCreatorInfo(ctx context.Context, host, name, service string) (Creator, e
 	decoder := json.NewDecoder(resp.Body)
 
 	if t, err := decoder.Token(); err != nil {
-		return creator, err
+		return nil, err
 	} else if t != json.Delim('[') {
-		return creator, &json.UnmarshalTypeError{Value: "object", Type: reflect.TypeOf([]Creator{})}
+		return nil, &json.UnmarshalTypeError{Value: "object", Type: reflect.TypeOf([]Creator{})}
 	}
 
 	for decoder.More() {
 		if err := decoder.Decode(&creator); err != nil {
-			return creator, err
+			return nil, err
 		}
 
 		if creator.Name == name && creator.Service == service {
@@ -138,7 +138,7 @@ func GetCreatorInfo(ctx context.Context, host, name, service string) (Creator, e
 		}
 	}
 
-	return creator, ErrCreatorNotFound
+	return nil, ErrCreatorNotFound
 }
 
 func (c *Creator) Feed(ctx context.Context, pages uint64, query string) (*feeds.Feed, error) {
