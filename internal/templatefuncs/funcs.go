@@ -23,7 +23,7 @@ func Nl2br(s string) string {
 
 //nolint:gochecknoglobals
 var linkTmpl = template.Must(
-	template.New("").Parse(`<a href="{{ . }}">{{ . }}</a>`),
+	template.New("").Parse(`<a href="{{ .url }}">{{ .text }}</a>`),
 )
 
 func FormatUrls(s string) string {
@@ -45,7 +45,10 @@ func FormatUrls(s string) string {
 		}
 		u.Scheme = "https"
 
-		if err := linkTmpl.Execute(&buf, u.String()); err != nil {
+		if err := linkTmpl.Execute(&buf, map[string]string{
+			"url":  u.String(),
+			"text": match,
+		}); err != nil {
 			continue
 		}
 
