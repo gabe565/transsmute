@@ -9,6 +9,7 @@ import (
 	"path"
 	"strings"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/gorilla/feeds"
 )
 
@@ -40,10 +41,13 @@ func SetType(next http.Handler) http.Handler {
 		case ".rss":
 			output = OutputRSS
 		}
-		r = r.WithContext(context.WithValue(r.Context(), TypeKey, output))
-		if output != OutputUnknown {
-			r.URL.Path = strings.TrimSuffix(r.URL.Path, ext)
+		if output != OutputUnknown && ext != "" {
+			if ctx := chi.RouteContext(r.Context()); len(ctx.URLParams.Values) != 0 {
+				last := len(ctx.URLParams.Values) - 1
+				ctx.URLParams.Values[last] = strings.TrimSuffix(ctx.URLParams.Values[last], ext)
+			}
 		}
+		r = r.WithContext(context.WithValue(r.Context(), TypeKey, output))
 
 		next.ServeHTTP(w, r)
 	}
