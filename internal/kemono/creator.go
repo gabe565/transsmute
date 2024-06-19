@@ -105,7 +105,8 @@ func GetCreatorInfo(ctx context.Context, host, name, service string) (*Creator, 
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "https://"+host+"/api/v1/creators", nil)
+	u := url.URL{Scheme: "https", Host: host, Path: "/api/v1/creators"}
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u.String(), nil)
 	if err != nil {
 		return nil, err
 	}
