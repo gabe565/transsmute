@@ -10,6 +10,7 @@ import (
 
 	"github.com/gabe565/transsmute/internal/feed"
 	"github.com/gabe565/transsmute/internal/templatefuncs"
+	"github.com/gabe565/transsmute/internal/util"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -27,6 +28,9 @@ func postHandler(host string) http.HandlerFunc {
 		if err != nil {
 			if errors.Is(err, ErrCreatorNotFound) {
 				http.Error(w, err.Error(), http.StatusNotFound)
+				return
+			} else if errors.Is(err, util.ErrUpstreamRequest) {
+				http.Error(w, err.Error(), http.StatusServiceUnavailable)
 				return
 			}
 			panic(err)
