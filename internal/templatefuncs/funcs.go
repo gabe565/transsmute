@@ -3,6 +3,7 @@ package templatefuncs
 import (
 	"bytes"
 	"html/template"
+	"path"
 	"regexp"
 	"strconv"
 	"strings"
@@ -80,7 +81,7 @@ func FormatHashtags(s string) string {
 
 		if err := hashtagTmpl.Execute(&buf, map[string]string{
 			"prefix": prefix,
-			"slug":   slug,
+			"slug":   path.Clean(slug),
 			"text":   text,
 		}); err != nil {
 			continue
