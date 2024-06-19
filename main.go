@@ -1,54 +1,13 @@
 package main
 
 import (
-	"context"
 	"os"
-	"os/signal"
-	"strings"
-	"syscall"
 
-	"github.com/gabe565/transsmute/internal/docker"
-	"github.com/gabe565/transsmute/internal/server"
-	flag "github.com/spf13/pflag"
-	"github.com/spf13/viper"
+	"github.com/gabe565/transsmute/cmd"
 )
 
-func init() {
-	flag.String("address", ":3000", "Listening address")
-	if err := viper.BindPFlag("address", flag.Lookup("address")); err != nil {
-		panic(err)
-	}
-}
-
 func main() {
-	viper.SetConfigName("transsmute")
-	viper.SetConfigType("yaml")
-	viper.AddConfigPath("$HOME/.config/")
-	viper.AddConfigPath("$HOME/")
-	viper.AddConfigPath("/etc/transsmute/")
-
-	viper.AutomaticEnv()
-	viper.SetEnvPrefix("transsmute")
-	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
-
-	if err := viper.ReadInConfig(); err != nil {
-		//nolint:errorlint
-		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
-			// Config file was found but another error was produced
-			panic("fatal error reading config file:" + err.Error())
-		}
-	}
-
-	flag.Parse()
-
-	if err := docker.SetupRegistries(); err != nil {
-		panic(err)
-	}
-
-	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT)
-	defer cancel()
-
-	if err := server.ListenAndServe(ctx, viper.GetString("address")); err != nil {
-		panic(err)
+	if err := cmd.New().Execute(); err != nil {
+		os.Exit(1)
 	}
 }
