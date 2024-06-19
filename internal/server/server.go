@@ -26,7 +26,7 @@ func (s Server) Handler() *chi.Mux {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 
-	r.Get("/*", http.FileServer(http.FS(assets.Assets)).ServeHTTP)
+	r.Handle("/*", http.FileServerFS(assets.Assets))
 
 	r.Group(func(r chi.Router) {
 		r.Use(feed.SetType)
