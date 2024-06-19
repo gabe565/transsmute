@@ -37,6 +37,7 @@ func TestFormatHashtags(t *testing.T) {
 		{"no change", args{"test"}, "test"},
 		{"hashtag", args{" #test"}, ` <a href="https://youtube.com/hashtag/test">#test</a>`},
 		{"no prefix", args{"#test"}, `<a href="https://youtube.com/hashtag/test">#test</a>`},
+		{"multiple", args{"#test #test"}, `<a href="https://youtube.com/hashtag/test">#test</a> <a href="https://youtube.com/hashtag/test">#test</a>`},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -59,6 +60,7 @@ func TestFormatTimestamps(t *testing.T) {
 	}{
 		{"seconds", args{"dQw4w9WgXcQ", "0:30"}, `<a href="https://youtube.com/watch?v=dQw4w9WgXcQ&t=30s">0:30</a>`},
 		{"minutes", args{"dQw4w9WgXcQ", "2:00"}, `<a href="https://youtube.com/watch?v=dQw4w9WgXcQ&t=120s">2:00</a>`},
+		{"multiple", args{"dQw4w9WgXcQ", "2:00 2:00"}, `<a href="https://youtube.com/watch?v=dQw4w9WgXcQ&t=120s">2:00</a> <a href="https://youtube.com/watch?v=dQw4w9WgXcQ&t=120s">2:00</a>`},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -79,6 +81,7 @@ func TestFormatUrls(t *testing.T) {
 		want string
 	}{
 		{"simple", args{"https://google.com"}, `<a href="https://google.com">https://google.com</a>`},
+		{"multiple", args{"https://google.com https://google.com"}, `<a href="https://google.com">https://google.com</a> <a href="https://google.com">https://google.com</a>`},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
