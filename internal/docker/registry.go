@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/url"
 	"strings"
 
 	"github.com/gabe565/transsmute/internal/config"
@@ -13,14 +14,14 @@ import (
 type Registry interface {
 	Names() []string
 
-	APIURL() string
-	TokenURL(repo string) string
+	APIURL() *url.URL
+	TokenURL(repo string) *url.URL
 
 	Authenticator(ctx context.Context, repo string) (authn.Authenticator, error)
 
 	NormalizeRepo(repo string) string
-	GetRepoURL(repo string) string
-	GetTagURL(repo, tag string) string
+	GetRepoURL(repo string) *url.URL
+	GetTagURL(repo, tag string) *url.URL
 	GetOwner(repo string) string
 }
 

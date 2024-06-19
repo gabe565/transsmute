@@ -3,7 +3,9 @@ package docker
 import (
 	"context"
 	"net/http"
+	"net/url"
 	"os"
+	"path"
 	"strconv"
 	"strings"
 	"time"
@@ -77,12 +79,18 @@ func (g Ghcr) Names() []string {
 	return []string{"ghcr.io"}
 }
 
-func (g Ghcr) APIURL() string {
-	return "https://ghcr.io"
+func (g Ghcr) APIURL() *url.URL {
+	return &url.URL{Scheme: "https", Host: "ghcr.io"}
 }
 
-func (g Ghcr) TokenURL(repo string) string {
-	return g.APIURL() + "/token?service=ghcr.io&scope=repository:" + repo + ":pull"
+func (g Ghcr) TokenURL(repo string) *url.URL {
+	u := g.APIURL()
+	u.Path = path.Join(u.Path, "token")
+	query := u.Query()
+	query.Set("service", "ghcr.io")
+	query.Set("scope", "repository:"+repo+":pull")
+	u.RawQuery = query.Encode()
+	return u
 }
 
 func (g Ghcr) Authenticator(ctx context.Context, _ string) (authn.Authenticator, error) {
@@ -102,11 +110,11 @@ func (g Ghcr) NormalizeRepo(repo string) string {
 	return repo
 }
 
-func (g Ghcr) GetRepoURL(repo string) string {
-	return "https://" + repo
+func (g Ghcr) GetRepoURL(repo string) *url.URL {
+	return &url.URL{Scheme: "https", Host: "ghcr.io", Path: strings.TrimPrefix(repo, "ghcr.io/")}
 }
 
-func (g Ghcr) GetTagURL(repo, _ string) string {
+func (g Ghcr) GetTagURL(repo, _ string) *url.URL {
 	return g.GetRepoURL(repo)
 }
 

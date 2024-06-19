@@ -2,6 +2,8 @@ package docker
 
 import (
 	"context"
+	"net/url"
+	"path"
 	"strings"
 
 	"github.com/gabe565/transsmute/internal/config"
@@ -23,12 +25,20 @@ func (d DockerHub) Names() []string {
 	return []string{"", "docker.io"}
 }
 
-func (d DockerHub) APIURL() string {
-	return "https://registry.hub.docker.com"
+func (d DockerHub) APIURL() *url.URL {
+	return &url.URL{Scheme: "https", Host: "registry.hub.docker.com"}
 }
 
-func (d DockerHub) TokenURL(repo string) string {
-	return "https://auth.docker.io/token?service=registry.hub.docker.com&scope=repository:" + repo + ":pull"
+func (d DockerHub) TokenURL(repo string) *url.URL {
+	return &url.URL{
+		Scheme: "https",
+		Host:   "auth.docker.io",
+		Path:   "/token",
+		RawQuery: url.Values{
+			"service": []string{"registry.hub.docker.com"},
+			"scope":   []string{"repository:" + repo + ":pull"},
+		}.Encode(),
+	}
 }
 
 func (d DockerHub) Authenticator(_ context.Context, _ string) (authn.Authenticator, error) {
@@ -46,15 +56,23 @@ func (d DockerHub) NormalizeRepo(repo string) string {
 	return repo
 }
 
-func (d DockerHub) GetRepoURL(repo string) string {
+func (d DockerHub) GetRepoURL(repo string) *url.URL {
+	u := &url.URL{Scheme: "https", Host: "hub.docker.com"}
 	if strings.HasPrefix(repo, "library/") {
-		return "https://hub.docker.com/_/" + strings.TrimPrefix(repo, "library/")
+		u.Path = path.Join(u.Path, "_", strings.TrimPrefix(repo, "library/"))
+	} else {
+		u.Path = path.Join(u.Path, "r", repo)
 	}
-	return "https://hub.docker.com/r/" + repo
+	return u
 }
 
-func (d DockerHub) GetTagURL(repo, tag string) string {
-	return d.GetRepoURL(repo) + "/tags?name=" + tag
+func (d DockerHub) GetTagURL(repo, tag string) *url.URL {
+	u := d.GetRepoURL(repo)
+	u.Path = path.Join(u.Path, "tags")
+	query := u.Query()
+	query.Set("name", tag)
+	u.RawQuery = query.Encode()
+	return u
 }
 
 func (d DockerHub) GetOwner(repo string) string {
