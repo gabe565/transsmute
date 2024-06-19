@@ -7,7 +7,6 @@ import (
 	"syscall"
 
 	"github.com/gabe565/transsmute/internal/config"
-	"github.com/gabe565/transsmute/internal/docker"
 	"github.com/gabe565/transsmute/internal/server"
 	"github.com/spf13/cobra"
 )
@@ -30,10 +29,6 @@ func run(cmd *cobra.Command, _ []string) error {
 	}
 
 	if err := conf.Load(cmd); err != nil {
-		return err
-	}
-
-	if err := docker.SetupRegistries(conf.Docker); err != nil {
 		return err
 	}
 

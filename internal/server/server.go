@@ -18,7 +18,7 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-func NewServeMux(conf *config.Config) *chi.Mux {
+func NewServeMux(conf *config.Config) (*chi.Mux, error) {
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
@@ -29,22 +29,30 @@ func NewServeMux(conf *config.Config) *chi.Mux {
 	r.Handle("/", http.NotFoundHandler())
 	r.Handle("/*", http.FileServerFS(assets.Assets))
 
+	var err error
 	r.Group(func(r chi.Router) {
 		r.Use(feed.SetType)
-		docker.Routes(r, conf.Docker)
-		youtube.Routes(r, conf.YouTube)
-		kemono.Routes(r, conf.Kemono)
+		err = errors.Join(
+			docker.Routes(r, conf.Docker),
+			youtube.Routes(r, conf.YouTube),
+			kemono.Routes(r, conf.Kemono),
+		)
 	})
 
-	return r
+	return r, err
 }
 
 func ListenAndServe(ctx context.Context, conf *config.Config) error {
+	mux, err := NewServeMux(conf)
+	if err != nil {
+		return err
+	}
+
 	group, ctx := errgroup.WithContext(ctx)
 
 	server := http.Server{
 		Addr:        conf.ListenAddress,
-		Handler:     NewServeMux(conf),
+		Handler:     mux,
 		ReadTimeout: 3 * time.Second,
 	}
 	group.Go(func() error {
