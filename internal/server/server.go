@@ -25,13 +25,15 @@ func (s Server) Handler() *chi.Mux {
 	r.Use(middleware.Heartbeat("/api/health"))
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
-	r.Use(feed.SetType)
 
 	r.Get("/*", http.FileServer(http.FS(assets.Assets)).ServeHTTP)
 
-	docker.Routes(r)
-	youtube.Routes(r)
-	kemono.Routes(r)
+	r.Group(func(r chi.Router) {
+		r.Use(feed.SetType)
+		docker.Routes(r)
+		youtube.Routes(r)
+		kemono.Routes(r)
+	})
 
 	return r
 }
