@@ -6,8 +6,8 @@ import (
 	"net/url"
 	"path"
 	"regexp"
-	"strconv"
 	"strings"
+	"time"
 
 	"mvdan.cc/xurls/v2"
 )
@@ -119,37 +119,28 @@ func FormatTimestamps(id, s string) string {
 
 	var offset int
 	var buf strings.Builder
-	for _, time := range times {
-		segments := strings.Split(time, ":")
+	for _, match := range times {
+		replaced := match
+		if strings.Count(match, ":") == 2 {
+			replaced = strings.Replace(replaced, ":", "h", 1)
+		}
+		replaced = strings.Replace(replaced, ":", "m", 1)
+		replaced += "s"
 
-		seconds, err := strconv.Atoi(segments[len(segments)-1])
+		d, err := time.ParseDuration(replaced)
 		if err != nil {
 			continue
-		}
-
-		min, err := strconv.Atoi(segments[len(segments)-2])
-		if err != nil {
-			continue
-		}
-		seconds += min * 60
-
-		if len(segments) == 3 {
-			hour, err := strconv.Atoi(segments[len(segments)-3])
-			if err != nil {
-				continue
-			}
-			seconds += hour * 60 * 60
 		}
 
 		if err := timestampTmpl.Execute(&buf, map[string]any{
 			"id":      id,
-			"seconds": seconds,
-			"time":    time,
+			"seconds": int(d.Seconds()),
+			"time":    match,
 		}); err != nil {
 			continue
 		}
 
-		s, offset = stringReplaceOffset(s, offset, time, buf.String())
+		s, offset = stringReplaceOffset(s, offset, match, buf.String())
 		buf.Reset()
 	}
 
