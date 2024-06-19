@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -13,6 +14,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/gabe565/transsmute/internal/util"
 	"github.com/gorilla/feeds"
 )
 
@@ -74,6 +76,9 @@ func (c *Creator) FetchPostPage(ctx context.Context, page uint64, query string) 
 		_, _ = io.Copy(io.Discard, resp.Body)
 		_ = resp.Body.Close()
 	}()
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%w: %s", util.ErrUpstreamResponse, resp.Status)
+	}
 
 	var posts []*Post
 	if err := json.NewDecoder(resp.Body).Decode(&posts); err != nil {
@@ -119,6 +124,9 @@ func GetCreatorInfo(ctx context.Context, host, name, service string) (*Creator, 
 		_, _ = io.Copy(io.Discard, resp.Body)
 		_ = resp.Body.Close()
 	}()
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%w: %s", util.ErrUpstreamResponse, resp.Status)
+	}
 
 	decoder := json.NewDecoder(resp.Body)
 
