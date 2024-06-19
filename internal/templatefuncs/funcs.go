@@ -1,11 +1,13 @@
 package templatefuncs
 
 import (
+	"html"
 	"html/template"
 	"net/mail"
 	"net/url"
 	"path"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -21,11 +23,6 @@ func Nl2br(s string) string {
 	return s
 }
 
-//nolint:gochecknoglobals
-var linkTmpl = template.Must(
-	template.New("").Parse(`<a href="{{ .url }}">{{ .text }}</a>`),
-)
-
 func FormatUrls(s string) string {
 	urls := xurls.Relaxed().FindAllString(s, -1)
 	if urls == nil {
@@ -33,7 +30,6 @@ func FormatUrls(s string) string {
 	}
 
 	var offset int
-	var buf strings.Builder
 	for _, match := range urls {
 		u, err := url.Parse(match)
 		if err != nil {
@@ -47,27 +43,14 @@ func FormatUrls(s string) string {
 			u.Scheme = "https"
 		}
 
-		if err := linkTmpl.Execute(&buf, map[string]string{
-			"url":  u.String(),
-			"text": match,
-		}); err != nil {
-			continue
-		}
-
-		s, offset = stringReplaceOffset(s, offset, match, buf.String())
-		buf.Reset()
+		newVal := `<a href="` + u.String() + `">` + html.EscapeString(match) + `</a>`
+		s, offset = stringReplaceOffset(s, offset, match, newVal)
 	}
 
 	return s
 }
 
-//nolint:gochecknoglobals
-var (
-	hashtagRe   = regexp.MustCompile("(^|\n| )#[A-Za-z0-9]+")
-	hashtagTmpl = template.Must(
-		template.New("").Parse(`{{ .prefix }}<a href="https://youtube.com/hashtag/{{ .slug }}">{{ .text }}</a>`),
-	)
-)
+var hashtagRe = regexp.MustCompile("(^|\n| )#[A-Za-z0-9]+")
 
 func FormatHashtags(s string) string {
 	matches := hashtagRe.FindAllString(s, -1)
@@ -76,7 +59,6 @@ func FormatHashtags(s string) string {
 	}
 
 	var offset int
-	var buf strings.Builder
 	for _, match := range matches {
 		prefix := string(match[0])
 		slug := match[2:]
@@ -88,28 +70,19 @@ func FormatHashtags(s string) string {
 			text = match
 		}
 
-		if err := hashtagTmpl.Execute(&buf, map[string]string{
-			"prefix": prefix,
-			"slug":   path.Clean(slug),
-			"text":   text,
-		}); err != nil {
-			continue
+		u := url.URL{
+			Scheme: "https",
+			Host:   "youtube.com",
+			Path:   path.Join("hashtag", slug),
 		}
-
-		s, offset = stringReplaceOffset(s, offset, match, buf.String())
-		buf.Reset()
+		newVal := html.EscapeString(prefix) + `<a href="` + u.String() + `">` + html.EscapeString(text) + `</a>`
+		s, offset = stringReplaceOffset(s, offset, match, newVal)
 	}
 
 	return s
 }
 
-//nolint:gochecknoglobals
-var (
-	timestampRe   = regexp.MustCompile("([0-9]:)?[0-9]+:[0-9]+")
-	timestampTmpl = template.Must(
-		template.New("").Parse(`<a href="https://youtube.com/watch?v={{ .id }}&t={{ .seconds }}s">{{ .time }}</a>`),
-	)
-)
+var timestampRe = regexp.MustCompile("([0-9]:)?[0-9]+:[0-9]+")
 
 func FormatTimestamps(id, s string) string {
 	times := timestampRe.FindAllString(s, -1)
@@ -118,7 +91,6 @@ func FormatTimestamps(id, s string) string {
 	}
 
 	var offset int
-	var buf strings.Builder
 	for _, match := range times {
 		replaced := match
 		if strings.Count(match, ":") == 2 {
@@ -132,16 +104,17 @@ func FormatTimestamps(id, s string) string {
 			continue
 		}
 
-		if err := timestampTmpl.Execute(&buf, map[string]any{
-			"id":      id,
-			"seconds": int(d.Seconds()),
-			"time":    match,
-		}); err != nil {
-			continue
+		u := url.URL{
+			Scheme: "https",
+			Host:   "youtube.com",
+			Path:   "/watch",
+			RawQuery: url.Values{
+				"v": []string{id},
+				"t": []string{strconv.Itoa(int(d.Seconds())) + "s"},
+			}.Encode(),
 		}
-
-		s, offset = stringReplaceOffset(s, offset, match, buf.String())
-		buf.Reset()
+		newVal := `<a href="` + u.String() + `">` + html.EscapeString(match) + `</a>`
+		s, offset = stringReplaceOffset(s, offset, match, newVal)
 	}
 
 	return s
