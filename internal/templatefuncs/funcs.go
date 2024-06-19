@@ -25,7 +25,7 @@ func Nl2br(s string) string {
 
 func FormatUrls(s string) string {
 	urls := xurls.Relaxed().FindAllString(s, -1)
-	if urls == nil {
+	if len(urls) == 0 {
 		return s
 	}
 
@@ -54,7 +54,7 @@ var hashtagRe = regexp.MustCompile("(^|\n| )#([A-Za-z0-9]+)")
 
 func FormatHashtags(s string) string {
 	matches := hashtagRe.FindAllStringSubmatch(s, -1)
-	if matches == nil {
+	if len(matches) == 0 {
 		return s
 	}
 
@@ -79,7 +79,7 @@ var timestampRe = regexp.MustCompile("([0-9]:)?[0-9]+:[0-9]+")
 
 func FormatTimestamps(id, s string) string {
 	times := timestampRe.FindAllString(s, -1)
-	if times == nil {
+	if len(times) == 0 {
 		return s
 	}
 
