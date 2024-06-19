@@ -83,6 +83,7 @@ func TestFormatUrls(t *testing.T) {
 		{"simple", args{"https://google.com"}, `<a href="https://google.com">https://google.com</a>`},
 		{"multiple", args{"https://google.com https://google.com"}, `<a href="https://google.com">https://google.com</a> <a href="https://google.com">https://google.com</a>`},
 		{"missing host", args{"example.com"}, `<a href="https://example.com">example.com</a>`},
+		{"email", args{"example@example.com"}, `<a href="mailto:example@example.com">example@example.com</a>`},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

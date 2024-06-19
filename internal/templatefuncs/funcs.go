@@ -35,15 +35,17 @@ func FormatUrls(s string) string {
 	var offset int
 	var buf strings.Builder
 	for _, match := range urls {
-		if _, err := mail.ParseAddress(match); err == nil && !strings.Contains(match, "/") {
-			continue
-		}
-
 		u, err := url.Parse(match)
 		if err != nil {
 			continue
 		}
-		u.Scheme = "https"
+
+		if _, err := mail.ParseAddress(match); err == nil && !strings.Contains(match, "/") {
+			u.Scheme = "mailto"
+			u.OmitHost = true
+		} else {
+			u.Scheme = "https"
+		}
 
 		if err := linkTmpl.Execute(&buf, map[string]string{
 			"url":  u.String(),
