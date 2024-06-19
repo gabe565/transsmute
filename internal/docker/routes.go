@@ -1,12 +1,12 @@
 package docker
 
 import (
+	"github.com/gabe565/transsmute/internal/config"
 	"github.com/go-chi/chi/v5"
-	"github.com/spf13/viper"
 )
 
-func Routes(r chi.Router) {
-	if viper.GetBool("docker.enabled") {
+func Routes(r chi.Router, conf config.Docker) {
+	if conf.Enabled {
 		r.Get("/docker/tags/*", Handler)
 	}
 }

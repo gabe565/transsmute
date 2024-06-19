@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/gabe565/transsmute/internal/config"
 	"github.com/google/go-containerregistry/pkg/authn"
 )
 
@@ -26,16 +27,18 @@ type Registry interface {
 //nolint:gochecknoglobals
 var registries []Registry
 
-func SetupRegistries() error {
-	ghcr, err := NewGhcr()
+func SetupRegistries(conf config.Docker) error {
+	ghcr, err := NewGhcr(conf.GHCR)
 	if err != nil {
 		return err
 	}
 
-	registries = []Registry{
-		ghcr,
-		&DockerHub{},
+	dockerhub, err := NewDockerHub(conf.DockerHub)
+	if err != nil {
+		return err
 	}
+
+	registries = []Registry{ghcr, dockerhub}
 	return nil
 }
 
