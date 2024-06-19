@@ -9,10 +9,9 @@ import (
 	"time"
 
 	"github.com/bradleyfalzon/ghinstallation/v2"
+	"github.com/gabe565/transsmute/internal/config"
 	"github.com/google/go-containerregistry/pkg/authn"
 	"github.com/google/go-github/v62/github"
-	flag "github.com/spf13/pflag"
-	"github.com/spf13/viper"
 )
 
 type AuthMethod uint8
@@ -23,52 +22,19 @@ const (
 	AuthApp
 )
 
-func init() {
-	flag.String("ghcr-username", "", "GitHub username for ghcr.io")
-	if err := viper.BindPFlag("ghcr.username", flag.Lookup("ghcr-username")); err != nil {
-		panic(err)
-	}
-
-	flag.String("ghcr-password", "", "GitHub personal access token for ghcr.io")
-	if err := viper.BindPFlag("ghcr.password", flag.Lookup("ghcr-password")); err != nil {
-		panic(err)
-	}
-
-	flag.Int64("ghcr-app-id", 0, "GitHub app ID")
-	if err := viper.BindPFlag("ghcr.app-id", flag.Lookup("ghcr-app-id")); err != nil {
-		panic(err)
-	}
-
-	flag.Int64("ghcr-installation-id", 0, "GitHub installation ID")
-	if err := viper.BindPFlag("ghcr.installation-id", flag.Lookup("ghcr-installation-id")); err != nil {
-		panic(err)
-	}
-
-	flag.String("ghcr-private-key", "", "GitHub app private key")
-	if err := viper.BindPFlag("ghcr.private-key", flag.Lookup("ghcr-private-key")); err != nil {
-		panic(err)
-	}
-
-	flag.String("ghcr-private-key-path", "", "GitHub app private key file path")
-	if err := viper.BindPFlag("ghcr.private-key-path", flag.Lookup("ghcr-private-key-path")); err != nil {
-		panic(err)
-	}
-}
-
-func NewGhcr() (*Ghcr, error) {
+func NewGhcr(conf config.GHCR) (*Ghcr, error) {
 	ghcr := &Ghcr{
-		username: viper.GetString("ghcr.username"),
-		password: viper.GetString("ghcr.password"),
+		username: conf.Username,
+		password: conf.Password,
 
-		installationID: viper.GetInt64("ghcr.installation-id"),
+		installationID: conf.InstallationID,
 	}
-	appID := viper.GetInt64("ghcr.app-id")
-	privateKey := []byte(viper.GetString("ghcr.private-key"))
+	appID := conf.AppID
+	privateKey := []byte(conf.PrivateKey)
 	if len(privateKey) == 0 {
-		privateKeyPath := viper.GetString("ghcr.private-key-path")
-		if privateKeyPath != "" {
+		if conf.PrivateKeyPath != "" {
 			var err error
-			privateKey, err = os.ReadFile(privateKeyPath)
+			privateKey, err = os.ReadFile(conf.PrivateKeyPath)
 			if err != nil {
 				return ghcr, err
 			}

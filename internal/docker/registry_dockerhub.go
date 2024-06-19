@@ -4,24 +4,20 @@ import (
 	"context"
 	"strings"
 
+	"github.com/gabe565/transsmute/internal/config"
 	"github.com/google/go-containerregistry/pkg/authn"
-	flag "github.com/spf13/pflag"
-	"github.com/spf13/viper"
 )
 
-func init() {
-	flag.String("dockerhub-username", "", "DockerHub username for private repos")
-	if err := viper.BindPFlag("dockerhub.username", flag.Lookup("dockerhub-username")); err != nil {
-		panic(err)
-	}
-
-	flag.String("dockerhub-password", "", "DockerHub password for private repos")
-	if err := viper.BindPFlag("dockerhub.password", flag.Lookup("dockerhub-password")); err != nil {
-		panic(err)
-	}
+type DockerHub struct { //nolint:revive
+	username, password string
 }
 
-type DockerHub struct{} //nolint:revive
+func NewDockerHub(conf config.DockerHub) (*DockerHub, error) {
+	return &DockerHub{
+		username: conf.Username,
+		password: conf.Password,
+	}, nil
+}
 
 func (d DockerHub) Names() []string {
 	return []string{"", "docker.io"}
@@ -37,8 +33,8 @@ func (d DockerHub) TokenURL(repo string) string {
 
 func (d DockerHub) Authenticator(_ context.Context, _ string) (authn.Authenticator, error) {
 	return &authn.Basic{
-		Username: viper.GetString("dockerhub.username"),
-		Password: viper.GetString("dockerhub-password"),
+		Username: d.username,
+		Password: d.password,
 	}, nil
 }
 

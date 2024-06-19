@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/gabe565/transsmute/assets"
+	"github.com/gabe565/transsmute/internal/config"
 	"github.com/gabe565/transsmute/internal/docker"
 	"github.com/gabe565/transsmute/internal/feed"
 	"github.com/gabe565/transsmute/internal/kemono"
@@ -17,7 +18,7 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-func NewServeMux() *chi.Mux {
+func NewServeMux(conf *config.Config) *chi.Mux {
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
@@ -30,24 +31,24 @@ func NewServeMux() *chi.Mux {
 
 	r.Group(func(r chi.Router) {
 		r.Use(feed.SetType)
-		docker.Routes(r)
-		youtube.Routes(r)
-		kemono.Routes(r)
+		docker.Routes(r, conf.Docker)
+		youtube.Routes(r, conf.YouTube)
+		kemono.Routes(r, conf.Kemono)
 	})
 
 	return r
 }
 
-func ListenAndServe(ctx context.Context, address string) error {
+func ListenAndServe(ctx context.Context, conf *config.Config) error {
 	group, ctx := errgroup.WithContext(ctx)
 
 	server := http.Server{
-		Addr:        address,
-		Handler:     NewServeMux(),
+		Addr:        conf.ListenAddress,
+		Handler:     NewServeMux(conf),
 		ReadTimeout: 3 * time.Second,
 	}
 	group.Go(func() error {
-		log.Println("Listening on " + address)
+		log.Println("Listening on " + conf.ListenAddress)
 		return server.ListenAndServe()
 	})
 
