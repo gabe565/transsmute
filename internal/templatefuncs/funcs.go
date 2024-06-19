@@ -2,6 +2,8 @@ package templatefuncs
 
 import (
 	"html/template"
+	"net/mail"
+	"net/url"
 	"path"
 	"regexp"
 	"strconv"
@@ -32,16 +34,22 @@ func FormatUrls(s string) string {
 
 	var offset int
 	var buf strings.Builder
-	for _, url := range urls {
-		if strings.Contains(url, "@") {
+	for _, match := range urls {
+		if _, err := mail.ParseAddress(match); err == nil && !strings.Contains(match, "/") {
 			continue
 		}
 
-		if err := linkTmpl.Execute(&buf, url); err != nil {
+		u, err := url.Parse(match)
+		if err != nil {
+			continue
+		}
+		u.Scheme = "https"
+
+		if err := linkTmpl.Execute(&buf, u.String()); err != nil {
 			continue
 		}
 
-		s, offset = stringReplaceOffset(s, offset, url, buf.String())
+		s, offset = stringReplaceOffset(s, offset, match, buf.String())
 		buf.Reset()
 	}
 
