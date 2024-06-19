@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/url"
 	"sort"
 	"time"
 
@@ -48,9 +49,16 @@ func (p Playlist) Feed(disableIframe bool) (*feeds.Feed, error) {
 		return nil, err
 	}
 
+	u := url.URL{
+		Scheme:   "https",
+		Host:     "youtube.com",
+		Path:     "/playlist",
+		RawQuery: url.Values{"list": []string{p.ID}}.Encode(),
+	}
+
 	feed := &feeds.Feed{
 		Title:       "YouTube - " + meta.Title,
-		Link:        &feeds.Link{Href: "https://youtube.com/playlist?list=" + p.ID},
+		Link:        &feeds.Link{Href: u.String()},
 		Description: meta.Description,
 		Created:     time.Now(),
 	}

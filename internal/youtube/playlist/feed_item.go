@@ -1,6 +1,7 @@
 package playlist
 
 import (
+	"net/url"
 	"strings"
 	"time"
 
@@ -25,9 +26,16 @@ func (i Item) FeedItem(disableIframe bool) (*feeds.Item, error) {
 		return nil, err
 	}
 
+	u := url.URL{
+		Scheme:   "https",
+		Host:     "youtube.com",
+		Path:     "/watch",
+		RawQuery: url.Values{"v": []string{i.ResourceId.VideoId}}.Encode(),
+	}
+
 	return &feeds.Item{
 		Title:       i.Title,
-		Link:        &feeds.Link{Href: "https://youtube.com/watch?v=" + i.ResourceId.VideoId},
+		Link:        &feeds.Link{Href: u.String()},
 		Author:      &feeds.Author{Name: i.ChannelTitle},
 		Description: description.String(),
 		Id:          i.ResourceId.VideoId,
