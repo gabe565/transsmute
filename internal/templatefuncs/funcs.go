@@ -1,7 +1,6 @@
 package templatefuncs
 
 import (
-	"bytes"
 	"html/template"
 	"path"
 	"regexp"
@@ -31,7 +30,8 @@ func FormatUrls(s string) string {
 		return s
 	}
 
-	var buf bytes.Buffer
+	var offset int
+	var buf strings.Builder
 	for _, url := range urls {
 		if strings.Contains(url, "@") {
 			continue
@@ -41,12 +41,7 @@ func FormatUrls(s string) string {
 			continue
 		}
 
-		s = strings.Replace(
-			s,
-			url,
-			buf.String(),
-			1,
-		)
+		s, offset = stringReplaceOffset(s, offset, url, buf.String())
 		buf.Reset()
 	}
 
@@ -67,7 +62,8 @@ func FormatHashtags(s string) string {
 		return s
 	}
 
-	var buf bytes.Buffer
+	var offset int
+	var buf strings.Builder
 	for _, match := range matches {
 		prefix := string(match[0])
 		slug := match[2:]
@@ -87,12 +83,7 @@ func FormatHashtags(s string) string {
 			continue
 		}
 
-		s = strings.Replace(
-			s,
-			match,
-			buf.String(),
-			1,
-		)
+		s, offset = stringReplaceOffset(s, offset, match, buf.String())
 		buf.Reset()
 	}
 
@@ -113,8 +104,8 @@ func FormatTimestamps(id, s string) string {
 		return s
 	}
 
-	var buf bytes.Buffer
-
+	var offset int
+	var buf strings.Builder
 	for _, time := range times {
 		segments := strings.Split(time, ":")
 
@@ -145,12 +136,7 @@ func FormatTimestamps(id, s string) string {
 			continue
 		}
 
-		s = strings.Replace(
-			s,
-			time,
-			buf.String(),
-			1,
-		)
+		s, offset = stringReplaceOffset(s, offset, time, buf.String())
 		buf.Reset()
 	}
 
@@ -160,4 +146,15 @@ func FormatTimestamps(id, s string) string {
 //nolint:gosec
 func HTML(s string) template.HTML {
 	return template.HTML(s)
+}
+
+func stringReplaceOffset(s string, offset int, old, new string) (string, int) { //nolint:predeclared
+	idx := strings.Index(s[offset:], old)
+	if idx == -1 {
+		return s, offset
+	}
+
+	offset += idx
+	s = s[:offset] + new + s[offset+len(old):]
+	return s, offset + len(new)
 }
