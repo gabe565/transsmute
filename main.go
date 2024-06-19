@@ -1,10 +1,11 @@
 package main
 
 import (
-	"log"
-	"net/http"
+	"context"
+	"os"
+	"os/signal"
 	"strings"
-	"time"
+	"syscall"
 
 	"github.com/gabe565/transsmute/internal/docker"
 	"github.com/gabe565/transsmute/internal/server"
@@ -44,16 +45,10 @@ func main() {
 		panic(err)
 	}
 
-	s := server.New()
-	address := viper.GetString("address")
-	log.Println("Listening on " + address)
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT)
+	defer cancel()
 
-	srv := http.Server{
-		Addr:        address,
-		Handler:     s.Handler(),
-		ReadTimeout: 3 * time.Second,
-	}
-	if err := srv.ListenAndServe(); err != nil {
+	if err := server.ListenAndServe(ctx, viper.GetString("address")); err != nil {
 		panic(err)
 	}
 }
