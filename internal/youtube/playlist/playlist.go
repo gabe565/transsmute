@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
+	"slices"
 	"sort"
 	"time"
 
@@ -79,9 +80,10 @@ func (p Playlist) Items() ([]*Item, error) {
 	call.PlaylistId(p.ID)
 	limit := 200
 
-	items := make([]*Item, 0)
+	var items []*Item
 	i := 0
 	err := call.Pages(p.Context, func(response *youtube.PlaylistItemListResponse) error {
+		items = slices.Grow(items, len(response.Items))
 		for _, item := range response.Items {
 			if item.Status.PrivacyStatus == "private" {
 				continue
