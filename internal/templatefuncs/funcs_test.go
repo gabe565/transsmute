@@ -60,6 +60,7 @@ func TestFormatTimestamps(t *testing.T) {
 	}{
 		{"seconds", args{"dQw4w9WgXcQ", "0:30"}, `<a href="https://youtube.com/watch?v=dQw4w9WgXcQ&t=30s">0:30</a>`},
 		{"minutes", args{"dQw4w9WgXcQ", "2:00"}, `<a href="https://youtube.com/watch?v=dQw4w9WgXcQ&t=120s">2:00</a>`},
+		{"hours", args{"dQw4w9WgXcQ", "2:2:00"}, `<a href="https://youtube.com/watch?v=dQw4w9WgXcQ&t=7320s">2:2:00</a>`},
 		{"multiple", args{"dQw4w9WgXcQ", "2:00 2:00"}, `<a href="https://youtube.com/watch?v=dQw4w9WgXcQ&t=120s">2:00</a> <a href="https://youtube.com/watch?v=dQw4w9WgXcQ&t=120s">2:00</a>`},
 	}
 	for _, tt := range tests {
