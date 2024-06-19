@@ -50,33 +50,26 @@ func FormatUrls(s string) string {
 	return s
 }
 
-var hashtagRe = regexp.MustCompile("(^|\n| )#[A-Za-z0-9]+")
+var hashtagRe = regexp.MustCompile("(^|\n| )#([A-Za-z0-9]+)")
 
 func FormatHashtags(s string) string {
-	matches := hashtagRe.FindAllString(s, -1)
+	matches := hashtagRe.FindAllStringSubmatch(s, -1)
 	if matches == nil {
 		return s
 	}
 
 	var offset int
 	for _, match := range matches {
-		prefix := string(match[0])
-		slug := match[2:]
-		text := match[1:]
-
-		if prefix == "#" {
-			prefix = ""
-			slug = text
-			text = match
-		}
+		prefix := match[1]
+		slug := match[2]
 
 		u := url.URL{
 			Scheme: "https",
 			Host:   "youtube.com",
 			Path:   path.Join("hashtag", slug),
 		}
-		newVal := html.EscapeString(prefix) + `<a href="` + u.String() + `">` + html.EscapeString(text) + `</a>`
-		s, offset = stringReplaceOffset(s, offset, match, newVal)
+		newVal := html.EscapeString(prefix) + `<a href="` + u.String() + `">#` + html.EscapeString(slug) + `</a>`
+		s, offset = stringReplaceOffset(s, offset, match[0], newVal)
 	}
 
 	return s
