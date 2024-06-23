@@ -11,10 +11,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var version = "beta"
+
 func New() *cobra.Command {
 	cmd := &cobra.Command{
 		Short: "transsmute",
 		RunE:  run,
+
+		Version: buildVersion(version),
 	}
 	conf := config.New()
 	conf.RegisterFlags(cmd)
