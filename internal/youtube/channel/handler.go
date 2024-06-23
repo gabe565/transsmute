@@ -27,7 +27,7 @@ func Handler(apiKey string) http.HandlerFunc {
 		identifier := chi.URLParam(r, "id")
 		ch := New(r.Context(), service, identifier)
 
-		f, err := ch.Feed(r.Context().Value(middleware.DisableIframeKey).(bool))
+		f, err := ch.Feed(r.Context().Value(middleware.NoIframeKey).(bool))
 		if err != nil {
 			if errors.Is(err, ErrInvalid) {
 				http.Error(w, "404 channel not found", http.StatusNotFound)

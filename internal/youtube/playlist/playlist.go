@@ -44,7 +44,7 @@ func (p Playlist) Meta() (*youtube.PlaylistSnippet, error) {
 	return resp.Items[0].Snippet, nil
 }
 
-func (p Playlist) Feed(disableIframe bool) (*feeds.Feed, error) {
+func (p Playlist) Feed(noIframe bool) (*feeds.Feed, error) {
 	meta, err := p.Meta()
 	if err != nil {
 		return nil, err
@@ -64,7 +64,7 @@ func (p Playlist) Feed(disableIframe bool) (*feeds.Feed, error) {
 		Created:     time.Now(),
 	}
 
-	feed.Items, err = p.FeedItems(disableIframe)
+	feed.Items, err = p.FeedItems(noIframe)
 	if err != nil {
 		return feed, err
 	}
@@ -110,7 +110,7 @@ func (p Playlist) Items() ([]*Item, error) {
 	return items, nil
 }
 
-func (p Playlist) FeedItems(disableIframe bool) ([]*feeds.Item, error) {
+func (p Playlist) FeedItems(noIframe bool) ([]*feeds.Item, error) {
 	items, err := p.Items()
 	if err != nil {
 		return nil, err
@@ -119,7 +119,7 @@ func (p Playlist) FeedItems(disableIframe bool) ([]*feeds.Item, error) {
 	feedItems := make([]*feeds.Item, 0, len(items))
 
 	for _, item := range items {
-		feedItem, err := item.FeedItem(disableIframe)
+		feedItem, err := item.FeedItem(noIframe)
 		if err != nil {
 			return feedItems, err
 		}

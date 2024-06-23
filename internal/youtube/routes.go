@@ -11,7 +11,7 @@ import (
 func Routes(r chi.Router, conf config.YouTube) error {
 	if conf.Enabled {
 		r.Group(func(r chi.Router) {
-			r.Use(middleware.DisableIframe)
+			r.Use(middleware.NoIframe)
 			r.Get("/youtube/channel/{id}", channel.Handler(conf.APIKey))
 			r.Get("/youtube/playlist/{id}", playlist.Handler(conf.APIKey))
 		})

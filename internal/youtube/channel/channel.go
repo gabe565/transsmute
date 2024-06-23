@@ -41,7 +41,7 @@ func (p Channel) Meta() (*youtube.Channel, error) {
 	return resp.Items[0], nil
 }
 
-func (p Channel) Feed(disableIframe bool) (*feeds.Feed, error) {
+func (p Channel) Feed(noIframe bool) (*feeds.Feed, error) {
 	meta, err := p.Meta()
 	if err != nil {
 		return nil, err
@@ -52,5 +52,5 @@ func (p Channel) Feed(disableIframe bool) (*feeds.Feed, error) {
 		p.Service,
 		meta.ContentDetails.RelatedPlaylists.Uploads,
 	)
-	return pl.Feed(disableIframe)
+	return pl.Feed(noIframe)
 }
