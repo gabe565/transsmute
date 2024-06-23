@@ -121,8 +121,10 @@ func GetCreatorInfo(ctx context.Context, host, name, service string) (*Creator, 
 		return nil, err
 	}
 	defer func() {
-		_, _ = io.Copy(io.Discard, resp.Body)
-		_ = resp.Body.Close()
+		go func() {
+			_, _ = io.Copy(io.Discard, resp.Body)
+			_ = resp.Body.Close()
+		}()
 	}()
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%w: %s", util.ErrUpstreamRequest, resp.Status)
