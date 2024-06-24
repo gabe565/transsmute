@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"net/http"
+	"slices"
 	"strings"
 	"time"
 
@@ -46,6 +47,8 @@ func Handler(registries Registries) http.HandlerFunc {
 			}
 			panic(err)
 		}
+
+		slices.Reverse(tags)
 
 		f := &feeds.Feed{
 			Title:   "Docker - " + repo,

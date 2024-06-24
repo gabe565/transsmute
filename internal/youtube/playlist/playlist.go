@@ -103,7 +103,7 @@ func (p Playlist) Items(ctx context.Context) ([]*Item, error) {
 	}
 
 	slices.SortStableFunc(items, func(a, b *Item) int {
-		return cmp.Compare(a.PublishedAt, b.PublishedAt)
+		return cmp.Compare(b.PublishedAt, a.PublishedAt)
 	})
 
 	return items, nil
