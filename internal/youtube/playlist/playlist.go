@@ -13,17 +13,15 @@ import (
 	"google.golang.org/api/youtube/v3"
 )
 
-func New(ctx context.Context, service *youtube.Service, id string) Playlist {
+func New(service *youtube.Service, id string) Playlist {
 	return Playlist{
 		Service: service,
-		Context: ctx,
 		ID:      id,
 	}
 }
 
 type Playlist struct {
 	Service *youtube.Service
-	Context context.Context
 	ID      string
 }
 
@@ -44,7 +42,7 @@ func (p Playlist) Meta() (*youtube.PlaylistSnippet, error) {
 	return resp.Items[0].Snippet, nil
 }
 
-func (p Playlist) Feed(noIframe bool) (*feeds.Feed, error) {
+func (p Playlist) Feed(ctx context.Context, noIframe bool) (*feeds.Feed, error) {
 	meta, err := p.Meta()
 	if err != nil {
 		return nil, err
@@ -64,7 +62,7 @@ func (p Playlist) Feed(noIframe bool) (*feeds.Feed, error) {
 		Created:     time.Now(),
 	}
 
-	feed.Items, err = p.FeedItems(noIframe)
+	feed.Items, err = p.FeedItems(ctx, noIframe)
 	if err != nil {
 		return feed, err
 	}
@@ -74,7 +72,7 @@ func (p Playlist) Feed(noIframe bool) (*feeds.Feed, error) {
 
 var ErrLimit = errors.New("exceeded fetch limit")
 
-func (p Playlist) Items() ([]*Item, error) {
+func (p Playlist) Items(ctx context.Context) ([]*Item, error) {
 	call := p.Service.PlaylistItems.List([]string{"snippet", "status"})
 	call.MaxResults(50)
 	call.PlaylistId(p.ID)
@@ -82,7 +80,7 @@ func (p Playlist) Items() ([]*Item, error) {
 
 	var items []*Item
 	i := 0
-	err := call.Pages(p.Context, func(response *youtube.PlaylistItemListResponse) error {
+	err := call.Pages(ctx, func(response *youtube.PlaylistItemListResponse) error {
 		items = slices.Grow(items, len(response.Items))
 		for _, item := range response.Items {
 			if item.Status.PrivacyStatus == "private" {
@@ -110,8 +108,8 @@ func (p Playlist) Items() ([]*Item, error) {
 	return items, nil
 }
 
-func (p Playlist) FeedItems(noIframe bool) ([]*feeds.Item, error) {
-	items, err := p.Items()
+func (p Playlist) FeedItems(ctx context.Context, noIframe bool) ([]*feeds.Item, error) {
+	items, err := p.Items(ctx)
 	if err != nil {
 		return nil, err
 	}

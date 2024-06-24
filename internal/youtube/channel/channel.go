@@ -10,17 +10,15 @@ import (
 	"google.golang.org/api/youtube/v3"
 )
 
-func New(ctx context.Context, service *youtube.Service, id string) Channel {
+func New(service *youtube.Service, id string) Channel {
 	return Channel{
 		Service: service,
-		Context: ctx,
 		ID:      id,
 	}
 }
 
 type Channel struct {
 	Service *youtube.Service
-	Context context.Context
 	ID      string
 }
 
@@ -41,16 +39,12 @@ func (p Channel) Meta() (*youtube.Channel, error) {
 	return resp.Items[0], nil
 }
 
-func (p Channel) Feed(noIframe bool) (*feeds.Feed, error) {
+func (p Channel) Feed(ctx context.Context, noIframe bool) (*feeds.Feed, error) {
 	meta, err := p.Meta()
 	if err != nil {
 		return nil, err
 	}
 
-	pl := playlist.New(
-		p.Context,
-		p.Service,
-		meta.ContentDetails.RelatedPlaylists.Uploads,
-	)
-	return pl.Feed(noIframe)
+	pl := playlist.New(p.Service, meta.ContentDetails.RelatedPlaylists.Uploads)
+	return pl.Feed(ctx, noIframe)
 }

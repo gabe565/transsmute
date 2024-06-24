@@ -24,9 +24,9 @@ func Handler(apiKey string) http.HandlerFunc {
 		}
 
 		identifier := chi.URLParam(r, "id")
-		plist := New(r.Context(), service, identifier)
+		plist := New(service, identifier)
 
-		f, err := plist.Feed(r.Context().Value(middleware.NoIframeKey).(bool))
+		f, err := plist.Feed(r.Context(), r.Context().Value(middleware.NoIframeKey).(bool))
 		if err != nil {
 			if errors.Is(err, ErrInvalid) {
 				http.Error(w, "404 playlist not found", http.StatusNotFound)
