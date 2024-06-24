@@ -62,7 +62,6 @@ func Handler(registries Registries) http.HandlerFunc {
 			item := &feeds.Item{
 				Title:       tag,
 				Link:        &feeds.Link{Href: reg.GetTagURL(repo, tag).String()},
-				Author:      owner,
 				Id:          tag,
 				Description: "<p>Docker tag: <code>" + html.EscapeString(repo+":"+tag) + "</code></p>",
 			}
