@@ -1,12 +1,12 @@
 package playlist
 
 import (
+	"cmp"
 	"context"
 	"errors"
 	"fmt"
 	"net/url"
 	"slices"
-	"sort"
 	"time"
 
 	"github.com/gorilla/feeds"
@@ -102,8 +102,8 @@ func (p Playlist) Items(ctx context.Context) ([]*Item, error) {
 		}
 	}
 
-	sort.Slice(items, func(i, j int) bool {
-		return items[i].PublishedAt > items[j].PublishedAt
+	slices.SortStableFunc(items, func(a, b *Item) int {
+		return cmp.Compare(a.PublishedAt, b.PublishedAt)
 	})
 
 	return items, nil
