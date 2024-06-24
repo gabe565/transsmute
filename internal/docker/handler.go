@@ -3,9 +3,9 @@ package docker
 import (
 	"context"
 	"errors"
+	"html"
 	"net/http"
 	"slices"
-	"strings"
 	"time"
 
 	"github.com/gabe565/transsmute/internal/feed"
@@ -59,24 +59,12 @@ func Handler(registries Registries) http.HandlerFunc {
 		}
 
 		for _, tag := range tags {
-			if err := r.Context().Err(); err != nil {
-				panic(err)
-			}
-
-			var description strings.Builder
-			if err := descriptionTmpl.Execute(&description, DescriptionValues{
-				Repo: repo,
-				Tag:  tag,
-			}); err != nil {
-				panic(err)
-			}
-
 			item := &feeds.Item{
 				Title:       tag,
 				Link:        &feeds.Link{Href: reg.GetTagURL(repo, tag).String()},
 				Author:      owner,
 				Id:          tag,
-				Description: description.String(),
+				Description: "<p>Docker tag: <code>" + html.EscapeString(repo+":"+tag) + "</code></p>",
 			}
 			f.Items = append(f.Items, item)
 		}
