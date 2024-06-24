@@ -23,6 +23,7 @@ func New(service *youtube.Service, id string) Playlist {
 type Playlist struct {
 	Service *youtube.Service
 	ID      string
+	Iframe  bool
 }
 
 var ErrInvalid = errors.New("invalid playlist")
@@ -43,7 +44,7 @@ func (p Playlist) Meta(ctx context.Context) (*youtube.PlaylistSnippet, error) {
 	return resp.Items[0].Snippet, nil
 }
 
-func (p Playlist) Feed(ctx context.Context, noIframe bool) (*feeds.Feed, error) {
+func (p Playlist) Feed(ctx context.Context) (*feeds.Feed, error) {
 	meta, err := p.Meta(ctx)
 	if err != nil {
 		return nil, err
@@ -63,7 +64,7 @@ func (p Playlist) Feed(ctx context.Context, noIframe bool) (*feeds.Feed, error) 
 		Created:     time.Now(),
 	}
 
-	feed.Items, err = p.FeedItems(ctx, noIframe)
+	feed.Items, err = p.FeedItems(ctx)
 	if err != nil {
 		return feed, err
 	}
@@ -109,7 +110,7 @@ func (p Playlist) Items(ctx context.Context) ([]*Item, error) {
 	return items, nil
 }
 
-func (p Playlist) FeedItems(ctx context.Context, noIframe bool) ([]*feeds.Item, error) {
+func (p Playlist) FeedItems(ctx context.Context) ([]*feeds.Item, error) {
 	items, err := p.Items(ctx)
 	if err != nil {
 		return nil, err
@@ -118,7 +119,7 @@ func (p Playlist) FeedItems(ctx context.Context, noIframe bool) ([]*feeds.Item, 
 	feedItems := make([]*feeds.Item, 0, len(items))
 
 	for _, item := range items {
-		feedItem, err := item.FeedItem(noIframe)
+		feedItem, err := item.FeedItem(p.Iframe)
 		if err != nil {
 			return feedItems, err
 		}

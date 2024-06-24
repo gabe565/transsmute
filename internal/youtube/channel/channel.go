@@ -20,6 +20,7 @@ func New(service *youtube.Service, id string) Channel {
 type Channel struct {
 	Service *youtube.Service
 	ID      string
+	Iframe  bool
 }
 
 var ErrInvalid = errors.New("invalid channel")
@@ -40,12 +41,13 @@ func (p Channel) Meta(ctx context.Context) (*youtube.Channel, error) {
 	return resp.Items[0], nil
 }
 
-func (p Channel) Feed(ctx context.Context, noIframe bool) (*feeds.Feed, error) {
+func (p Channel) Feed(ctx context.Context) (*feeds.Feed, error) {
 	meta, err := p.Meta(ctx)
 	if err != nil {
 		return nil, err
 	}
 
 	pl := playlist.New(p.Service, meta.ContentDetails.RelatedPlaylists.Uploads)
-	return pl.Feed(ctx, noIframe)
+	pl.Iframe = p.Iframe
+	return pl.Feed(ctx)
 }

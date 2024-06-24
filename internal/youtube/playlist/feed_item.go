@@ -12,7 +12,7 @@ import (
 
 type Item youtube.PlaylistItemSnippet
 
-func (i Item) FeedItem(noIframe bool) (*feeds.Item, error) {
+func (i Item) FeedItem(iframe bool) (*feeds.Item, error) {
 	published, err := time.Parse(time.RFC3339, i.PublishedAt)
 	if err != nil {
 		return nil, err
@@ -21,7 +21,7 @@ func (i Item) FeedItem(noIframe bool) (*feeds.Item, error) {
 	var description strings.Builder
 	if err := tmpl.DescriptionTmpl.Execute(&description, map[string]any{
 		"Item":   i,
-		"Iframe": !noIframe,
+		"Iframe": iframe,
 	}); err != nil {
 		return nil, err
 	}

@@ -15,9 +15,11 @@ import (
 func Handler(service *youtube.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		identifier := chi.URLParam(r, "id")
+		iframe := r.Context().Value(middleware.IframeKey).(bool)
 		ch := New(service, identifier)
+		ch.Iframe = iframe
 
-		f, err := ch.Feed(r.Context(), r.Context().Value(middleware.NoIframeKey).(bool))
+		f, err := ch.Feed(r.Context())
 		if err != nil {
 			if errors.Is(err, ErrInvalid) {
 				http.Error(w, "404 channel not found", http.StatusNotFound)

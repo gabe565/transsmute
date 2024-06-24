@@ -24,7 +24,7 @@ func Routes(r chi.Router, conf config.YouTube) error {
 		}
 
 		r.Group(func(r chi.Router) {
-			r.Use(middleware.NoIframe)
+			r.Use(middleware.IframeParam)
 			r.Get("/youtube/channel/{id}", channel.Handler(service))
 			r.Get("/youtube/playlist/{id}", playlist.Handler(service))
 		})

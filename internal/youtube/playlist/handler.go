@@ -14,9 +14,11 @@ import (
 func Handler(service *youtube.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		identifier := chi.URLParam(r, "id")
+		iframe := r.Context().Value(middleware.IframeKey).(bool)
 		plist := New(service, identifier)
+		plist.Iframe = iframe
 
-		f, err := plist.Feed(r.Context(), r.Context().Value(middleware.NoIframeKey).(bool))
+		f, err := plist.Feed(r.Context())
 		if err != nil {
 			if errors.Is(err, ErrInvalid) {
 				http.Error(w, "404 playlist not found", http.StatusNotFound)
