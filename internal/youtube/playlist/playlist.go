@@ -27,9 +27,10 @@ type Playlist struct {
 
 var ErrInvalid = errors.New("invalid playlist")
 
-func (p Playlist) Meta() (*youtube.PlaylistSnippet, error) {
+func (p Playlist) Meta(ctx context.Context) (*youtube.PlaylistSnippet, error) {
 	call := p.Service.Playlists.List([]string{"snippet"})
 	call.Id(p.ID)
+	call.Context(ctx)
 	resp, err := call.Do()
 	if err != nil {
 		return nil, err
@@ -43,7 +44,7 @@ func (p Playlist) Meta() (*youtube.PlaylistSnippet, error) {
 }
 
 func (p Playlist) Feed(ctx context.Context, noIframe bool) (*feeds.Feed, error) {
-	meta, err := p.Meta()
+	meta, err := p.Meta(ctx)
 	if err != nil {
 		return nil, err
 	}

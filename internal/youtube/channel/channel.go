@@ -24,9 +24,10 @@ type Channel struct {
 
 var ErrInvalid = errors.New("invalid channel")
 
-func (p Channel) Meta() (*youtube.Channel, error) {
+func (p Channel) Meta(ctx context.Context) (*youtube.Channel, error) {
 	call := p.Service.Channels.List([]string{"snippet", "contentDetails"})
 	call.Id(p.ID)
+	call.Context(ctx)
 	resp, err := call.Do()
 	if err != nil {
 		return nil, err
@@ -40,7 +41,7 @@ func (p Channel) Meta() (*youtube.Channel, error) {
 }
 
 func (p Channel) Feed(ctx context.Context, noIframe bool) (*feeds.Feed, error) {
-	meta, err := p.Meta()
+	meta, err := p.Meta(ctx)
 	if err != nil {
 		return nil, err
 	}
