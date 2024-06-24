@@ -7,10 +7,12 @@ import (
 
 func Routes(r chi.Router, conf config.Docker) error {
 	if conf.Enabled {
-		if err := SetupRegistries(conf); err != nil {
+		registries, err := NewRegistries(conf)
+		if err != nil {
 			return err
 		}
-		r.Get("/docker/tags/*", Handler)
+
+		r.Get("/docker/tags/*", Handler(registries))
 	}
 	return nil
 }

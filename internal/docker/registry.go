@@ -25,28 +25,26 @@ type Registry interface {
 	GetOwner(repo string) string
 }
 
-//nolint:gochecknoglobals
-var registries []Registry
+type Registries []Registry
 
-func SetupRegistries(conf config.Docker) error {
+func NewRegistries(conf config.Docker) (Registries, error) {
 	ghcr, err := NewGhcr(conf.GHCR)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	dockerhub, err := NewDockerHub(conf.DockerHub)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	registries = []Registry{ghcr, dockerhub}
-	return nil
+	return Registries{ghcr, dockerhub}, nil
 }
 
 var ErrInvalidRegistry = errors.New("no registry for repo")
 
-func FindRegistry(repo string) (Registry, error) {
-	for _, registry := range registries {
+func (r Registries) Find(repo string) (Registry, error) {
+	for _, registry := range r {
 		for _, name := range registry.Names() {
 			if strings.HasPrefix(repo, name) {
 				return registry, nil
