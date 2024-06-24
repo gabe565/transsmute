@@ -61,7 +61,10 @@ func (p Playlist) Feed(ctx context.Context) (*feeds.Feed, error) {
 		Title:       "YouTube - " + meta.Title,
 		Link:        &feeds.Link{Href: u.String()},
 		Description: meta.Description,
-		Created:     time.Now(),
+		Author: &feeds.Author{
+			Name: meta.ChannelTitle,
+		},
+		Created: time.Now(),
 	}
 
 	feed.Items, err = p.FeedItems(ctx)
