@@ -46,9 +46,10 @@ func postHandler(host string) http.HandlerFunc {
 			}
 		}
 
+		tag := r.URL.Query().Get("tag")
 		query := r.URL.Query().Get("q")
 
-		f, err := creator.Feed(r.Context(), pages, query)
+		f, err := creator.Feed(r.Context(), pages, tag, query)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusServiceUnavailable)
 			panic(err)

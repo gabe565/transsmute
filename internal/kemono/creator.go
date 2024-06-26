@@ -169,7 +169,7 @@ func GetCreatorInfo(ctx context.Context, host, service, name string) (*Creator, 
 	return nil, ErrCreatorNotFound
 }
 
-func (c *Creator) Feed(ctx context.Context, pages uint64, query string) (*feeds.Feed, error) {
+func (c *Creator) Feed(ctx context.Context, pages uint64, tag, query string) (*feeds.Feed, error) {
 	f := &feeds.Feed{
 		Title:   formatServiceName(c.Service) + " - " + c.Name,
 		Link:    &feeds.Link{Href: c.PublicURL().String()},
@@ -193,6 +193,9 @@ func (c *Creator) Feed(ctx context.Context, pages uint64, query string) (*feeds.
 		f.Items = slices.Grow(f.Items, len(posts))
 
 		for _, post := range posts {
+			if tag != "" && !slices.Contains(post.Tags, tag) {
+				continue
+			}
 			f.Items = append(f.Items, post.FeedItem())
 		}
 
