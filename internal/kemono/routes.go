@@ -15,6 +15,8 @@ func Routes(r chi.Router, conf config.Kemono) error {
 			return ErrNoHosts
 		}
 
+		initCreatorCache()
+
 		for name, host := range conf.Hosts {
 			r.Get("/"+name+"/{service}/user/{creator}", postHandler(host))
 		}

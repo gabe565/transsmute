@@ -7,13 +7,11 @@ import (
 	"html/template"
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/gabe565/transsmute/internal/feed"
 	"github.com/gabe565/transsmute/internal/templatefuncs"
 	"github.com/gabe565/transsmute/internal/util"
 	"github.com/go-chi/chi/v5"
-	"github.com/jellydator/ttlcache/v3"
 )
 
 //go:embed post.html.gotmpl
@@ -25,38 +23,17 @@ var postTmpl = template.Must(
 )
 
 func postHandler(host string) http.HandlerFunc {
-	type creatorCacheKey struct {
-		service string
-		creator string
-	}
-
-	creatorCache := ttlcache.New[creatorCacheKey, *Creator](
-		ttlcache.WithTTL[creatorCacheKey, *Creator](24*time.Hour),
-		ttlcache.WithDisableTouchOnHit[creatorCacheKey, *Creator](),
-	)
-	go creatorCache.Start()
-
 	return func(w http.ResponseWriter, r *http.Request) {
-		cacheKey := creatorCacheKey{
-			service: chi.URLParam(r, "service"),
-			creator: chi.URLParam(r, "creator"),
-		}
-		var creator *Creator
-		if cached := creatorCache.Get(cacheKey); cached != nil {
-			creator = cached.Value()
-		} else {
-			var err error
-			if creator, err = GetCreatorInfo(r.Context(), host, cacheKey.creator, cacheKey.service); err != nil {
-				if errors.Is(err, ErrCreatorNotFound) {
-					http.Error(w, err.Error(), http.StatusNotFound)
-					return
-				} else if errors.Is(err, util.ErrUpstreamRequest) {
-					http.Error(w, err.Error(), http.StatusServiceUnavailable)
-					return
-				}
-				panic(err)
+		creator, err := GetCreatorInfo(r.Context(), host, chi.URLParam(r, "service"), chi.URLParam(r, "creator"))
+		if err != nil {
+			if errors.Is(err, ErrCreatorNotFound) {
+				http.Error(w, err.Error(), http.StatusNotFound)
+				return
+			} else if errors.Is(err, util.ErrUpstreamRequest) {
+				http.Error(w, err.Error(), http.StatusServiceUnavailable)
+				return
 			}
-			creatorCache.Set(cacheKey, creator, ttlcache.DefaultTTL)
+			panic(err)
 		}
 
 		pagesRaw := r.URL.Query().Get("pages")

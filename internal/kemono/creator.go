@@ -16,7 +16,14 @@ import (
 
 	"github.com/gabe565/transsmute/internal/util"
 	"github.com/gorilla/feeds"
+	"github.com/jellydator/ttlcache/v3"
 )
+
+type creatorCacheKey struct {
+	host    string
+	service string
+	creator string
+}
 
 type Creator struct {
 	host    string
@@ -104,7 +111,16 @@ func (c *Creator) FetchPostPage(ctx context.Context, page uint64, query string) 
 
 var ErrCreatorNotFound = errors.New("creator not found")
 
-func GetCreatorInfo(ctx context.Context, host, name, service string) (*Creator, error) {
+func GetCreatorInfo(ctx context.Context, host, service, name string) (*Creator, error) {
+	cacheKey := creatorCacheKey{
+		host:    host,
+		service: service,
+		creator: name,
+	}
+	if cached := creatorCache.Get(cacheKey); cached != nil {
+		return cached.Value(), nil
+	}
+
 	creator := &Creator{host: host}
 
 	ctx, cancel := context.WithCancel(ctx)
@@ -145,6 +161,7 @@ func GetCreatorInfo(ctx context.Context, host, name, service string) (*Creator, 
 
 		if creator.Name == name && creator.Service == service {
 			cancel()
+			creatorCache.Set(cacheKey, creator, ttlcache.DefaultTTL)
 			return creator, nil
 		}
 	}
