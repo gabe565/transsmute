@@ -1,11 +1,17 @@
 package kemono
 
 import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
 	"net/url"
 	"path"
 	"strings"
 	"time"
 
+	"github.com/gabe565/transsmute/internal/util"
 	"github.com/gorilla/feeds"
 )
 
@@ -85,4 +91,43 @@ func (a *Attachment) URL() *url.URL {
 	}
 	u.RawQuery = strings.ReplaceAll(u.RawQuery, "+", "%20")
 	return u
+}
+
+type AttachmentInfo struct {
+	ID       int    `json:"id"`
+	Hash     string `json:"hash"`
+	Created  string `json:"ctime"`
+	Modified string `json:"mtime"`
+	MIMEType string `json:"mime"`
+	Ext      string `json:"ext"`
+	Added    string `json:"added"`
+	Size     int    `json:"size"`
+}
+
+func (a *Attachment) Info(ctx context.Context) (*AttachmentInfo, error) {
+	hash := strings.TrimSuffix(path.Base(a.Path), path.Ext(a.Path))
+	u := url.URL{Scheme: "https", Host: a.post.creator.host, Path: path.Join("/api/v1/search_hash/", hash)}
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		_, _ = io.Copy(io.Discard, resp.Body)
+		_ = resp.Body.Close()
+	}()
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%w: %s", util.ErrUpstreamRequest, resp.Status)
+	}
+
+	info := &AttachmentInfo{}
+	if err := json.NewDecoder(resp.Body).Decode(info); err != nil {
+		return nil, err
+	}
+
+	return info, nil
 }
