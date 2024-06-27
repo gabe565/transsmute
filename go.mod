@@ -5,6 +5,7 @@ go 1.22.4
 require (
 	github.com/Masterminds/sprig/v3 v3.2.3
 	github.com/bradleyfalzon/ghinstallation/v2 v2.11.0
+	github.com/eduncan911/podcast v1.4.2
 	github.com/go-chi/chi/v5 v5.0.12
 	github.com/google/go-containerregistry v0.19.1
 	github.com/google/go-github/v62 v62.0.0

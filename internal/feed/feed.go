@@ -9,6 +9,7 @@ import (
 	"path"
 	"strings"
 
+	"github.com/eduncan911/podcast"
 	"github.com/go-chi/chi/v5"
 	"github.com/gorilla/feeds"
 )
@@ -56,39 +57,49 @@ func SetType(next http.Handler) http.Handler {
 
 func WriteFeed(w http.ResponseWriter, r *http.Request) error {
 	format := r.Context().Value(TypeKey).(OutputFormat)
-	feed := r.Context().Value(FeedKey).(*feeds.Feed)
+	feed := r.Context().Value(FeedKey)
 
 	var buf bytes.Buffer
 
-	switch format {
-	case OutputAtom, OutputUnknown:
-		atomFeed := (&feeds.Atom{Feed: feed}).AtomFeed()
-		if feed.Image != nil {
-			atomFeed.Icon = feed.Image.Url
+	switch feed := feed.(type) {
+	case *feeds.Feed:
+		switch format {
+		case OutputAtom, OutputUnknown:
+			atomFeed := (&feeds.Atom{Feed: feed}).AtomFeed()
+			if feed.Image != nil {
+				atomFeed.Icon = feed.Image.Url
+			}
+			if err := feeds.WriteXML(atomFeed, &buf); err != nil {
+				return err
+			}
+			w.Header().Set("Content-Type", "application/rss+xml")
+		case OutputJSON:
+			jsonFeed := (&feeds.JSON{Feed: feed}).JSONFeed()
+			if feed.Image != nil {
+				jsonFeed.Icon = feed.Image.Url
+			}
+			e := json.NewEncoder(&buf)
+			e.SetIndent("", "  ")
+			if err := e.Encode(jsonFeed); err != nil {
+				return err
+			}
+			w.Header().Set("Content-Type", "application/json")
+		case OutputRSS:
+			if err := feed.WriteRss(&buf); err != nil {
+				return err
+			}
+			w.Header().Set("Content-Type", "application/rss+xml")
+		default:
+			http.Error(w, "400 invalid format", http.StatusBadRequest)
+			return nil
 		}
-		if err := feeds.WriteXML(atomFeed, &buf); err != nil {
+	case *podcast.Podcast:
+		if err := feed.Encode(&buf); err != nil {
 			return err
 		}
-		w.Header().Set("Content-Type", "application/rss+xml")
-	case OutputJSON:
-		jsonFeed := (&feeds.JSON{Feed: feed}).JSONFeed()
-		if feed.Image != nil {
-			jsonFeed.Icon = feed.Image.Url
-		}
-		e := json.NewEncoder(&buf)
-		e.SetIndent("", "  ")
-		if err := e.Encode(jsonFeed); err != nil {
-			return err
-		}
-		w.Header().Set("Content-Type", "application/json")
-	case OutputRSS:
-		if err := feed.WriteRss(&buf); err != nil {
-			return err
-		}
-		w.Header().Set("Content-Type", "application/rss+xml")
+		w.Header().Set("Content-Type", "application/xml")
 	default:
-		http.Error(w, "400 invalid format", http.StatusBadRequest)
-		return nil
+		panic("invalid feed type")
 	}
 
 	if _, err := io.Copy(w, &buf); err != nil {

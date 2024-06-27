@@ -14,6 +14,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/eduncan911/podcast"
 	"github.com/gabe565/transsmute/internal/util"
 	"github.com/gorilla/feeds"
 	"github.com/jellydator/ttlcache/v3"
@@ -205,4 +206,51 @@ func (c *Creator) Feed(ctx context.Context, pages uint64, tag, query string) (*f
 	}
 
 	return f, nil
+}
+
+func (c *Creator) Podcast(ctx context.Context, pages uint64, tag, query string) (*podcast.Podcast, error) {
+	var pubdate *time.Time
+	if c.Indexed != 0 {
+		d := time.Unix(int64(c.Updated), 0)
+		pubdate = &d
+	}
+	f := podcast.New(c.Name, c.PublicURL().String(), "", pubdate, nil)
+	f.IBlock = "Yes"
+	f.TTL = int(24 * time.Hour / time.Second)
+
+	for page := range pages {
+		posts, err := c.FetchPostPage(ctx, page, query)
+		if err != nil {
+			return nil, err
+		}
+		f.Items = slices.Grow(f.Items, len(posts))
+
+		for _, post := range posts {
+			if tag != "" && !slices.Contains(post.Tags, tag) {
+				continue
+			}
+
+			item, image, err := post.PodcastItem(ctx)
+			if err != nil {
+				if errors.Is(err, ErrNoAudio) {
+					continue
+				}
+				return nil, err
+			}
+			f.Items = append(f.Items, item)
+			if image != nil && f.Image == nil {
+				f.AddImage(image.ThumbURL().String())
+			}
+		}
+
+		if len(posts) < 50 {
+			break
+		}
+	}
+
+	if f.Image == nil {
+		f.AddImage(c.ImageURL().String())
+	}
+
+	return &f, nil
 }

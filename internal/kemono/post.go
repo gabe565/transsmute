@@ -3,14 +3,17 @@ package kemono
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
 	"net/url"
 	"path"
+	"strconv"
 	"strings"
 	"time"
 
+	"github.com/eduncan911/podcast"
 	"github.com/gabe565/transsmute/internal/util"
 	"github.com/gorilla/feeds"
 )
@@ -51,6 +54,47 @@ func (p *Post) FeedItem() *feeds.Item {
 	return item
 }
 
+var ErrNoAudio = errors.New("no audio file")
+
+func (p *Post) PodcastItem(ctx context.Context) (*podcast.Item, *Attachment, error) {
+	var audio, image *Attachment
+	for _, attachment := range p.Attachments {
+		switch {
+		case attachment.IsAudio() && audio == nil:
+			audio = attachment
+		case attachment.IsImage() && image == nil:
+			image = attachment
+		}
+	}
+	if audio == nil {
+		return nil, nil, ErrNoAudio
+	}
+
+	audioInfo, err := audio.Info(ctx)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	item := &podcast.Item{
+		Title:       p.Title,
+		Link:        p.creator.PostURL(p).String(),
+		Description: p.Content,
+		GUID:        p.ID,
+		Enclosure: &podcast.Enclosure{
+			URL:             audio.URL().String(),
+			LengthFormatted: strconv.Itoa(audioInfo.Size),
+			TypeFormatted:   audioInfo.MIMEType,
+		},
+	}
+	if image != nil {
+		item.AddImage(image.ThumbURL().String())
+	}
+	if parsed, err := time.Parse("2006-01-02T15:04:05", p.Published); err == nil {
+		item.AddPubDate(&parsed)
+	}
+	return item, image, nil
+}
+
 type Embed struct {
 	URL         string `json:"url"`
 	Subject     string `json:"subject"`
@@ -71,6 +115,11 @@ func (a *Attachment) IsImage() bool {
 func (a *Attachment) IsVideo() bool {
 	ext := path.Ext(a.Path)
 	return ext == ".mp4" || ext == ".webm"
+}
+
+func (a *Attachment) IsAudio() bool {
+	ext := path.Ext(a.Path)
+	return ext == ".mp3" || ext == ".m4a"
 }
 
 func (a *Attachment) ThumbURL() *url.URL {
@@ -106,7 +155,7 @@ type AttachmentInfo struct {
 
 func (a *Attachment) Info(ctx context.Context) (*AttachmentInfo, error) {
 	hash := strings.TrimSuffix(path.Base(a.Path), path.Ext(a.Path))
-	u := url.URL{Scheme: "https", Host: a.post.creator.host, Path: path.Join("/api/v1/search_hash/", hash)}
+	u := url.URL{Scheme: "https", Host: a.post.creator.host, Path: path.Join("/api/v1/search_hash", hash)}
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u.String(), nil)
 	if err != nil {
 		return nil, err
