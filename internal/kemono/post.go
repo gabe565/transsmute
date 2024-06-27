@@ -30,6 +30,7 @@ type Post struct {
 	Published   string        `json:"published"`
 	Edited      string        `json:"edited"`
 	Tags        Tags          `json:"tags"`
+	File        *Attachment   `json:"file"`
 	Attachments []*Attachment `json:"attachments"`
 }
 

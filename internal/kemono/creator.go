@@ -97,14 +97,20 @@ func (c *Creator) FetchPostPage(ctx context.Context, page uint64, query string) 
 
 	for _, post := range posts {
 		post.Creator = c
-		seen := make([]string, 0, len(post.Attachments))
-		post.Attachments = slices.DeleteFunc(post.Attachments, func(attachment *Attachment) bool {
-			if slices.Contains(seen, attachment.Path) {
-				return true
+		if len(post.Attachments) == 0 {
+			if post.File != nil && post.File.Path != "" {
+				post.Attachments = append(post.Attachments, post.File)
 			}
-			seen = append(seen, attachment.Path)
-			return false
-		})
+		} else {
+			seen := make([]string, 0, len(post.Attachments))
+			post.Attachments = slices.DeleteFunc(post.Attachments, func(attachment *Attachment) bool {
+				if slices.Contains(seen, attachment.Path) {
+					return true
+				}
+				seen = append(seen, attachment.Path)
+				return false
+			})
+		}
 		for _, attachment := range post.Attachments {
 			attachment.post = post
 		}
