@@ -51,12 +51,6 @@ func (c *Creator) PublicURL() *url.URL {
 	}
 }
 
-func (c *Creator) PostURL(p *Post) *url.URL {
-	u := c.PublicURL()
-	u.Path = path.Join(u.Path, "post", p.ID)
-	return u
-}
-
 func (c *Creator) PostAPIURL(page uint64, query string) *url.URL {
 	return &url.URL{
 		Scheme: "https",

@@ -33,10 +33,16 @@ type Post struct {
 	Attachments []*Attachment `json:"attachments"`
 }
 
+func (p *Post) URL() *url.URL {
+	u := p.creator.PublicURL()
+	u.Path = path.Join(u.Path, "post", p.ID)
+	return u
+}
+
 func (p *Post) FeedItem() *feeds.Item {
 	item := &feeds.Item{
 		Id:    p.ID,
-		Link:  &feeds.Link{Href: p.creator.PostURL(p).String()},
+		Link:  &feeds.Link{Href: p.URL().String()},
 		Title: p.Title,
 	}
 	if parsed, err := time.Parse("2006-01-02T15:04:05", p.Published); err == nil {
@@ -77,7 +83,7 @@ func (p *Post) PodcastItem(ctx context.Context) (*podcast.Item, *Attachment, err
 
 	item := &podcast.Item{
 		Title:       p.Title,
-		Link:        p.creator.PostURL(p).String(),
+		Link:        p.URL().String(),
 		Description: p.Content,
 		GUID:        p.ID,
 		Enclosure: &podcast.Enclosure{
