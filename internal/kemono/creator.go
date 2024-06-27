@@ -51,6 +51,14 @@ func (c *Creator) PublicURL() *url.URL {
 	}
 }
 
+func (c *Creator) TagURL(t string) *url.URL {
+	u := c.PublicURL()
+	q := u.Query()
+	q.Set("tag", t)
+	u.RawQuery = q.Encode()
+	return u
+}
+
 func (c *Creator) PostAPIURL(page uint64, query string) *url.URL {
 	return &url.URL{
 		Scheme: "https",
@@ -88,7 +96,7 @@ func (c *Creator) FetchPostPage(ctx context.Context, page uint64, query string) 
 	}
 
 	for _, post := range posts {
-		post.creator = c
+		post.Creator = c
 		seen := make([]string, 0, len(post.Attachments))
 		post.Attachments = slices.DeleteFunc(post.Attachments, func(attachment *Attachment) bool {
 			if slices.Contains(seen, attachment.Path) {

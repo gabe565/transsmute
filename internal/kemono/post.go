@@ -19,7 +19,7 @@ import (
 )
 
 type Post struct {
-	creator     *Creator
+	Creator     *Creator      `json:"-"`
 	ID          string        `json:"id"`
 	User        string        `json:"user"`
 	Service     string        `json:"service"`
@@ -34,7 +34,7 @@ type Post struct {
 }
 
 func (p *Post) URL() *url.URL {
-	u := p.creator.PublicURL()
+	u := p.Creator.PublicURL()
 	u.Path = path.Join(u.Path, "post", p.ID)
 	return u
 }
@@ -131,7 +131,7 @@ func (a *Attachment) IsAudio() bool {
 func (a *Attachment) ThumbURL() *url.URL {
 	u := &url.URL{
 		Scheme: "https",
-		Host:   "img." + a.post.creator.host,
+		Host:   "img." + a.post.Creator.host,
 		Path:   path.Join("thumbnail", "data", a.Path),
 	}
 	return u
@@ -140,7 +140,7 @@ func (a *Attachment) ThumbURL() *url.URL {
 func (a *Attachment) URL() *url.URL {
 	u := &url.URL{
 		Scheme:   "https",
-		Host:     a.post.creator.host,
+		Host:     a.post.Creator.host,
 		Path:     path.Join("data", a.Path),
 		RawQuery: url.Values{"f": []string{a.Name}}.Encode(),
 	}
@@ -161,7 +161,7 @@ type AttachmentInfo struct {
 
 func (a *Attachment) Info(ctx context.Context) (*AttachmentInfo, error) {
 	hash := strings.TrimSuffix(path.Base(a.Path), path.Ext(a.Path))
-	u := url.URL{Scheme: "https", Host: a.post.creator.host, Path: path.Join("/api/v1/search_hash", hash)}
+	u := url.URL{Scheme: "https", Host: a.post.Creator.host, Path: path.Join("/api/v1/search_hash", hash)}
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u.String(), nil)
 	if err != nil {
 		return nil, err

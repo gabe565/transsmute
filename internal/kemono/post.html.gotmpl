@@ -30,3 +30,10 @@
 </p>
 {{- end }}
 {{- end }}
+
+{{- with .Tags }}
+<h3>Tags</h3>
+{{- range . }}
+<a href="{{ $.Creator.TagURL . }}">{{ . }}</a>
+{{- end }}
+{{- end }}
