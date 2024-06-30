@@ -24,7 +24,7 @@ var postTmpl = template.Must(
 
 func postHandler(host string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		creator, err := GetCreatorInfo(r.Context(), host, chi.URLParam(r, "service"), chi.URLParam(r, "creator"))
+		creator, err := GetCreatorByID(r.Context(), host, chi.URLParam(r, "service"), chi.URLParam(r, "id"))
 		if err != nil {
 			if errors.Is(err, ErrCreatorNotFound) {
 				http.Error(w, err.Error(), http.StatusNotFound)

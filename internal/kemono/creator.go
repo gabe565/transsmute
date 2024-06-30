@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"net/url"
 	"path"
-	"reflect"
 	"slices"
 	"strconv"
 	"time"
@@ -17,22 +16,15 @@ import (
 	"github.com/eduncan911/podcast"
 	"github.com/gabe565/transsmute/internal/util"
 	"github.com/gorilla/feeds"
-	"github.com/jellydator/ttlcache/v3"
 )
-
-type creatorCacheKey struct {
-	host    string
-	service string
-	creator string
-}
 
 type Creator struct {
 	host    string
 	ID      string `json:"id"`
 	Name    string `json:"name"`
 	Service string `json:"service"`
-	Indexed uint   `json:"indexed"`
-	Updated uint   `json:"updated"`
+	Indexed string `json:"indexed"`
+	Updated string `json:"updated"`
 }
 
 func (c *Creator) ImageURL() *url.URL {
@@ -68,6 +60,14 @@ func (c *Creator) PostAPIURL(page uint64, query string) *url.URL {
 			"o": []string{strconv.FormatUint(page*50, 10)},
 			"q": []string{query},
 		}.Encode(),
+	}
+}
+
+func (c *Creator) ProfileAPIURL() *url.URL {
+	return &url.URL{
+		Scheme: "https",
+		Host:   c.host,
+		Path:   path.Join("api", "v1", c.Service, "user", c.ID, "profile"),
 	}
 }
 
@@ -120,23 +120,14 @@ func (c *Creator) FetchPostPage(ctx context.Context, page uint64, query string) 
 
 var ErrCreatorNotFound = errors.New("creator not found")
 
-func GetCreatorInfo(ctx context.Context, host, service, name string) (*Creator, error) {
-	cacheKey := creatorCacheKey{
+func GetCreatorByID(ctx context.Context, host, service, id string) (*Creator, error) {
+	creator := &Creator{
 		host:    host,
-		service: service,
-		creator: name,
-	}
-	if cached := creatorCache.Get(cacheKey); cached != nil {
-		return cached.Value(), nil
+		Service: service,
+		ID:      id,
 	}
 
-	creator := &Creator{host: host}
-
-	ctx, cancel := context.WithCancel(ctx)
-	defer cancel()
-
-	u := url.URL{Scheme: "https", Host: host, Path: "/api/v1/creators"}
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u.String(), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, creator.ProfileAPIURL().String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -146,52 +137,37 @@ func GetCreatorInfo(ctx context.Context, host, service, name string) (*Creator, 
 		return nil, err
 	}
 	defer func() {
-		go func() {
-			_, _ = io.Copy(io.Discard, resp.Body)
-			_ = resp.Body.Close()
-		}()
+		_, _ = io.Copy(io.Discard, resp.Body)
+		_ = resp.Body.Close()
 	}()
-	if resp.StatusCode != http.StatusOK {
+
+	switch resp.StatusCode {
+	case http.StatusOK:
+	case http.StatusNotFound:
+		return nil, ErrCreatorNotFound
+	default:
 		return nil, fmt.Errorf("%w: %s", util.ErrUpstreamRequest, resp.Status)
 	}
 
-	decoder := json.NewDecoder(resp.Body)
-
-	if t, err := decoder.Token(); err != nil {
+	if err := json.NewDecoder(resp.Body).Decode(&creator); err != nil {
 		return nil, err
-	} else if t != json.Delim('[') {
-		return nil, &json.UnmarshalTypeError{Value: "object", Type: reflect.TypeOf([]Creator{})}
 	}
-
-	for decoder.More() {
-		if err := decoder.Decode(&creator); err != nil {
-			return nil, err
-		}
-
-		if creator.Name == name && creator.Service == service {
-			cancel()
-			creatorCache.Set(cacheKey, creator, ttlcache.DefaultTTL)
-			return creator, nil
-		}
-	}
-
-	return nil, ErrCreatorNotFound
+	return creator, nil
 }
 
 func (c *Creator) Feed(ctx context.Context, pages uint64, tag, query string) (*feeds.Feed, error) {
 	f := &feeds.Feed{
-		Title:   formatServiceName(c.Service) + " - " + c.Name,
-		Link:    &feeds.Link{Href: c.PublicURL().String()},
-		Updated: time.Now(),
-		Items:   make([]*feeds.Item, 0, 50),
+		Title: formatServiceName(c.Service) + " - " + c.Name,
+		Link:  &feeds.Link{Href: c.PublicURL().String()},
+		Items: make([]*feeds.Item, 0, 50),
 		Image: &feeds.Image{
 			Url:   c.ImageURL().String(),
 			Title: c.Name,
 			Link:  c.PublicURL().String(),
 		},
 	}
-	if c.Indexed != 0 {
-		f.Created = time.Unix(int64(c.Updated), 0)
+	if parsed, err := time.Parse("2006-01-02T15:04:05", c.Updated); err == nil {
+		f.Created = parsed
 	}
 
 	for page := range pages {
@@ -218,9 +194,8 @@ func (c *Creator) Feed(ctx context.Context, pages uint64, tag, query string) (*f
 
 func (c *Creator) Podcast(ctx context.Context, pages uint64, tag, query string) (*podcast.Podcast, error) {
 	var pubdate *time.Time
-	if c.Indexed != 0 {
-		d := time.Unix(int64(c.Updated), 0)
-		pubdate = &d
+	if parsed, err := time.Parse("2006-01-02T15:04:05", c.Updated); err == nil {
+		pubdate = &parsed
 	}
 	f := podcast.New(c.Name, c.PublicURL().String(), "", pubdate, nil)
 	f.IBlock = "Yes"
