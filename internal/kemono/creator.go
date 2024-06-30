@@ -166,9 +166,6 @@ func (c *Creator) Feed(ctx context.Context, pages uint64, tag, query string) (*f
 			Link:  c.PublicURL().String(),
 		},
 	}
-	if parsed, err := time.Parse("2006-01-02T15:04:05", c.Updated); err == nil {
-		f.Created = parsed
-	}
 
 	for page := range pages {
 		posts, err := c.FetchPostPage(ctx, page, query)
@@ -181,7 +178,15 @@ func (c *Creator) Feed(ctx context.Context, pages uint64, tag, query string) (*f
 			if tag != "" && !slices.Contains(post.Tags, tag) {
 				continue
 			}
-			f.Items = append(f.Items, post.FeedItem())
+			item := post.FeedItem()
+			f.Items = append(f.Items, item)
+			if f.Updated.IsZero() {
+				if !item.Updated.IsZero() {
+					f.Updated = item.Updated
+				} else if !item.Created.IsZero() {
+					f.Updated = item.Created
+				}
+			}
 		}
 
 		if len(posts) < 50 {
@@ -193,13 +198,10 @@ func (c *Creator) Feed(ctx context.Context, pages uint64, tag, query string) (*f
 }
 
 func (c *Creator) Podcast(ctx context.Context, pages uint64, tag, query string) (*podcast.Podcast, error) {
-	var pubdate *time.Time
-	if parsed, err := time.Parse("2006-01-02T15:04:05", c.Updated); err == nil {
-		pubdate = &parsed
-	}
-	f := podcast.New(c.Name, c.PublicURL().String(), "", pubdate, nil)
+	f := podcast.New(c.Name, c.PublicURL().String(), "", nil, nil)
 	f.IBlock = "Yes"
 	f.TTL = int(24 * time.Hour / time.Second)
+	var setPubDate bool
 
 	for page := range pages {
 		posts, err := c.FetchPostPage(ctx, page, query)
@@ -223,6 +225,10 @@ func (c *Creator) Podcast(ctx context.Context, pages uint64, tag, query string) 
 			f.Items = append(f.Items, item)
 			if image != nil && f.Image == nil {
 				f.AddImage(image.ThumbURL().String())
+			}
+			if !setPubDate {
+				f.AddPubDate(item.PubDate)
+				setPubDate = true
 			}
 		}
 
