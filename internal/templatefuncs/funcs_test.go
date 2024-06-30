@@ -2,6 +2,8 @@ package templatefuncs
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestEscape(t *testing.T) {
@@ -18,9 +20,7 @@ func TestEscape(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := Escape(tt.args.s); got != tt.want {
-				t.Errorf("Escape() = %v, want %v", got, tt.want)
-			}
+			assert.Equal(t, tt.want, Escape(tt.args.s))
 		})
 	}
 }
@@ -41,9 +41,7 @@ func TestFormatHashtags(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := FormatHashtags(tt.args.s); got != tt.want {
-				t.Errorf("FormatHashtags() = %v, want %v", got, tt.want)
-			}
+			assert.Equal(t, tt.want, FormatHashtags(tt.args.s))
 		})
 	}
 }
@@ -65,9 +63,7 @@ func TestFormatTimestamps(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := FormatTimestamps(tt.args.id, tt.args.s); got != tt.want {
-				t.Errorf("FormatTimestamps() = %v, want %v", got, tt.want)
-			}
+			assert.Equal(t, tt.want, FormatTimestamps(tt.args.id, tt.args.s))
 		})
 	}
 }
@@ -88,9 +84,7 @@ func TestFormatUrls(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := FormatUrls(tt.args.s); got != tt.want {
-				t.Errorf("FormatUrls() = %v, want %v", got, tt.want)
-			}
+			assert.Equal(t, tt.want, FormatUrls(tt.args.s))
 		})
 	}
 }
@@ -108,9 +102,7 @@ func TestNl2br(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := Nl2br(tt.args.s); got != tt.want {
-				t.Errorf("Nl2br() = %v, want %v", got, tt.want)
-			}
+			assert.Equal(t, tt.want, Nl2br(tt.args.s))
 		})
 	}
 }
