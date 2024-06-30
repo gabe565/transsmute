@@ -26,9 +26,9 @@ type Post struct {
 	Title       string        `json:"title"`
 	Content     string        `json:"content"`
 	Embed       Embed         `json:"embed"`
-	Added       string        `json:"added"`
-	Published   string        `json:"published"`
-	Edited      string        `json:"edited"`
+	Added       Time          `json:"added"`
+	Published   Time          `json:"published"`
+	Edited      Time          `json:"edited"`
 	Tags        Tags          `json:"tags"`
 	File        *Attachment   `json:"file"`
 	Attachments []*Attachment `json:"attachments"`
@@ -42,15 +42,11 @@ func (p *Post) URL() *url.URL {
 
 func (p *Post) FeedItem() *feeds.Item {
 	item := &feeds.Item{
-		Id:    p.ID,
-		Link:  &feeds.Link{Href: p.URL().String()},
-		Title: p.Title,
-	}
-	if parsed, err := time.Parse("2006-01-02T15:04:05", p.Published); err == nil {
-		item.Created = parsed
-	}
-	if parsed, err := time.Parse("2006-01-02T15:04:05", p.Edited); err == nil {
-		item.Updated = parsed
+		Id:      p.ID,
+		Link:    &feeds.Link{Href: p.URL().String()},
+		Title:   p.Title,
+		Created: time.Time(p.Published),
+		Updated: time.Time(p.Edited),
 	}
 
 	var buf strings.Builder
@@ -93,11 +89,9 @@ func (p *Post) PodcastItem(ctx context.Context) (*podcast.Item, *Attachment, err
 			TypeFormatted:   audioInfo.MIMEType,
 		},
 	}
+	item.AddPubDate((*time.Time)(&p.Published))
 	if image != nil {
 		item.AddImage(image.ThumbURL().String())
-	}
-	if parsed, err := time.Parse("2006-01-02T15:04:05", p.Published); err == nil {
-		item.AddPubDate(&parsed)
 	}
 	return item, image, nil
 }

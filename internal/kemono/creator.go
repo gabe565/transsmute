@@ -23,8 +23,8 @@ type Creator struct {
 	ID      string `json:"id"`
 	Name    string `json:"name"`
 	Service string `json:"service"`
-	Indexed string `json:"indexed"`
-	Updated string `json:"updated"`
+	Indexed Time   `json:"indexed"`
+	Updated Time   `json:"updated"`
 }
 
 func (c *Creator) ImageURL() *url.URL {
