@@ -3,7 +3,7 @@ package server
 import (
 	"context"
 	"errors"
-	"log"
+	"log/slog"
 	"net/http"
 	"time"
 
@@ -56,13 +56,13 @@ func ListenAndServe(ctx context.Context, conf *config.Config) error {
 		ReadTimeout: 3 * time.Second,
 	}
 	group.Go(func() error {
-		log.Println("Listening on " + conf.ListenAddress)
+		slog.Info("Starting server", "address", conf.ListenAddress)
 		return server.ListenAndServe()
 	})
 
 	group.Go(func() error {
 		<-ctx.Done()
-		log.Println("Gracefully shutting down server")
+		slog.Info("Gracefully shutting down server")
 		shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 60*time.Second)
 		defer shutdownCancel()
 
