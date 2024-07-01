@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"log/slog"
 	"os"
 	"os/signal"
 	"syscall"
@@ -14,11 +15,14 @@ import (
 var version = "beta"
 
 func New() *cobra.Command {
+	version, commit := buildVersion(version)
+
 	cmd := &cobra.Command{
 		Short: "transsmute",
 		RunE:  run,
 
-		Version: buildVersion(version),
+		Version:     version,
+		Annotations: map[string]string{"commit": commit},
 	}
 	conf := config.New()
 	conf.RegisterFlags(cmd)
@@ -35,6 +39,8 @@ func run(cmd *cobra.Command, _ []string) error {
 	if err := conf.Load(cmd); err != nil {
 		return err
 	}
+
+	slog.Info("Transsmute", "version", version, "commit", cmd.Annotations["commit"])
 
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT)
 	defer cancel()

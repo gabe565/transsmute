@@ -2,7 +2,7 @@ package cmd
 
 import "runtime/debug"
 
-func buildVersion(version string) string {
+func buildVersion(version string) (string, string) {
 	var commit string
 	var modified bool
 	if info, ok := debug.ReadBuildInfo(); ok {
@@ -19,14 +19,13 @@ func buildVersion(version string) string {
 	}
 
 	if commit != "" {
-		version += " ("
-		if modified {
-			version += "*"
-		}
 		if len(commit) > 8 {
 			commit = commit[:8]
 		}
-		version += commit + ")"
+		if modified {
+			commit = "*" + commit
+		}
+		version += " (" + commit + ")"
 	}
-	return version
+	return version, commit
 }
