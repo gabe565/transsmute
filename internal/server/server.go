@@ -20,6 +20,7 @@ import (
 
 func NewServeMux(conf *config.Config) (*chi.Mux, error) {
 	r := chi.NewRouter()
+	r.Use(middleware.Heartbeat("/ping"))
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Heartbeat("/api/health"))
