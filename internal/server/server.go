@@ -32,7 +32,7 @@ func NewServeMux(conf *config.Config) (*chi.Mux, error) {
 
 	var err error
 	r.Group(func(r chi.Router) {
-		r.Use(feed.SetType)
+		r.Use(feed.DetectFormat)
 		err = errors.Join(
 			docker.Routes(r, conf.Docker),
 			youtube.Routes(r, conf.YouTube),

@@ -16,28 +16,28 @@ import (
 	"github.com/gorilla/feeds"
 )
 
-type OutputFormat uint8
+type Format uint8
 
 const (
-	OutputUnknown OutputFormat = iota
-	OutputAtom
-	OutputRSS
-	OutputJSON
+	FormatUnknown Format = iota
+	FormatAtom
+	FormatRSS
+	FormatJSON
 )
 
-func SetType(next http.Handler) http.Handler {
+func DetectFormat(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		ext := path.Ext(r.URL.Path)
-		var output OutputFormat
+		var output Format
 		switch ext {
 		case ".json":
-			output = OutputJSON
+			output = FormatJSON
 		case ".atom":
-			output = OutputAtom
+			output = FormatAtom
 		case ".rss":
-			output = OutputRSS
+			output = FormatRSS
 		}
-		if output != OutputUnknown && ext != "" {
+		if output != FormatUnknown && ext != "" {
 			if ctx := chi.RouteContext(r.Context()); len(ctx.URLParams.Values) != 0 {
 				last := len(ctx.URLParams.Values) - 1
 				ctx.URLParams.Values[last] = strings.TrimSuffix(ctx.URLParams.Values[last], ext)
@@ -50,14 +50,14 @@ func SetType(next http.Handler) http.Handler {
 }
 
 var (
-	ErrContextOutputFormat = errors.New("context output format is invalid")
-	ErrContextFeed         = errors.New("context feed is invalid")
+	ErrContextFormat = errors.New("context format is invalid")
+	ErrContextFeed   = errors.New("context feed is invalid")
 )
 
 func WriteFeed(w http.ResponseWriter, r *http.Request) error {
 	format, ok := FormatFromContext(r.Context())
 	if !ok {
-		return ErrContextOutputFormat
+		return ErrContextFormat
 	}
 
 	feed, ok := FromContext[any](r.Context())
@@ -71,7 +71,7 @@ func WriteFeed(w http.ResponseWriter, r *http.Request) error {
 	switch feed := feed.(type) {
 	case *feeds.Feed:
 		switch format {
-		case OutputAtom, OutputUnknown:
+		case FormatAtom, FormatUnknown:
 			atomFeed := (&feeds.Atom{Feed: feed}).AtomFeed()
 			if feed.Image != nil {
 				atomFeed.Icon = feed.Image.Url
@@ -80,7 +80,7 @@ func WriteFeed(w http.ResponseWriter, r *http.Request) error {
 				return err
 			}
 			w.Header().Set("Content-Type", "application/rss+xml")
-		case OutputJSON:
+		case FormatJSON:
 			jsonFeed := (&feeds.JSON{Feed: feed}).JSONFeed()
 			if feed.Image != nil {
 				jsonFeed.Icon = feed.Image.Url
@@ -91,7 +91,7 @@ func WriteFeed(w http.ResponseWriter, r *http.Request) error {
 				return err
 			}
 			w.Header().Set("Content-Type", "application/json")
-		case OutputRSS:
+		case FormatRSS:
 			if err := feed.WriteRss(bufWriter); err != nil {
 				return err
 			}

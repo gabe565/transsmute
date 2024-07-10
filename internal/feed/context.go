@@ -27,11 +27,11 @@ func FromContext[T Feed | any](ctx context.Context) (T, bool) {
 	return data, ok
 }
 
-func NewFormatContext(ctx context.Context, t OutputFormat) context.Context {
+func NewFormatContext(ctx context.Context, t Format) context.Context {
 	return context.WithValue(ctx, formatKey, t)
 }
 
-func FormatFromContext(ctx context.Context) (OutputFormat, bool) {
-	data, ok := ctx.Value(formatKey).(OutputFormat)
+func FormatFromContext(ctx context.Context) (Format, bool) {
+	data, ok := ctx.Value(formatKey).(Format)
 	return data, ok
 }
