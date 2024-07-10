@@ -27,7 +27,9 @@ func formatServiceName(name string) string {
 
 var ErrInvalidTimeType = errors.New("invalid time type")
 
-type Time time.Time
+type Time struct {
+	time.Time
+}
 
 func (d *Time) UnmarshalJSON(data []byte) error {
 	decoder := json.NewDecoder(bytes.NewReader(data))
@@ -45,7 +47,7 @@ func (d *Time) UnmarshalJSON(data []byte) error {
 			return err
 		}
 
-		*d = Time(parsed.UTC())
+		d.Time = parsed.UTC()
 		return nil
 	case json.Number:
 		val, err := t.Int64()
@@ -53,11 +55,10 @@ func (d *Time) UnmarshalJSON(data []byte) error {
 			return err
 		}
 
-		parsed := time.Unix(val, 0).UTC()
-		*d = Time(parsed)
+		d.Time = time.Unix(val, 0).UTC()
 		return nil
 	case nil:
-		*d = Time(time.Time{}.UTC())
+		d.Time = time.Time{}.UTC()
 		return nil
 	}
 	return ErrInvalidTimeType

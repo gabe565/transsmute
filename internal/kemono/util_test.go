@@ -40,7 +40,7 @@ func TestTime_UnmarshalJSON(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.wantErr(t, tt.d.UnmarshalJSON(tt.args.bytes))
-			assert.Equal(t, tt.want, time.Time(tt.d))
+			assert.Equal(t, tt.want, tt.d.Time)
 		})
 	}
 }

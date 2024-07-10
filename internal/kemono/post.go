@@ -11,7 +11,6 @@ import (
 	"path"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/eduncan911/podcast"
 	"github.com/gabe565/transsmute/internal/util"
@@ -45,8 +44,8 @@ func (p *Post) FeedItem() *feeds.Item {
 		Id:      p.ID,
 		Link:    &feeds.Link{Href: p.URL().String()},
 		Title:   p.Title,
-		Created: time.Time(p.Published),
-		Updated: time.Time(p.Edited),
+		Created: p.Published.Time,
+		Updated: p.Edited.Time,
 	}
 
 	var buf strings.Builder
@@ -89,7 +88,7 @@ func (p *Post) PodcastItem(ctx context.Context) (*podcast.Item, *Attachment, err
 			TypeFormatted:   audioInfo.MIMEType,
 		},
 	}
-	item.AddPubDate((*time.Time)(&p.Published))
+	item.AddPubDate(&p.Published.Time)
 	if image != nil {
 		item.AddImage(image.ThumbURL().String())
 	}
