@@ -215,7 +215,7 @@ func (c *Creator) Podcast(ctx context.Context, pages uint64, tag, query string) 
 				continue
 			}
 
-			item, image, err := post.PodcastItem(ctx)
+			item, image, published, edited, err := post.PodcastItem(ctx)
 			if err != nil {
 				if errors.Is(err, ErrNoAudio) {
 					continue
@@ -227,7 +227,11 @@ func (c *Creator) Podcast(ctx context.Context, pages uint64, tag, query string) 
 				f.AddImage(image.ThumbURL().String())
 			}
 			if !setPubDate {
-				f.AddPubDate(item.PubDate)
+				if edited.IsZero() {
+					f.AddPubDate(&published.Time)
+				} else {
+					f.AddPubDate(&edited.Time)
+				}
 				setPubDate = true
 			}
 		}

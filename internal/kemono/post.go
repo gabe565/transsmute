@@ -58,7 +58,7 @@ func (p *Post) FeedItem() *feeds.Item {
 
 var ErrNoAudio = errors.New("no audio file")
 
-func (p *Post) PodcastItem(ctx context.Context) (*podcast.Item, *Attachment, error) {
+func (p *Post) PodcastItem(ctx context.Context) (*podcast.Item, *Attachment, Time, Time, error) {
 	var audio, image *Attachment
 	for _, attachment := range p.Attachments {
 		switch {
@@ -69,12 +69,12 @@ func (p *Post) PodcastItem(ctx context.Context) (*podcast.Item, *Attachment, err
 		}
 	}
 	if audio == nil {
-		return nil, nil, ErrNoAudio
+		return nil, nil, Time{}, Time{}, ErrNoAudio
 	}
 
 	audioInfo, err := audio.Info(ctx)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, Time{}, Time{}, err
 	}
 
 	item := &podcast.Item{
@@ -92,7 +92,7 @@ func (p *Post) PodcastItem(ctx context.Context) (*podcast.Item, *Attachment, err
 	if image != nil {
 		item.AddImage(image.ThumbURL().String())
 	}
-	return item, image, nil
+	return item, image, p.Published, p.Edited, nil
 }
 
 type Embed struct {
