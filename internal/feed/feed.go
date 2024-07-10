@@ -16,6 +16,8 @@ import (
 	"github.com/gorilla/feeds"
 )
 
+//go:generate enumer -type Format -trimprefix Format -transform lower -text
+
 type Format uint8
 
 const (
@@ -28,15 +30,7 @@ const (
 func DetectFormat(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		ext := path.Ext(r.URL.Path)
-		var output Format
-		switch ext {
-		case ".json":
-			output = FormatJSON
-		case ".atom":
-			output = FormatAtom
-		case ".rss":
-			output = FormatRSS
-		}
+		output, _ := FormatString(strings.TrimPrefix(ext, "."))
 		if output != FormatUnknown && ext != "" {
 			if ctx := chi.RouteContext(r.Context()); len(ctx.URLParams.Values) != 0 {
 				last := len(ctx.URLParams.Values) - 1
