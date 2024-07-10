@@ -3,6 +3,8 @@ package feed
 import (
 	"bytes"
 	"context"
+	"crypto/sha1" //nolint:gosec
+	"encoding/hex"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -60,7 +62,8 @@ func WriteFeed(w http.ResponseWriter, r *http.Request) error {
 	feed := r.Context().Value(FeedKey)
 
 	var buf bytes.Buffer
-
+	hasher := sha1.New() //nolint:gosec
+	bufWriter := io.MultiWriter(&buf, hasher)
 	switch feed := feed.(type) {
 	case *feeds.Feed:
 		switch format {
@@ -69,7 +72,7 @@ func WriteFeed(w http.ResponseWriter, r *http.Request) error {
 			if feed.Image != nil {
 				atomFeed.Icon = feed.Image.Url
 			}
-			if err := feeds.WriteXML(atomFeed, &buf); err != nil {
+			if err := feeds.WriteXML(atomFeed, bufWriter); err != nil {
 				return err
 			}
 			w.Header().Set("Content-Type", "application/rss+xml")
@@ -78,14 +81,14 @@ func WriteFeed(w http.ResponseWriter, r *http.Request) error {
 			if feed.Image != nil {
 				jsonFeed.Icon = feed.Image.Url
 			}
-			e := json.NewEncoder(&buf)
+			e := json.NewEncoder(bufWriter)
 			e.SetIndent("", "  ")
 			if err := e.Encode(jsonFeed); err != nil {
 				return err
 			}
 			w.Header().Set("Content-Type", "application/json")
 		case OutputRSS:
-			if err := feed.WriteRss(&buf); err != nil {
+			if err := feed.WriteRss(bufWriter); err != nil {
 				return err
 			}
 			w.Header().Set("Content-Type", "application/rss+xml")
@@ -94,7 +97,7 @@ func WriteFeed(w http.ResponseWriter, r *http.Request) error {
 			return nil
 		}
 	case *podcast.Podcast:
-		if err := feed.Encode(&buf); err != nil {
+		if err := feed.Encode(bufWriter); err != nil {
 			return err
 		}
 		w.Header().Set("Content-Type", "application/xml")
@@ -102,9 +105,18 @@ func WriteFeed(w http.ResponseWriter, r *http.Request) error {
 		panic("invalid feed type")
 	}
 
+	etag := `"` + hex.EncodeToString(hasher.Sum(nil)) + `"`
+	w.Header().Set("Etag", etag)
+	if ifNoneMatch := r.Header.Get("If-None-Match"); ifNoneMatch != "" {
+		ifNoneMatch = strings.TrimPrefix(ifNoneMatch, "W/")
+		if etag == ifNoneMatch {
+			w.WriteHeader(http.StatusNotModified)
+			return nil
+		}
+	}
+
 	if _, err := io.Copy(w, &buf); err != nil {
 		return err
 	}
-
 	return nil
 }
