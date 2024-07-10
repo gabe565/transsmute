@@ -1,7 +1,6 @@
 package kemono
 
 import (
-	"context"
 	_ "embed"
 	"errors"
 	"html/template"
@@ -55,7 +54,7 @@ func postHandler(host string) http.HandlerFunc {
 			panic(err)
 		}
 
-		r = r.WithContext(context.WithValue(r.Context(), feed.FeedKey, f))
+		r = r.WithContext(feed.NewContext(r.Context(), f))
 		if err := feed.WriteFeed(w, r); err != nil {
 			panic(err)
 		}

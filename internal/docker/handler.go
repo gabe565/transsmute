@@ -1,7 +1,6 @@
 package docker
 
 import (
-	"context"
 	"errors"
 	"html"
 	"net/http"
@@ -68,8 +67,7 @@ func Handler(registries Registries) http.HandlerFunc {
 			f.Items = append(f.Items, item)
 		}
 
-		r = r.WithContext(context.WithValue(r.Context(), feed.FeedKey, f))
-
+		r = r.WithContext(feed.NewContext(r.Context(), f))
 		if err := feed.WriteFeed(w, r); err != nil {
 			panic(err)
 		}

@@ -2,10 +2,10 @@ package feed
 
 import (
 	"bytes"
-	"context"
 	"crypto/sha1" //nolint:gosec
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 	"path"
@@ -23,13 +23,6 @@ const (
 	OutputAtom
 	OutputRSS
 	OutputJSON
-)
-
-type CtxKey uint8
-
-const (
-	TypeKey CtxKey = iota
-	FeedKey
 )
 
 func SetType(next http.Handler) http.Handler {
@@ -50,16 +43,27 @@ func SetType(next http.Handler) http.Handler {
 				ctx.URLParams.Values[last] = strings.TrimSuffix(ctx.URLParams.Values[last], ext)
 			}
 		}
-		r = r.WithContext(context.WithValue(r.Context(), TypeKey, output))
-
+		r = r.WithContext(NewFormatContext(r.Context(), output))
 		next.ServeHTTP(w, r)
 	}
 	return http.HandlerFunc(fn)
 }
 
+var (
+	ErrContextOutputFormat = errors.New("context output format is invalid")
+	ErrContextFeed         = errors.New("context feed is invalid")
+)
+
 func WriteFeed(w http.ResponseWriter, r *http.Request) error {
-	format := r.Context().Value(TypeKey).(OutputFormat)
-	feed := r.Context().Value(FeedKey)
+	format, ok := FormatFromContext(r.Context())
+	if !ok {
+		return ErrContextOutputFormat
+	}
+
+	feed, ok := FromContext[any](r.Context())
+	if !ok {
+		return ErrContextFeed
+	}
 
 	var buf bytes.Buffer
 	hasher := sha1.New() //nolint:gosec

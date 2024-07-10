@@ -1,7 +1,6 @@
 package playlist
 
 import (
-	"context"
 	"errors"
 	"net/http"
 
@@ -27,8 +26,7 @@ func Handler(service *youtube.Service) http.HandlerFunc {
 			panic(err)
 		}
 
-		r = r.WithContext(context.WithValue(r.Context(), feed.FeedKey, f))
-
+		r = r.WithContext(feed.NewContext(r.Context(), f))
 		if err := feed.WriteFeed(w, r); err != nil {
 			panic(err)
 		}

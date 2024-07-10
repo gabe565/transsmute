@@ -1,7 +1,6 @@
 package kemono
 
 import (
-	"context"
 	"errors"
 	"net/http"
 	"strconv"
@@ -51,7 +50,7 @@ func podcastHandler(host string) http.HandlerFunc {
 			}
 		}
 
-		r = r.WithContext(context.WithValue(r.Context(), feed.FeedKey, f))
+		r = r.WithContext(feed.NewContext(r.Context(), f))
 		if err := feed.WriteFeed(w, r); err != nil {
 			panic(err)
 		}
