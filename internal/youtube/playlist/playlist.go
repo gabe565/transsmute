@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/url"
 	"slices"
+	"time"
 
 	"github.com/gorilla/feeds"
 	"google.golang.org/api/youtube/v3"
@@ -49,6 +50,11 @@ func (p Playlist) Feed(ctx context.Context) (*feeds.Feed, error) {
 		return nil, err
 	}
 
+	created, err := time.Parse(time.RFC3339, meta.PublishedAt)
+	if err != nil {
+		return nil, err
+	}
+
 	u := url.URL{
 		Scheme:   "https",
 		Host:     "youtube.com",
@@ -63,11 +69,16 @@ func (p Playlist) Feed(ctx context.Context) (*feeds.Feed, error) {
 		Author: &feeds.Author{
 			Name: meta.ChannelTitle,
 		},
+		Created: created,
 	}
 
 	feed.Items, err = p.FeedItems(ctx)
 	if err != nil {
 		return feed, err
+	}
+
+	if len(feed.Items) != 0 {
+		feed.Updated = feed.Items[0].Created
 	}
 
 	return feed, nil
