@@ -229,8 +229,10 @@ func (c *Creator) Podcast(ctx context.Context, pages uint64, tag, query string) 
 			if !setPubDate {
 				if edited.IsZero() {
 					f.AddPubDate(&published.Time)
+					f.AddLastBuildDate(&published.Time)
 				} else {
 					f.AddPubDate(&edited.Time)
+					f.AddLastBuildDate(&edited.Time)
 				}
 				setPubDate = true
 			}

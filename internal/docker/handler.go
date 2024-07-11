@@ -5,7 +5,6 @@ import (
 	"html"
 	"net/http"
 	"slices"
-	"time"
 
 	"github.com/gabe565/transsmute/internal/feed"
 	"github.com/go-chi/chi/v5"
@@ -50,11 +49,10 @@ func Handler(registries Registries) http.HandlerFunc {
 		slices.Reverse(tags)
 
 		f := &feeds.Feed{
-			Title:   "Docker - " + repo,
-			Link:    &feeds.Link{Href: reg.GetRepoURL(repo).String()},
-			Author:  owner,
-			Created: time.Now(),
-			Items:   make([]*feeds.Item, 0, len(tags)),
+			Title:  "Docker - " + repo,
+			Link:   &feeds.Link{Href: reg.GetRepoURL(repo).String()},
+			Author: owner,
+			Items:  make([]*feeds.Item, 0, len(tags)),
 		}
 
 		for _, tag := range tags {

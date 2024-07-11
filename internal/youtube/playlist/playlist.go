@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"net/url"
 	"slices"
-	"time"
 
 	"github.com/gorilla/feeds"
 	"google.golang.org/api/youtube/v3"
@@ -64,7 +63,6 @@ func (p Playlist) Feed(ctx context.Context) (*feeds.Feed, error) {
 		Author: &feeds.Author{
 			Name: meta.ChannelTitle,
 		},
-		Created: time.Now(),
 	}
 
 	feed.Items, err = p.FeedItems(ctx)
