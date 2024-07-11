@@ -180,12 +180,9 @@ func (c *Creator) Feed(ctx context.Context, pages uint64, tag, query string) (*f
 			}
 			item := post.FeedItem()
 			f.Items = append(f.Items, item)
-			if f.Updated.IsZero() {
-				if !item.Updated.IsZero() {
-					f.Updated = item.Updated
-				} else if !item.Created.IsZero() {
-					f.Updated = item.Created
-				}
+			if f.Created.IsZero() && f.Updated.IsZero() {
+				f.Created = item.Created
+				f.Updated = item.Updated
 			}
 		}
 
