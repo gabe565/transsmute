@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"path"
 	"strings"
+	"time"
 
 	"github.com/eduncan911/podcast"
 	"github.com/go-chi/chi/v5"
@@ -103,18 +104,7 @@ func WriteFeed(w http.ResponseWriter, r *http.Request) error {
 		panic("invalid feed type")
 	}
 
-	etag := `"` + hex.EncodeToString(hasher.Sum(nil)) + `"`
-	w.Header().Set("Etag", etag)
-	if ifNoneMatch := r.Header.Get("If-None-Match"); ifNoneMatch != "" {
-		ifNoneMatch = strings.TrimPrefix(ifNoneMatch, "W/")
-		if etag == ifNoneMatch {
-			w.WriteHeader(http.StatusNotModified)
-			return nil
-		}
-	}
-
-	if _, err := io.Copy(w, &buf); err != nil {
-		return err
-	}
+	w.Header().Set("ETag", `"`+hex.EncodeToString(hasher.Sum(nil))+`"`)
+	http.ServeContent(w, r, "", time.Time{}, bytes.NewReader(buf.Bytes()))
 	return nil
 }
