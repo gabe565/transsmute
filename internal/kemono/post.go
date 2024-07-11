@@ -153,10 +153,17 @@ type AttachmentInfo struct {
 	Size     int    `json:"size"`
 }
 
-func (a *Attachment) Info(ctx context.Context) (*AttachmentInfo, error) {
+func (a *Attachment) InfoAPIURL() *url.URL {
 	hash := strings.TrimSuffix(path.Base(a.Path), path.Ext(a.Path))
-	u := url.URL{Scheme: "https", Host: a.post.Creator.host, Path: path.Join("/api/v1/search_hash", hash)}
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u.String(), nil)
+	return &url.URL{
+		Scheme: "https",
+		Host:   a.post.Creator.host,
+		Path:   path.Join("/api/v1/search_hash", hash),
+	}
+}
+
+func (a *Attachment) Info(ctx context.Context) (*AttachmentInfo, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, a.InfoAPIURL().String(), nil)
 	if err != nil {
 		return nil, err
 	}
