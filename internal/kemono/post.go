@@ -62,9 +62,9 @@ func (p *Post) PodcastItem(ctx context.Context) (*podcast.Item, *Attachment, Tim
 	var audio, image *Attachment
 	for _, attachment := range p.Attachments {
 		switch {
-		case attachment.IsAudio() && audio == nil:
+		case audio == nil && attachment.IsAudio():
 			audio = attachment
-		case attachment.IsImage() && image == nil:
+		case image == nil && attachment.IsImage():
 			image = attachment
 		}
 	}
