@@ -63,6 +63,7 @@ func WriteFeed(w http.ResponseWriter, r *http.Request) error {
 	var buf bytes.Buffer
 	hasher := sha1.New() //nolint:gosec
 	bufWriter := io.MultiWriter(&buf, hasher)
+	var lastModified time.Time
 	switch feed := feed.(type) {
 	case *feeds.Feed:
 		switch format {
@@ -95,16 +96,22 @@ func WriteFeed(w http.ResponseWriter, r *http.Request) error {
 			http.Error(w, "400 invalid format", http.StatusBadRequest)
 			return nil
 		}
+		if !feed.Updated.IsZero() {
+			lastModified = feed.Updated
+		} else if !feed.Created.IsZero() {
+			lastModified = feed.Created
+		}
 	case *podcast.Podcast:
 		if err := feed.Encode(bufWriter); err != nil {
 			return err
 		}
 		w.Header().Set("Content-Type", "application/xml")
+		lastModified, _ = time.Parse(time.RFC1123, feed.PubDate)
 	default:
 		panic("invalid feed type")
 	}
 
 	w.Header().Set("ETag", `"`+hex.EncodeToString(hasher.Sum(nil))+`"`)
-	http.ServeContent(w, r, "", time.Time{}, bytes.NewReader(buf.Bytes()))
+	http.ServeContent(w, r, "", lastModified, bytes.NewReader(buf.Bytes()))
 	return nil
 }
