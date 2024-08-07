@@ -8,7 +8,7 @@ builds:
     ldflags:
       - -s
       - -w
-      - -X github.com/gabe565/transsmute/cmd.version={{ .Version }}
+      - -X main.version={{ .Version }}
     goarch:
       - amd64
       - arm
