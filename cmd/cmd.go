@@ -24,6 +24,8 @@ func New() *cobra.Command {
 
 		Version:     version,
 		Annotations: map[string]string{"commit": commit},
+
+		DisableAutoGenTag: true,
 	}
 	conf := config.New()
 	conf.RegisterFlags(cmd)

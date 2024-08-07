@@ -55,6 +55,8 @@ For more information, see
 | `--kemono-enabled`     | `TRANSSMUTE_KEMONO_ENABLED`     | Kemono API enabled.                                                          | `true`                           |
 | `--kemono-hosts`       | `TRANSSMUTE_KEMONO_HOSTS`       | Kemono API hosts, where the key is the URL prefix and the value is the host. | `kemono=kemono.su`               |
 
+Command-line help reference is also available in [docs](./docs/transsmute.md).
+
 ### DockerHub
 
 DockerHub credentials are only required to access private repositories.
