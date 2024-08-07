@@ -18,8 +18,9 @@ func New() *cobra.Command {
 	version, commit := buildVersion(version)
 
 	cmd := &cobra.Command{
-		Short: "transsmute",
-		RunE:  run,
+		Use:  "transsmute",
+		Long: "Build RSS feeds for websites that don't provide them.",
+		RunE: run,
 
 		Version:     version,
 		Annotations: map[string]string{"commit": commit},
