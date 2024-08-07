@@ -9,7 +9,7 @@ require (
 	github.com/go-chi/chi/v5 v5.0.12
 	github.com/google/go-containerregistry v0.19.1
 	github.com/google/go-github/v62 v62.0.0
-	github.com/gorilla/feeds v1.1.2
+	github.com/gorilla/feeds v1.2.0
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.9.0
