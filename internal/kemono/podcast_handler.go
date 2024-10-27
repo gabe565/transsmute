@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/gabe565/transsmute/internal/feed"
-	"github.com/gabe565/transsmute/internal/util"
+	"gabe565.com/transsmute/internal/feed"
+	"gabe565.com/transsmute/internal/util"
 	"github.com/go-chi/chi/v5"
 )
 

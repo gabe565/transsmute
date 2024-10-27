@@ -7,7 +7,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/gabe565/transsmute/internal/config"
+	"gabe565.com/transsmute/internal/config"
 	"github.com/google/go-containerregistry/pkg/authn"
 )
 

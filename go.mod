@@ -1,4 +1,4 @@
-module github.com/gabe565/transsmute
+module gabe565.com/transsmute
 
 go 1.22.6
 

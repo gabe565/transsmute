@@ -4,8 +4,8 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/gabe565/transsmute/internal/feed"
-	"github.com/gabe565/transsmute/internal/youtube/middleware"
+	"gabe565.com/transsmute/internal/feed"
+	"gabe565.com/transsmute/internal/youtube/middleware"
 	"github.com/go-chi/chi/v5"
 	"google.golang.org/api/youtube/v3"
 )

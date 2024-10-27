@@ -4,7 +4,7 @@ import (
 	_ "embed"
 	"html/template"
 
-	"github.com/gabe565/transsmute/internal/templatefuncs"
+	"gabe565.com/transsmute/internal/templatefuncs"
 )
 
 //go:embed description.html.gotmpl

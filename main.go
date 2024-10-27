@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/gabe565/transsmute/cmd"
+	"gabe565.com/transsmute/cmd"
 )
 
 var version = "beta"

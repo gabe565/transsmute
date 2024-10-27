@@ -12,8 +12,8 @@ import (
 	"strconv"
 	"strings"
 
+	"gabe565.com/transsmute/internal/util"
 	"github.com/eduncan911/podcast"
-	"github.com/gabe565/transsmute/internal/util"
 	"github.com/gorilla/feeds"
 )
 

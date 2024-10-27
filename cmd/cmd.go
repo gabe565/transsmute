@@ -7,8 +7,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/gabe565/transsmute/internal/config"
-	"github.com/gabe565/transsmute/internal/server"
+	"gabe565.com/transsmute/internal/config"
+	"gabe565.com/transsmute/internal/server"
 	"github.com/spf13/cobra"
 )
 

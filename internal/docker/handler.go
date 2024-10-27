@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"slices"
 
-	"github.com/gabe565/transsmute/internal/feed"
+	"gabe565.com/transsmute/internal/feed"
 	"github.com/go-chi/chi/v5"
 	"github.com/google/go-containerregistry/pkg/crane"
 	"github.com/google/go-containerregistry/pkg/v1/remote/transport"

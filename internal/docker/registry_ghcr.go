@@ -10,8 +10,8 @@ import (
 	"strings"
 	"time"
 
+	"gabe565.com/transsmute/internal/config"
 	"github.com/bradleyfalzon/ghinstallation/v2"
-	"github.com/gabe565/transsmute/internal/config"
 	"github.com/google/go-containerregistry/pkg/authn"
 	"github.com/google/go-github/v63/github"
 )

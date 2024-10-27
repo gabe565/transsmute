@@ -3,7 +3,7 @@ package kemono
 import (
 	"errors"
 
-	"github.com/gabe565/transsmute/internal/config"
+	"gabe565.com/transsmute/internal/config"
 	"github.com/go-chi/chi/v5"
 )
 
