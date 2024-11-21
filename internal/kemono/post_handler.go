@@ -9,7 +9,6 @@ import (
 
 	"gabe565.com/transsmute/internal/feed"
 	"gabe565.com/transsmute/internal/templatefuncs"
-	"gabe565.com/transsmute/internal/util"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -25,11 +24,9 @@ func postHandler(host string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		creator, err := GetCreatorByID(r.Context(), host, chi.URLParam(r, "service"), chi.URLParam(r, "id"))
 		if err != nil {
-			if errors.Is(err, ErrCreatorNotFound) {
-				http.Error(w, err.Error(), http.StatusNotFound)
-				return
-			} else if errors.Is(err, util.ErrUpstreamRequest) {
-				http.Error(w, err.Error(), http.StatusServiceUnavailable)
+			var respErr UpstreamResponseError
+			if errors.As(err, &respErr) {
+				http.Error(w, respErr.Body(), respErr.Response.StatusCode)
 				return
 			}
 			panic(err)
@@ -50,7 +47,11 @@ func postHandler(host string) http.HandlerFunc {
 
 		f, err := creator.Feed(r.Context(), pages, tag, query)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusServiceUnavailable)
+			var respErr UpstreamResponseError
+			if errors.As(err, &respErr) {
+				http.Error(w, respErr.Body(), respErr.Response.StatusCode)
+				return
+			}
 			panic(err)
 		}
 

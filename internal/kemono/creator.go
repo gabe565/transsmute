@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -13,7 +12,6 @@ import (
 	"strconv"
 	"time"
 
-	"gabe565.com/transsmute/internal/util"
 	"github.com/eduncan911/podcast"
 	"github.com/gorilla/feeds"
 )
@@ -87,7 +85,7 @@ func (c *Creator) FetchPostPage(ctx context.Context, page uint64, query string) 
 		_ = resp.Body.Close()
 	}()
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%w: %s", util.ErrUpstreamRequest, resp.Status)
+		return nil, NewUpstreamResponseError(resp)
 	}
 
 	var posts []*Post
@@ -118,8 +116,6 @@ func (c *Creator) FetchPostPage(ctx context.Context, page uint64, query string) 
 	return posts, nil
 }
 
-var ErrCreatorNotFound = errors.New("creator not found")
-
 func GetCreatorByID(ctx context.Context, host, service, id string) (*Creator, error) {
 	creator := &Creator{
 		host:    host,
@@ -141,12 +137,8 @@ func GetCreatorByID(ctx context.Context, host, service, id string) (*Creator, er
 		_ = resp.Body.Close()
 	}()
 
-	switch resp.StatusCode {
-	case http.StatusOK:
-	case http.StatusNotFound:
-		return nil, ErrCreatorNotFound
-	default:
-		return nil, fmt.Errorf("%w: %s", util.ErrUpstreamRequest, resp.Status)
+	if resp.StatusCode != http.StatusOK {
+		return nil, NewUpstreamResponseError(resp)
 	}
 
 	if err := json.NewDecoder(resp.Body).Decode(&creator); err != nil {

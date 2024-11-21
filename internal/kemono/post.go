@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -12,7 +11,6 @@ import (
 	"strconv"
 	"strings"
 
-	"gabe565.com/transsmute/internal/util"
 	"github.com/eduncan911/podcast"
 	"github.com/gorilla/feeds"
 )
@@ -177,7 +175,7 @@ func (a *Attachment) Info(ctx context.Context) (*AttachmentInfo, error) {
 		_ = resp.Body.Close()
 	}()
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%w: %s", util.ErrUpstreamRequest, resp.Status)
+		return nil, NewUpstreamResponseError(resp)
 	}
 
 	info := &AttachmentInfo{}
