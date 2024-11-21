@@ -118,13 +118,13 @@ func HTML(s string) template.HTML {
 	return template.HTML(s)
 }
 
-func stringReplaceOffset(s string, offset int, old, new string) (string, int) { //nolint:predeclared
-	idx := strings.Index(s[offset:], old)
+func stringReplaceOffset(s string, offset int, oldVal, newVal string) (string, int) {
+	idx := strings.Index(s[offset:], oldVal)
 	if idx == -1 {
 		return s, offset
 	}
 
 	offset += idx
-	s = s[:offset] + new + s[offset+len(old):]
-	return s, offset + len(new)
+	s = s[:offset] + newVal + s[offset+len(oldVal):]
+	return s, offset + len(newVal)
 }
