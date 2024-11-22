@@ -10,24 +10,31 @@ import (
 	"google.golang.org/api/youtube/v3"
 )
 
-func New(service *youtube.Service, id string) Channel {
+func New(service *youtube.Service, id, username string) Channel {
 	return Channel{
-		Service: service,
-		ID:      id,
+		Service:  service,
+		ID:       id,
+		Username: username,
 	}
 }
 
 type Channel struct {
-	Service *youtube.Service
-	ID      string
-	Iframe  bool
+	Service  *youtube.Service
+	Username string
+	ID       string
+	Iframe   bool
 }
 
 var ErrInvalid = errors.New("invalid channel")
 
 func (p Channel) Meta(ctx context.Context) (*youtube.Channel, error) {
 	call := p.Service.Channels.List([]string{"snippet", "contentDetails"})
-	call.Id(p.ID)
+	switch {
+	case p.Username != "":
+		call.ForUsername(p.Username)
+	case p.ID != "":
+		call.Id(p.ID)
+	}
 	call.Context(ctx)
 	resp, err := call.Do()
 	if err != nil {
