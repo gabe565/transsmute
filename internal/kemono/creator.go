@@ -12,6 +12,7 @@ import (
 	"reflect"
 	"slices"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/eduncan911/podcast"
@@ -152,8 +153,6 @@ func GetCreatorByID(ctx context.Context, host, service, id string) (*Creator, er
 var ErrCreatorNotFound = errors.New("creator not found")
 
 func GetCreatorByUsername(ctx context.Context, host, service, username string) (*Creator, error) {
-	creator := &Creator{host: host}
-
 	u := url.URL{Scheme: "https", Host: host, Path: "/api/v1/creators.txt"}
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u.String(), nil)
 	if err != nil {
@@ -183,12 +182,13 @@ func GetCreatorByUsername(ctx context.Context, host, service, username string) (
 	}
 
 	for decoder.More() {
+		creator := Creator{host: host}
 		if err := decoder.Decode(&creator); err != nil {
 			return nil, err
 		}
 
-		if creator.Name == username && creator.Service == service {
-			return creator, nil
+		if creator.Service == service && strings.EqualFold(creator.Name, username) {
+			return &creator, nil
 		}
 	}
 
