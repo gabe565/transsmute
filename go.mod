@@ -1,6 +1,6 @@
 module gabe565.com/transsmute
 
-go 1.22.6
+go 1.23.3
 
 require (
 	github.com/Masterminds/sprig/v3 v3.2.3
