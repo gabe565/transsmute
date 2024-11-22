@@ -75,8 +75,8 @@ type Ghcr struct {
 	expiresAt      time.Time
 }
 
-func (g Ghcr) Names() []string {
-	return []string{"ghcr.io"}
+func (g Ghcr) Match(repo string) bool {
+	return strings.HasPrefix(repo, "ghcr.io/")
 }
 
 func (g Ghcr) APIURL() *url.URL {

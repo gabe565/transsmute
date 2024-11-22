@@ -21,8 +21,8 @@ func NewDockerHub(conf config.DockerHub) (*DockerHub, error) {
 	}, nil
 }
 
-func (d DockerHub) Names() []string {
-	return []string{"", "docker.io"}
+func (d DockerHub) Match(repo string) bool {
+	return strings.HasPrefix(repo, "docker.io/") || strings.Count(repo, "/") <= 1
 }
 
 func (d DockerHub) APIURL() *url.URL {

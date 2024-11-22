@@ -5,14 +5,13 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
-	"strings"
 
 	"gabe565.com/transsmute/internal/config"
 	"github.com/google/go-containerregistry/pkg/authn"
 )
 
 type Registry interface {
-	Names() []string
+	Match(repo string) bool
 
 	APIURL() *url.URL
 	TokenURL(repo string) *url.URL
@@ -45,10 +44,8 @@ var ErrInvalidRegistry = errors.New("no registry for repo")
 
 func (r Registries) Find(repo string) (Registry, error) {
 	for _, registry := range r {
-		for _, name := range registry.Names() {
-			if strings.HasPrefix(repo, name) {
-				return registry, nil
-			}
+		if registry.Match(repo) {
+			return registry, nil
 		}
 	}
 	return nil, fmt.Errorf("%w: %s", ErrInvalidRegistry, repo)
