@@ -20,6 +20,8 @@ func New(opts ...cobrax.Option) *cobra.Command {
 		RunE: run,
 
 		DisableAutoGenTag: true,
+		SilenceErrors:     true,
+		SilenceUsage:      true,
 	}
 	conf := config.New()
 	conf.RegisterFlags(cmd)
