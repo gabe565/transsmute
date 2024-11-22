@@ -44,72 +44,69 @@ func DetectFormat(next http.Handler) http.Handler {
 	return http.HandlerFunc(fn)
 }
 
-var (
-	ErrContextFormat = errors.New("context format is invalid")
-	ErrContextFeed   = errors.New("context feed is invalid")
-)
+var ErrContextFormat = errors.New("context format is invalid")
 
-func WriteFeed(w http.ResponseWriter, r *http.Request) error {
+func WriteFeed(w http.ResponseWriter, r *http.Request, f *feeds.Feed) error {
 	format, ok := FormatFromContext(r.Context())
 	if !ok {
 		return ErrContextFormat
-	}
-
-	feed, ok := FromContext[any](r.Context())
-	if !ok {
-		return ErrContextFeed
 	}
 
 	var buf bytes.Buffer
 	hasher := sha1.New() //nolint:gosec
 	bufWriter := io.MultiWriter(&buf, hasher)
 	var lastModified time.Time
-	switch feed := feed.(type) {
-	case *feeds.Feed:
-		switch format {
-		case FormatAtom, FormatUnknown:
-			atomFeed := (&feeds.Atom{Feed: feed}).AtomFeed()
-			if feed.Image != nil {
-				atomFeed.Icon = feed.Image.Url
-			}
-			if err := feeds.WriteXML(atomFeed, bufWriter); err != nil {
-				return err
-			}
-			w.Header().Set("Content-Type", "application/rss+xml")
-		case FormatJSON:
-			jsonFeed := (&feeds.JSON{Feed: feed}).JSONFeed()
-			if feed.Image != nil {
-				jsonFeed.Icon = feed.Image.Url
-			}
-			e := json.NewEncoder(bufWriter)
-			e.SetIndent("", "  ")
-			if err := e.Encode(jsonFeed); err != nil {
-				return err
-			}
-			w.Header().Set("Content-Type", "application/json")
-		case FormatRSS:
-			if err := feed.WriteRss(bufWriter); err != nil {
-				return err
-			}
-			w.Header().Set("Content-Type", "application/rss+xml")
-		default:
-			http.Error(w, "400 invalid format", http.StatusBadRequest)
-			return nil
+	switch format {
+	case FormatAtom, FormatUnknown:
+		atomFeed := (&feeds.Atom{Feed: f}).AtomFeed()
+		if f.Image != nil {
+			atomFeed.Icon = f.Image.Url
 		}
-		if !feed.Updated.IsZero() {
-			lastModified = feed.Updated
-		} else if !feed.Created.IsZero() {
-			lastModified = feed.Created
-		}
-	case *podcast.Podcast:
-		if err := feed.Encode(bufWriter); err != nil {
+		if err := feeds.WriteXML(atomFeed, bufWriter); err != nil {
 			return err
 		}
-		w.Header().Set("Content-Type", "application/xml")
-		lastModified, _ = time.Parse(time.RFC1123, feed.PubDate)
+		w.Header().Set("Content-Type", "application/rss+xml")
+	case FormatJSON:
+		jsonFeed := (&feeds.JSON{Feed: f}).JSONFeed()
+		if f.Image != nil {
+			jsonFeed.Icon = f.Image.Url
+		}
+		e := json.NewEncoder(bufWriter)
+		e.SetIndent("", "  ")
+		if err := e.Encode(jsonFeed); err != nil {
+			return err
+		}
+		w.Header().Set("Content-Type", "application/json")
+	case FormatRSS:
+		if err := f.WriteRss(bufWriter); err != nil {
+			return err
+		}
+		w.Header().Set("Content-Type", "application/rss+xml")
 	default:
-		panic("invalid feed type")
+		http.Error(w, "400 invalid format", http.StatusBadRequest)
+		return nil
 	}
+	if !f.Updated.IsZero() {
+		lastModified = f.Updated
+	} else if !f.Created.IsZero() {
+		lastModified = f.Created
+	}
+
+	w.Header().Set("ETag", `"`+hex.EncodeToString(hasher.Sum(nil))+`"`)
+	http.ServeContent(w, r, "", lastModified, bytes.NewReader(buf.Bytes()))
+	return nil
+}
+
+func WritePodcast(w http.ResponseWriter, r *http.Request, f *podcast.Podcast) error {
+	var buf bytes.Buffer
+	hasher := sha1.New() //nolint:gosec
+	bufWriter := io.MultiWriter(&buf, hasher)
+	var lastModified time.Time
+	if err := f.Encode(bufWriter); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/xml")
+	lastModified, _ = time.Parse(time.RFC1123, f.PubDate)
 
 	w.Header().Set("ETag", `"`+hex.EncodeToString(hasher.Sum(nil))+`"`)
 	http.ServeContent(w, r, "", lastModified, bytes.NewReader(buf.Bytes()))

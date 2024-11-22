@@ -65,8 +65,7 @@ func Handler(registries Registries) http.HandlerFunc {
 			f.Items = append(f.Items, item)
 		}
 
-		r = r.WithContext(feed.NewContext(r.Context(), f))
-		if err := feed.WriteFeed(w, r); err != nil {
+		if err := feed.WriteFeed(w, r, f); err != nil {
 			panic(err)
 		}
 	}

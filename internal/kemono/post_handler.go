@@ -55,8 +55,7 @@ func postHandler(host string) http.HandlerFunc {
 			panic(err)
 		}
 
-		r = r.WithContext(feed.NewContext(r.Context(), f))
-		if err := feed.WriteFeed(w, r); err != nil {
+		if err := feed.WriteFeed(w, r, f); err != nil {
 			panic(err)
 		}
 	}

@@ -51,8 +51,7 @@ func podcastHandler(host string) http.HandlerFunc {
 			}
 		}
 
-		r = r.WithContext(feed.NewContext(r.Context(), f))
-		if err := feed.WriteFeed(w, r); err != nil {
+		if err := feed.WritePodcast(w, r, f); err != nil {
 			panic(err)
 		}
 	}
