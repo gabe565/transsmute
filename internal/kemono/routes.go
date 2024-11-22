@@ -16,8 +16,13 @@ func Routes(r chi.Router, conf config.Kemono) error {
 		}
 
 		for name, host := range conf.Hosts {
-			r.Get("/"+name+"/{service}/user/{id}", postHandler(host))
-			r.Get("/"+name+"/{service}/podcast/{id}", podcastHandler(host))
+			r.Get("/"+name+"/{service}/user/name/{name}", redirectHandler(host))
+			r.Get("/"+name+"/{service}/user/id/{id}", postHandler(host))
+			r.Get("/"+name+"/{service}/podcast/name/{name}", redirectHandler(host))
+			r.Get("/"+name+"/{service}/podcast/id/{id}", podcastHandler(host))
+
+			r.Get("/"+name+"/{service}/user/{id}", redirectHandler(host))    // Deprecated
+			r.Get("/"+name+"/{service}/podcast/{id}", redirectHandler(host)) // Deprecated
 		}
 	}
 	return nil

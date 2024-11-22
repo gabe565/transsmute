@@ -4,10 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
 	"path"
+	"reflect"
 	"slices"
 	"strconv"
 	"time"
@@ -145,6 +147,52 @@ func GetCreatorByID(ctx context.Context, host, service, id string) (*Creator, er
 		return nil, err
 	}
 	return creator, nil
+}
+
+var ErrCreatorNotFound = errors.New("creator not found")
+
+func GetCreatorByUsername(ctx context.Context, host, service, username string) (*Creator, error) {
+	creator := &Creator{host: host}
+
+	u := url.URL{Scheme: "https", Host: host, Path: "/api/v1/creators.txt"}
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		go func() {
+			_, _ = io.Copy(io.Discard, resp.Body)
+			_ = resp.Body.Close()
+		}()
+	}()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, NewUpstreamResponseError(resp)
+	}
+
+	decoder := json.NewDecoder(resp.Body)
+	if t, err := decoder.Token(); err != nil {
+		return nil, err
+	} else if t != json.Delim('[') {
+		return nil, &json.UnmarshalTypeError{Value: "object", Type: reflect.TypeOf([]Creator{})}
+	}
+
+	for decoder.More() {
+		if err := decoder.Decode(&creator); err != nil {
+			return nil, err
+		}
+
+		if creator.Name == username && creator.Service == service {
+			return creator, nil
+		}
+	}
+
+	return nil, fmt.Errorf("%w: %s", ErrCreatorNotFound, username)
 }
 
 func (c *Creator) Feed(ctx context.Context, pages uint64, tag, query string) (*feeds.Feed, error) {
