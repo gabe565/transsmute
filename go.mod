@@ -3,6 +3,7 @@ module gabe565.com/transsmute
 go 1.23.3
 
 require (
+	gabe565.com/utils v0.0.0-20241116061915-abe2278ecd5c
 	github.com/Masterminds/sprig/v3 v3.3.0
 	github.com/bradleyfalzon/ghinstallation/v2 v2.12.0
 	github.com/dmarkham/enumer v1.5.10

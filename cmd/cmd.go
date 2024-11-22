@@ -9,10 +9,11 @@ import (
 
 	"gabe565.com/transsmute/internal/config"
 	"gabe565.com/transsmute/internal/server"
+	"gabe565.com/utils/cobrax"
 	"github.com/spf13/cobra"
 )
 
-func New(opts ...Option) *cobra.Command {
+func New(opts ...cobrax.Option) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:  "transsmute",
 		Long: "Build RSS feeds for websites that don't provide them.",
@@ -41,7 +42,7 @@ func run(cmd *cobra.Command, _ []string) error {
 		return err
 	}
 
-	slog.Info("Transsmute", "version", cmd.Annotations["version"], "commit", cmd.Annotations["commit"])
+	slog.Info("Transsmute", "version", cobrax.GetVersion(cmd), "commit", cobrax.GetCommit(cmd))
 
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT)
 	defer cancel()
