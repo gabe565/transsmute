@@ -20,7 +20,7 @@ func Handler(registries Registries) http.HandlerFunc {
 		reg, err := registries.Find(repo)
 		if err != nil {
 			if errors.Is(err, ErrInvalidRegistry) {
-				http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+				http.Error(w, "404 "+ErrInvalidRegistry.Error(), http.StatusNotFound)
 				return
 			}
 			panic(err)
@@ -38,7 +38,11 @@ func Handler(registries Registries) http.HandlerFunc {
 		if err != nil {
 			var transportErr *transport.Error
 			if errors.As(err, &transportErr) {
-				http.Error(w, http.StatusText(transportErr.StatusCode), transportErr.StatusCode)
+				msg := http.StatusText(transportErr.StatusCode)
+				if len(transportErr.Errors) != 0 {
+					msg = transportErr.Errors[0].Message
+				}
+				http.Error(w, msg, transportErr.StatusCode)
 				if transportErr.StatusCode == http.StatusNotFound {
 					return
 				}
