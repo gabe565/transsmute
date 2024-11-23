@@ -9,6 +9,7 @@ import (
 	"slices"
 	"time"
 
+	"gabe565.com/transsmute/internal/youtube/middleware"
 	"github.com/gorilla/feeds"
 	"google.golang.org/api/youtube/v3"
 )
@@ -18,6 +19,7 @@ func New(service *youtube.Service, id string) Playlist {
 		Service: service,
 		ID:      id,
 		Embed:   true,
+		Limit:   middleware.DefaultLimit,
 	}
 }
 
@@ -25,6 +27,7 @@ type Playlist struct {
 	Service *youtube.Service
 	ID      string
 	Embed   bool
+	Limit   int
 }
 
 var ErrInvalid = errors.New("invalid playlist")
@@ -89,9 +92,8 @@ var ErrLimit = errors.New("exceeded fetch limit")
 
 func (p Playlist) Items(ctx context.Context) ([]*Item, error) {
 	call := p.Service.PlaylistItems.List([]string{"snippet", "status"})
-	call.MaxResults(50)
+	call.MaxResults(int64(min(p.Limit, 50)))
 	call.PlaylistId(p.ID)
-	limit := 200
 
 	var items []*Item
 	i := 0
@@ -104,7 +106,7 @@ func (p Playlist) Items(ctx context.Context) ([]*Item, error) {
 			items = append(items, (*Item)(item.Snippet))
 
 			i++
-			if i >= limit {
+			if i >= p.Limit {
 				return ErrLimit
 			}
 		}

@@ -20,6 +20,7 @@ func Handler(service *youtube.Service) http.HandlerFunc {
 
 		ch := New(service, channelID, username)
 		ch.Embed = middleware.EmbedFromContext(r.Context())
+		ch.Limit = middleware.LimitFromContext(r.Context())
 
 		f, err := ch.Feed(r.Context())
 		if err != nil {

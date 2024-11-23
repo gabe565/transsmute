@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 
+	"gabe565.com/transsmute/internal/youtube/middleware"
 	"gabe565.com/transsmute/internal/youtube/playlist"
 	"github.com/gorilla/feeds"
 	"google.golang.org/api/youtube/v3"
@@ -16,6 +17,7 @@ func New(service *youtube.Service, id, username string) Channel {
 		Username: username,
 		ID:       id,
 		Embed:    true,
+		Limit:    middleware.DefaultLimit,
 	}
 }
 
@@ -24,6 +26,7 @@ type Channel struct {
 	Username string
 	ID       string
 	Embed    bool
+	Limit    int
 }
 
 var ErrInvalid = errors.New("invalid channel")
@@ -56,6 +59,7 @@ func (c Channel) Feed(ctx context.Context) (*feeds.Feed, error) {
 	}
 
 	p := playlist.New(c.Service, meta.ContentDetails.RelatedPlaylists.Uploads)
+	p.Limit = c.Limit
 	p.Embed = c.Embed
 	return p.Feed(ctx)
 }

@@ -16,6 +16,7 @@ func Handler(service *youtube.Service) http.HandlerFunc {
 
 		plist := New(service, identifier)
 		plist.Embed = middleware.EmbedFromContext(r.Context())
+		plist.Limit = middleware.LimitFromContext(r.Context())
 
 		f, err := plist.Feed(r.Context())
 		if err != nil {
