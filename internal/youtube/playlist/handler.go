@@ -13,9 +13,9 @@ import (
 func Handler(service *youtube.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		identifier := chi.URLParam(r, "id")
-		iframe := r.Context().Value(middleware.IframeKey).(bool)
+
 		plist := New(service, identifier)
-		plist.Iframe = iframe
+		plist.Embed = middleware.EmbedFromContext(r.Context())
 
 		f, err := plist.Feed(r.Context())
 		if err != nil {

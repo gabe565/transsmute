@@ -24,7 +24,7 @@ func Routes(r chi.Router, conf config.YouTube) error {
 		}
 
 		r.Group(func(r chi.Router) {
-			r.Use(middleware.IframeParam)
+			r.Use(middleware.EmbedParam)
 			r.Get("/youtube/channel/id/{id}", channel.Handler(service))
 			r.Get("/youtube/channel/username/{username}", channel.RedirectHandler(service))
 			r.Get("/youtube/channel/handle/{handle}", channel.RedirectHandler(service))

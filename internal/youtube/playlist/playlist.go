@@ -17,13 +17,14 @@ func New(service *youtube.Service, id string) Playlist {
 	return Playlist{
 		Service: service,
 		ID:      id,
+		Embed:   true,
 	}
 }
 
 type Playlist struct {
 	Service *youtube.Service
 	ID      string
-	Iframe  bool
+	Embed   bool
 }
 
 var ErrInvalid = errors.New("invalid playlist")
@@ -131,7 +132,7 @@ func (p Playlist) FeedItems(ctx context.Context) ([]*feeds.Item, error) {
 	feedItems := make([]*feeds.Item, 0, len(items))
 
 	for _, item := range items {
-		feedItem, err := item.FeedItem(p.Iframe)
+		feedItem, err := item.FeedItem(p.Embed)
 		if err != nil {
 			return feedItems, err
 		}
