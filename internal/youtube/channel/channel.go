@@ -27,13 +27,13 @@ type Channel struct {
 
 var ErrInvalid = errors.New("invalid channel")
 
-func (p Channel) Meta(ctx context.Context) (*youtube.Channel, error) {
-	call := p.Service.Channels.List([]string{"snippet", "contentDetails"})
+func (c Channel) Meta(ctx context.Context) (*youtube.Channel, error) {
+	call := c.Service.Channels.List([]string{"snippet", "contentDetails"})
 	switch {
-	case p.Username != "":
-		call.ForUsername(p.Username)
-	case p.ID != "":
-		call.Id(p.ID)
+	case c.Username != "":
+		call.ForUsername(c.Username)
+	case c.ID != "":
+		call.Id(c.ID)
 	}
 	call.Context(ctx)
 	resp, err := call.Do()
@@ -42,19 +42,19 @@ func (p Channel) Meta(ctx context.Context) (*youtube.Channel, error) {
 	}
 
 	if len(resp.Items) < 1 {
-		return nil, fmt.Errorf("%s: %w", p.ID, ErrInvalid)
+		return nil, fmt.Errorf("%s: %w", c.ID, ErrInvalid)
 	}
 
 	return resp.Items[0], nil
 }
 
-func (p Channel) Feed(ctx context.Context) (*feeds.Feed, error) {
-	meta, err := p.Meta(ctx)
+func (c Channel) Feed(ctx context.Context) (*feeds.Feed, error) {
+	meta, err := c.Meta(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	pl := playlist.New(p.Service, meta.ContentDetails.RelatedPlaylists.Uploads)
-	pl.Iframe = p.Iframe
-	return pl.Feed(ctx)
+	p := playlist.New(c.Service, meta.ContentDetails.RelatedPlaylists.Uploads)
+	p.Iframe = c.Iframe
+	return p.Feed(ctx)
 }
