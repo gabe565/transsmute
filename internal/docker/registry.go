@@ -18,7 +18,6 @@ type Registry interface {
 
 	Authenticator(ctx context.Context, repo string) (authn.Authenticator, error)
 
-	NormalizeRepo(repo string) string
 	GetRepoURL(repo string) *url.URL
 	GetTagURL(repo, tag string) *url.URL
 	GetOwner(repo string) string

@@ -48,20 +48,12 @@ func (d DockerHub) Authenticator(_ context.Context, _ string) (authn.Authenticat
 	}, nil
 }
 
-func (d DockerHub) NormalizeRepo(repo string) string {
-	repo = strings.TrimPrefix(repo, "docker.io/")
-	if !strings.Contains(repo, "/") {
-		return "library/" + repo
-	}
-	return repo
-}
-
 func (d DockerHub) GetRepoURL(repo string) *url.URL {
 	u := &url.URL{Scheme: "https", Host: "hub.docker.com"}
-	if strings.HasPrefix(repo, "library/") {
-		u.Path = path.Join(u.Path, "_", strings.TrimPrefix(repo, "library/"))
-	} else {
+	if strings.ContainsRune(repo, '/') {
 		u.Path = path.Join(u.Path, "r", repo)
+	} else {
+		u.Path = path.Join(u.Path, "_", repo)
 	}
 	return u
 }
@@ -76,5 +68,8 @@ func (d DockerHub) GetTagURL(repo, tag string) *url.URL {
 }
 
 func (d DockerHub) GetOwner(repo string) string {
+	if !strings.ContainsRune(repo, '/') {
+		return "library"
+	}
 	return strings.SplitN(repo, "/", 2)[0]
 }

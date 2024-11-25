@@ -106,10 +106,6 @@ func (g Ghcr) Authenticator(ctx context.Context, _ string) (authn.Authenticator,
 	}, nil
 }
 
-func (g Ghcr) NormalizeRepo(repo string) string {
-	return repo
-}
-
 func (g Ghcr) GetRepoURL(repo string) *url.URL {
 	return &url.URL{Scheme: "https", Host: "ghcr.io", Path: strings.TrimPrefix(repo, "ghcr.io/")}
 }

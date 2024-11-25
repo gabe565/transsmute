@@ -27,9 +27,6 @@ func Handler(registries Registries) http.HandlerFunc {
 			panic(err)
 		}
 
-		repo = reg.NormalizeRepo(repo)
-		owner := &feeds.Author{Name: reg.GetOwner(repo)}
-
 		auth, err := reg.Authenticator(r.Context(), repo)
 		if err != nil {
 			panic(err)
@@ -60,7 +57,7 @@ func Handler(registries Registries) http.HandlerFunc {
 		f := &feeds.Feed{
 			Title:  "Docker - " + repo,
 			Link:   &feeds.Link{Href: reg.GetRepoURL(repo).String()},
-			Author: owner,
+			Author: &feeds.Author{Name: reg.GetOwner(repo)},
 			Items:  make([]*feeds.Item, 0, len(tags)),
 		}
 
