@@ -9,6 +9,7 @@ import (
 	"gabe565.com/transsmute/internal/feed"
 	"github.com/go-chi/chi/v5"
 	"github.com/google/go-containerregistry/pkg/crane"
+	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/google/go-containerregistry/pkg/v1/remote/transport"
 	"github.com/gorilla/feeds"
 )
@@ -37,7 +38,8 @@ func Handler(registries Registries) http.HandlerFunc {
 		tags, err := crane.ListTags(repo, crane.WithContext(r.Context()), crane.WithAuth(auth))
 		if err != nil {
 			var transportErr *transport.Error
-			if errors.As(err, &transportErr) {
+			switch {
+			case errors.As(err, &transportErr):
 				msg := http.StatusText(transportErr.StatusCode)
 				if len(transportErr.Errors) != 0 {
 					msg = transportErr.Errors[0].Message
@@ -46,6 +48,9 @@ func Handler(registries Registries) http.HandlerFunc {
 				if transportErr.StatusCode == http.StatusNotFound {
 					return
 				}
+			case errors.Is(err, &name.ErrBadName{}):
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
 			}
 			panic(err)
 		}
