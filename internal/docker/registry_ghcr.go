@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"path"
 	"strconv"
 	"strings"
 	"time"
@@ -77,20 +76,6 @@ type Ghcr struct {
 
 func (g Ghcr) Match(repo string) bool {
 	return strings.HasPrefix(repo, "ghcr.io/")
-}
-
-func (g Ghcr) APIURL() *url.URL {
-	return &url.URL{Scheme: "https", Host: "ghcr.io"}
-}
-
-func (g Ghcr) TokenURL(repo string) *url.URL {
-	u := g.APIURL()
-	u.Path = path.Join(u.Path, "token")
-	query := u.Query()
-	query.Set("service", "ghcr.io")
-	query.Set("scope", "repository:"+repo+":pull")
-	u.RawQuery = query.Encode()
-	return u
 }
 
 func (g Ghcr) Authenticator(ctx context.Context, _ string) (authn.Authenticator, error) {

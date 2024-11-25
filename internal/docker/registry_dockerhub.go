@@ -25,22 +25,6 @@ func (d DockerHub) Match(repo string) bool {
 	return strings.HasPrefix(repo, "docker.io/") || strings.Count(repo, "/") <= 1
 }
 
-func (d DockerHub) APIURL() *url.URL {
-	return &url.URL{Scheme: "https", Host: "registry.hub.docker.com"}
-}
-
-func (d DockerHub) TokenURL(repo string) *url.URL {
-	return &url.URL{
-		Scheme: "https",
-		Host:   "auth.docker.io",
-		Path:   "/token",
-		RawQuery: url.Values{
-			"service": []string{"registry.hub.docker.com"},
-			"scope":   []string{"repository:" + repo + ":pull"},
-		}.Encode(),
-	}
-}
-
 func (d DockerHub) Authenticator(_ context.Context, _ string) (authn.Authenticator, error) {
 	return &authn.Basic{
 		Username: d.username,

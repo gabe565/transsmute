@@ -13,9 +13,6 @@ import (
 type Registry interface {
 	Match(repo string) bool
 
-	APIURL() *url.URL
-	TokenURL(repo string) *url.URL
-
 	Authenticator(ctx context.Context, repo string) (authn.Authenticator, error)
 
 	GetRepoURL(repo string) *url.URL
