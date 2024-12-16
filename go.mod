@@ -8,7 +8,7 @@ require (
 	github.com/bradleyfalzon/ghinstallation/v2 v2.12.0
 	github.com/dmarkham/enumer v1.5.10
 	github.com/eduncan911/podcast v1.4.2
-	github.com/go-chi/chi/v5 v5.1.0
+	github.com/go-chi/chi/v5 v5.2.0
 	github.com/google/go-containerregistry v0.20.2
 	github.com/google/go-github/v66 v66.0.0
 	github.com/gorilla/feeds v1.2.0
