@@ -17,7 +17,7 @@ import (
 	"github.com/gorilla/feeds"
 )
 
-//go:generate go run github.com/dmarkham/enumer -type Format -trimprefix Format -transform lower
+//go:generate go tool enumer -type Format -trimprefix Format -transform lower
 
 type Format uint8
 
