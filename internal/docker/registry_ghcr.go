@@ -106,7 +106,7 @@ func (g Ghcr) GetOwner(repo string) string {
 func (g *Ghcr) RefreshAppToken(ctx context.Context) error {
 	token, _, err := g.client.Apps.CreateInstallationToken(ctx, g.installationID, &github.InstallationTokenOptions{
 		Permissions: &github.InstallationPermissions{
-			Packages: github.String("read"),
+			Packages: github.Ptr("read"),
 		},
 	})
 	if err != nil {
