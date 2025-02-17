@@ -12,7 +12,7 @@ import (
 	"gabe565.com/transsmute/internal/config"
 	"github.com/bradleyfalzon/ghinstallation/v2"
 	"github.com/google/go-containerregistry/pkg/authn"
-	"github.com/google/go-github/v66/github"
+	"github.com/google/go-github/v69/github"
 )
 
 type AuthMethod uint8
@@ -106,7 +106,7 @@ func (g Ghcr) GetOwner(repo string) string {
 func (g *Ghcr) RefreshAppToken(ctx context.Context) error {
 	token, _, err := g.client.Apps.CreateInstallationToken(ctx, g.installationID, &github.InstallationTokenOptions{
 		Permissions: &github.InstallationPermissions{
-			Packages: github.String("read"),
+			Packages: github.Ptr("read"),
 		},
 	})
 	if err != nil {
