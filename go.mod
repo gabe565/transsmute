@@ -17,7 +17,7 @@ require (
 	github.com/stretchr/testify v1.10.0
 	golang.org/x/sync v0.11.0
 	golang.org/x/text v0.22.0
-	google.golang.org/api v0.209.0
+	google.golang.org/api v0.221.0
 	mvdan.cc/xurls/v2 v2.6.0
 )
 
