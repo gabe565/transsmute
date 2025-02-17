@@ -7,8 +7,8 @@ cloud.google.com/go/compute/metadata v0.6.0 h1:A6hENjEsCDtC1k8byVsgwvVcioamEHvZ4
 cloud.google.com/go/compute/metadata v0.6.0/go.mod h1:FjyFAW1MW0C203CEOMDTu3Dk1FlqW3Rga40jzHL4hfg=
 dario.cat/mergo v1.0.1 h1:Ra4+bf83h2ztPIQYNP99R6m+Y7KfnARDfID+a+vLl4s=
 dario.cat/mergo v1.0.1/go.mod h1:uNxQE+84aUszobStD9th8a29P2fMDhsBdgRYvZOxGmk=
-gabe565.com/utils v0.0.0-20241116061915-abe2278ecd5c h1:1rmGsS/Sbm85ZELLkfOtXJ99v3YHdmqvkhMDLteLUug=
-gabe565.com/utils v0.0.0-20241116061915-abe2278ecd5c/go.mod h1:1WioSVukwGZYG4Q0LJBnRhgYyVljmW2Izl+RW36ALUc=
+gabe565.com/utils v0.0.0-20250217005250-f306fa7738cd h1:yIF1LBavwbZnIl7b4Gc/RFALrwrCa2CrE6Zv6cSOqpQ=
+gabe565.com/utils v0.0.0-20250217005250-f306fa7738cd/go.mod h1:8IpokjLTL2meO6pWztDzfN95olyT6P8ip3HjKu/ri9o=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/Masterminds/goutils v1.1.1 h1:5nUrii3FMTL5diU80unEVvNevw1nH4+ZV4DSLVJLSYI=
 github.com/Masterminds/goutils v1.1.1/go.mod h1:8cTjp+g8YejhMuvIA5y2vz3BpJxksy863GQaJW2MFNU=
