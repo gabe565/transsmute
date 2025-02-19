@@ -21,11 +21,10 @@ func podcastHandler(host string) http.HandlerFunc {
 			panic(err)
 		}
 
-		pagesRaw := r.URL.Query().Get("pages")
 		pages := uint64(1)
-		if pagesRaw != "" {
+		if v := r.URL.Query().Get("pages"); v != "" {
 			var err error
-			if pages, err = strconv.ParseUint(pagesRaw, 10, 64); err != nil || pages == 0 {
+			if pages, err = strconv.ParseUint(v, 10, 64); err != nil || pages == 0 {
 				http.Error(w, "pages must be a positive integer", http.StatusBadRequest)
 				return
 			}
