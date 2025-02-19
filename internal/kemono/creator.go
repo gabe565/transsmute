@@ -153,6 +153,9 @@ func GetCreatorByID(ctx context.Context, host, service, id string) (*Creator, er
 var ErrCreatorNotFound = errors.New("creator not found")
 
 func GetCreatorByUsername(ctx context.Context, host, service, username string) (*Creator, error) {
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
 	u := url.URL{Scheme: "https", Host: host, Path: "/api/v1/creators.txt"}
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u.String(), nil)
 	if err != nil {
@@ -164,10 +167,9 @@ func GetCreatorByUsername(ctx context.Context, host, service, username string) (
 		return nil, err
 	}
 	defer func() {
-		go func() {
-			_, _ = io.Copy(io.Discard, resp.Body)
-			_ = resp.Body.Close()
-		}()
+		cancel()
+		_, _ = io.Copy(io.Discard, resp.Body)
+		_ = resp.Body.Close()
 	}()
 
 	if resp.StatusCode != http.StatusOK {
