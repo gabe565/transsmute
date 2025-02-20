@@ -53,15 +53,20 @@ func (c *Creator) TagURL(t string) *url.URL {
 }
 
 func (c *Creator) PostAPIURL(page uint64, query string) *url.URL {
-	return &url.URL{
+	u := &url.URL{
 		Scheme: "https",
 		Host:   c.host,
 		Path:   path.Join("api", "v1", c.Service, "user", c.ID),
-		RawQuery: url.Values{
-			"o": []string{strconv.FormatUint(page*50, 10)},
-			"q": []string{query},
-		}.Encode(),
 	}
+	q := u.Query()
+	if page != 0 {
+		q.Set("o", strconv.FormatUint(page*50, 10))
+	}
+	if query != "" {
+		q.Set("q", query)
+	}
+	u.RawQuery = q.Encode()
+	return u
 }
 
 func (c *Creator) ProfileAPIURL() *url.URL {
