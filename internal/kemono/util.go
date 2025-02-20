@@ -67,6 +67,12 @@ func (d *Time) UnmarshalJSON(data []byte) error {
 type Tags []string
 
 func (t *Tags) UnmarshalJSON(bytes []byte) error {
+	var list []string
+	if err := json.Unmarshal(bytes, &list); err == nil {
+		*t = list
+		return nil
+	}
+
 	var val string
 	if err := json.Unmarshal(bytes, &val); err != nil {
 		return err
