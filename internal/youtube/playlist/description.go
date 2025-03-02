@@ -22,7 +22,7 @@ func (i *Item) TemplateDescription(embed bool) g.Group {
 					html.Width("640"),
 					html.Height("390"),
 					g.Attr("frameborder", "0"),
-					html.Src("http://www.youtube.com/embed/"+i.ResourceId.VideoId),
+					html.Src("https://youtube.com/embed/"+i.ResourceId.VideoId),
 				),
 			)
 		}),
