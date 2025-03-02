@@ -2,27 +2,17 @@ package playlist
 
 import (
 	"net/url"
-	"strings"
 	"time"
 
-	"gabe565.com/transsmute/internal/youtube/tmpl"
 	"github.com/gorilla/feeds"
 	"google.golang.org/api/youtube/v3"
 )
 
 type Item youtube.PlaylistItemSnippet
 
-func (i Item) FeedItem(embed bool) (*feeds.Item, error) {
+func (i *Item) FeedItem(embed bool) (*feeds.Item, error) {
 	published, err := time.Parse(time.RFC3339, i.PublishedAt)
 	if err != nil {
-		return nil, err
-	}
-
-	var description strings.Builder
-	if err := tmpl.DescriptionTmpl.Execute(&description, map[string]any{
-		"Item":  i,
-		"Embed": embed,
-	}); err != nil {
 		return nil, err
 	}
 
@@ -34,11 +24,11 @@ func (i Item) FeedItem(embed bool) (*feeds.Item, error) {
 	}
 
 	return &feeds.Item{
-		Title:       i.Title,
-		Link:        &feeds.Link{Href: u.String()},
-		Author:      &feeds.Author{Name: i.ChannelTitle},
-		Description: description.String(),
-		Id:          i.ResourceId.VideoId,
-		Created:     published,
+		Title:   i.Title,
+		Link:    &feeds.Link{Href: u.String()},
+		Author:  &feeds.Author{Name: i.ChannelTitle},
+		Id:      i.ResourceId.VideoId,
+		Created: published,
+		Content: i.TemplateDescription(embed).String(),
 	}, nil
 }

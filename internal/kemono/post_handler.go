@@ -1,23 +1,12 @@
 package kemono
 
 import (
-	_ "embed"
 	"errors"
-	"html/template"
 	"net/http"
 	"strconv"
 
 	"gabe565.com/transsmute/internal/feed"
-	"gabe565.com/transsmute/internal/templatefuncs"
 	"github.com/go-chi/chi/v5"
-)
-
-//go:embed post.html.gotmpl
-var postTmplStr string
-
-//nolint:gochecknoglobals
-var postTmpl = template.Must(
-	template.New("").Funcs(templatefuncs.FuncMap()).Parse(postTmplStr),
 )
 
 func postHandler(host string) http.HandlerFunc {

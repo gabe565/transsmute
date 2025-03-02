@@ -1,4 +1,4 @@
-package templatefuncs
+package html
 
 import (
 	"testing"
@@ -68,7 +68,7 @@ func TestFormatTimestamps(t *testing.T) {
 	}
 }
 
-func TestFormatUrls(t *testing.T) {
+func TestFormatURLs(t *testing.T) {
 	type args struct {
 		s string
 	}
@@ -84,12 +84,12 @@ func TestFormatUrls(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.want, FormatUrls(tt.args.s))
+			assert.Equal(t, tt.want, FormatURLs(tt.args.s))
 		})
 	}
 }
 
-func TestNl2br(t *testing.T) {
+func TestNL2BR(t *testing.T) {
 	type args struct {
 		s string
 	}
@@ -102,7 +102,7 @@ func TestNl2br(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.want, Nl2br(tt.args.s))
+			assert.Equal(t, tt.want, NL2BR(tt.args.s))
 		})
 	}
 }

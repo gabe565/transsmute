@@ -1,7 +1,6 @@
-package templatefuncs
+package html
 
 import (
-	"html"
 	"html/template"
 	"net/mail"
 	"net/url"
@@ -18,12 +17,11 @@ func Escape(s string) string {
 	return template.HTMLEscapeString(s)
 }
 
-func Nl2br(s string) string {
-	s = strings.ReplaceAll(s, "\n", "<br>\n")
-	return s
+func NL2BR(s string) string {
+	return strings.ReplaceAll(s, "\n", "<br>\n")
 }
 
-func FormatUrls(s string) string {
+func FormatURLs(s string) string {
 	urls := xurls.Relaxed().FindAllString(s, -1)
 	if len(urls) == 0 {
 		return s
@@ -43,7 +41,7 @@ func FormatUrls(s string) string {
 			u.Scheme = "https"
 		}
 
-		newVal := `<a href="` + u.String() + `">` + html.EscapeString(match) + `</a>`
+		newVal := `<a href="` + u.String() + `">` + template.HTMLEscapeString(match) + `</a>`
 		s, offset = stringReplaceOffset(s, offset, match, newVal)
 	}
 
@@ -68,7 +66,7 @@ func FormatHashtags(s string) string {
 			Host:   "youtube.com",
 			Path:   path.Join("hashtag", slug),
 		}
-		newVal := html.EscapeString(prefix) + `<a href="` + u.String() + `">#` + html.EscapeString(slug) + `</a>`
+		newVal := template.HTMLEscapeString(prefix) + `<a href="` + u.String() + `">#` + template.HTMLEscapeString(slug) + `</a>`
 		s, offset = stringReplaceOffset(s, offset, match[0], newVal)
 	}
 
@@ -106,16 +104,11 @@ func FormatTimestamps(id, s string) string {
 				"t": []string{strconv.Itoa(int(d.Seconds())) + "s"},
 			}.Encode(),
 		}
-		newVal := `<a href="` + u.String() + `">` + html.EscapeString(match) + `</a>`
+		newVal := `<a href="` + u.String() + `">` + template.HTMLEscapeString(match) + `</a>`
 		s, offset = stringReplaceOffset(s, offset, match, newVal)
 	}
 
 	return s
-}
-
-//nolint:gosec
-func HTML(s string) template.HTML {
-	return template.HTML(s)
 }
 
 func stringReplaceOffset(s string, offset int, oldVal, newVal string) (string, int) {

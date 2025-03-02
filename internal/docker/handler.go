@@ -2,7 +2,6 @@ package docker
 
 import (
 	"errors"
-	"html"
 	"net/http"
 	"slices"
 
@@ -12,6 +11,8 @@ import (
 	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/google/go-containerregistry/pkg/v1/remote/transport"
 	"github.com/gorilla/feeds"
+	g "maragu.dev/gomponents"
+	"maragu.dev/gomponents/html"
 )
 
 func Handler(registries Registries) http.HandlerFunc {
@@ -63,10 +64,13 @@ func Handler(registries Registries) http.HandlerFunc {
 
 		for _, tag := range tags {
 			item := &feeds.Item{
-				Title:       tag,
-				Link:        &feeds.Link{Href: reg.GetTagURL(repo, tag).String()},
-				Id:          tag,
-				Description: "<p>Docker tag: <code>" + html.EscapeString(repo+":"+tag) + "</code></p>",
+				Title: tag,
+				Link:  &feeds.Link{Href: reg.GetTagURL(repo, tag).String()},
+				Id:    tag,
+				Description: g.Group{
+					g.Text("Docker tag: "),
+					html.Code(g.Text(repo + ":" + tag)),
+				}.String(),
 			}
 			f.Items = append(f.Items, item)
 		}

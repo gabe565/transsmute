@@ -38,20 +38,14 @@ func (p *Post) URL() *url.URL {
 }
 
 func (p *Post) FeedItem() *feeds.Item {
-	item := &feeds.Item{
+	return &feeds.Item{
 		Id:      p.ID,
 		Link:    &feeds.Link{Href: p.URL().String()},
 		Title:   p.Title,
 		Created: p.Published.Time,
 		Updated: p.Edited.Time,
+		Content: p.TemplateDescription().String(),
 	}
-
-	var buf strings.Builder
-	if err := postTmpl.Execute(&buf, p); err != nil {
-		panic(err)
-	}
-	item.Content = buf.String()
-	return item
 }
 
 var ErrNoAudio = errors.New("no audio file")
