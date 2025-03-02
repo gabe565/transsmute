@@ -27,25 +27,32 @@ func FormatURLs(s string) string {
 		return s
 	}
 
+	var buf strings.Builder
+	buf.Grow(len(s))
 	var offset int
-	for _, match := range urls {
-		u, err := url.Parse(match)
-		if err != nil {
+	for _, v := range urls {
+		idx := strings.Index(s[offset:], v)
+		if idx == -1 {
 			continue
 		}
+		buf.WriteString(s[offset : offset+idx])
+		offset += idx + len(v)
 
-		if _, err := mail.ParseAddress(match); err == nil && !strings.Contains(match, "/") {
-			u.Scheme = "mailto"
-			u.OmitHost = true
-		} else {
-			u.Scheme = "https"
+		if u, err := url.Parse(v); err == nil {
+			if _, err := mail.ParseAddress(v); err == nil && !strings.Contains(v, "/") {
+				u.Scheme = "mailto"
+				u.OmitHost = true
+			} else {
+				u.Scheme = "https"
+			}
+
+			v = `<a href="` + u.String() + `">` + template.HTMLEscapeString(v) + `</a>`
 		}
-
-		newVal := `<a href="` + u.String() + `">` + template.HTMLEscapeString(match) + `</a>`
-		s, offset = stringReplaceOffset(s, offset, match, newVal)
+		buf.WriteString(v)
 	}
+	buf.WriteString(s[offset:])
 
-	return s
+	return buf.String()
 }
 
 var hashtagRe = regexp.MustCompile("(^|\n| )#([A-Za-z0-9]+)")
@@ -56,21 +63,32 @@ func FormatHashtags(s string) string {
 		return s
 	}
 
+	var buf strings.Builder
+	buf.Grow(len(s))
 	var offset int
 	for _, match := range matches {
+		v := match[0]
 		prefix := match[1]
 		slug := match[2]
+
+		idx := strings.Index(s[offset:], v)
+		if idx == -1 {
+			continue
+		}
+		buf.WriteString(s[offset : offset+idx])
+		offset += idx + len(v)
 
 		u := url.URL{
 			Scheme: "https",
 			Host:   "youtube.com",
 			Path:   path.Join("hashtag", slug),
 		}
-		newVal := template.HTMLEscapeString(prefix) + `<a href="` + u.String() + `">#` + template.HTMLEscapeString(slug) + `</a>`
-		s, offset = stringReplaceOffset(s, offset, match[0], newVal)
+		v = template.HTMLEscapeString(prefix) + `<a href="` + u.String() + `">#` + template.HTMLEscapeString(slug) + `</a>`
+		buf.WriteString(v)
 	}
+	buf.WriteString(s[offset:])
 
-	return s
+	return buf.String()
 }
 
 var timestampRe = regexp.MustCompile("([0-9]:)?[0-9]+:[0-9]+")
@@ -81,43 +99,41 @@ func FormatTimestamps(id, s string) string {
 		return s
 	}
 
+	var buf strings.Builder
+	buf.Grow(len(s))
 	var offset int
-	for _, match := range times {
-		replaced := match
-		if strings.Count(match, ":") == 2 {
-			replaced = strings.Replace(replaced, ":", "h", 1)
-		}
-		replaced = strings.Replace(replaced, ":", "m", 1)
-		replaced += "s"
-
-		d, err := time.ParseDuration(replaced)
-		if err != nil {
+	for _, v := range times {
+		idx := strings.Index(s[offset:], v)
+		if idx == -1 {
 			continue
 		}
+		buf.WriteString(s[offset : offset+idx])
+		offset += idx + len(v)
 
-		u := url.URL{
-			Scheme: "https",
-			Host:   "youtube.com",
-			Path:   "/watch",
-			RawQuery: url.Values{
-				"v": []string{id},
-				"t": []string{strconv.Itoa(int(d.Seconds())) + "s"},
-			}.Encode(),
+		cleaned := v
+		if strings.Count(v, ":") == 2 {
+			cleaned = strings.Replace(cleaned, ":", "h", 1)
 		}
-		newVal := `<a href="` + u.String() + `">` + template.HTMLEscapeString(match) + `</a>`
-		s, offset = stringReplaceOffset(s, offset, match, newVal)
+		cleaned = strings.Replace(cleaned, ":", "m", 1)
+		cleaned += "s"
+
+		if d, err := time.ParseDuration(cleaned); err == nil {
+			u := url.URL{
+				Scheme: "https",
+				Host:   "youtube.com",
+				Path:   "/watch",
+				RawQuery: url.Values{
+					"v": []string{id},
+					"t": []string{strconv.Itoa(int(d.Seconds())) + "s"},
+				}.Encode(),
+			}
+
+			v = `<a href="` + u.String() + `">` + template.HTMLEscapeString(v) + `</a>`
+		}
+
+		buf.WriteString(v)
 	}
+	buf.WriteString(s[offset:])
 
-	return s
-}
-
-func stringReplaceOffset(s string, offset int, oldVal, newVal string) (string, int) {
-	idx := strings.Index(s[offset:], oldVal)
-	if idx == -1 {
-		return s, offset
-	}
-
-	offset += idx
-	s = s[:offset] + newVal + s[offset+len(oldVal):]
-	return s, offset + len(newVal)
+	return buf.String()
 }
