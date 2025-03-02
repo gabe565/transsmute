@@ -19,6 +19,10 @@ func TestFormatHashtags(t *testing.T) {
 		{"hashtag", args{"prefix #test suffix"}, `prefix <a href="https://youtube.com/hashtag/test">#test</a> suffix`},
 		{"no prefix", args{"prefix #test suffix"}, `prefix <a href="https://youtube.com/hashtag/test">#test</a> suffix`},
 		{"multiple", args{"prefix #test #test suffix"}, `prefix <a href="https://youtube.com/hashtag/test">#test</a> <a href="https://youtube.com/hashtag/test">#test</a> suffix`},
+		{"at start", args{"#test"}, `<a href="https://youtube.com/hashtag/test">#test</a>`},
+		{"after line break", args{"prefix\n#test"}, `prefix` + "\n" + `<a href="https://youtube.com/hashtag/test">#test</a>`},
+		{"after tab", args{"prefix\t#test"}, `prefix` + "\t" + `<a href="https://youtube.com/hashtag/test">#test</a>`},
+		{"url fragment", args{`<a href="https://google.com#test>test</a>`}, `<a href="https://google.com#test>test</a>`},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

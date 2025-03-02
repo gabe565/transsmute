@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-var hashtagRe = regexp.MustCompile("(^|\n| )#([A-Za-z0-9]+)")
+var hashtagRe = regexp.MustCompile(`(^|\s)#([A-Za-z0-9_]+)`)
 
 func FormatHashtags(s string) string {
 	matches := hashtagRe.FindAllStringSubmatch(s, -1)
