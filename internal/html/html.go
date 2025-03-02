@@ -35,11 +35,13 @@ func FormatURLs(s string) string {
 		offset += idx + len(v)
 
 		if u, err := url.Parse(v); err == nil {
-			if _, err := mail.ParseAddress(v); err == nil && !strings.Contains(v, "/") {
-				u.Scheme = "mailto"
-				u.OmitHost = true
-			} else {
-				u.Scheme = "https"
+			if u.Scheme == "" {
+				if _, err := mail.ParseAddress(v); err == nil && !strings.Contains(v, "/") {
+					u.Scheme = "mailto"
+					u.OmitHost = true
+				} else {
+					u.Scheme = "https"
+				}
 			}
 
 			v = `<a href="` + u.String() + `">` + template.HTMLEscapeString(v) + `</a>`
