@@ -59,16 +59,9 @@ func (p Playlist) Feed(ctx context.Context) (*feeds.Feed, error) {
 		return nil, err
 	}
 
-	u := url.URL{
-		Scheme:   "https",
-		Host:     "youtube.com",
-		Path:     "/playlist",
-		RawQuery: url.Values{"list": []string{p.ID}}.Encode(),
-	}
-
 	feed := &feeds.Feed{
 		Title:       "YouTube - " + meta.Title,
-		Link:        &feeds.Link{Href: u.String()},
+		Link:        &feeds.Link{Href: p.URL().String()},
 		Description: meta.Description,
 		Author: &feeds.Author{
 			Name: meta.ChannelTitle,
@@ -143,4 +136,13 @@ func (p Playlist) FeedItems(ctx context.Context) ([]*feeds.Item, error) {
 	}
 
 	return feedItems, nil
+}
+
+func (p *Playlist) URL() *url.URL {
+	return &url.URL{
+		Scheme:   "https",
+		Host:     "youtube.com",
+		Path:     "/playlist",
+		RawQuery: url.Values{"list": []string{p.ID}}.Encode(),
+	}
 }
