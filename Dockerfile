@@ -19,7 +19,7 @@ RUN --mount=type=cache,id="transsmute-$TARGETPLATFORM",target=/root/.cache \
         'linux/arm64') export GOARCH=arm64 ;; \
         *) echo "Unsupported target: $TARGETPLATFORM" && exit 1 ;; \
     esac \
-    && go build -ldflags='-w -s' -trimpath
+    && go build -ldflags='-w -s' -trimpath -tags grpcnotrace
 
 
 FROM gcr.io/distroless/static:nonroot
