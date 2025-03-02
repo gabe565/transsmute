@@ -2,6 +2,7 @@ package playlist
 
 import (
 	tshtml "gabe565.com/transsmute/internal/html"
+	ythtml "gabe565.com/transsmute/internal/youtube/html"
 	g "maragu.dev/gomponents"
 	"maragu.dev/gomponents/html"
 )
@@ -10,8 +11,8 @@ func (i *Item) TemplateDescription(embed bool) g.Group {
 	desc := i.Description
 	desc = tshtml.Escape(desc)
 	desc = tshtml.FormatURLs(desc)
-	desc = tshtml.FormatHashtags(desc)
-	desc = tshtml.FormatTimestamps(i.ResourceId.VideoId, desc)
+	desc = ythtml.FormatHashtags(desc)
+	desc = ythtml.FormatTimestamps(i.ResourceId.VideoId, desc)
 	desc = tshtml.NL2BR(desc)
 
 	return g.Group{
