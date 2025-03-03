@@ -1,6 +1,7 @@
 package kemono
 
 import (
+	tshtml "gabe565.com/transsmute/internal/html"
 	g "maragu.dev/gomponents"
 	"maragu.dev/gomponents/html"
 )
@@ -10,7 +11,7 @@ func (p *Post) TemplateDescription() g.Group {
 		g.Iff(p.Content != "", func() g.Node {
 			return g.Group{
 				html.H3(g.Text("Content")),
-				g.Raw(p.Content),
+				g.Raw(tshtml.FormatHR(p.Content, true)),
 			}
 		}),
 

@@ -1,11 +1,16 @@
 package html
 
 import (
+	"bytes"
+	"errors"
 	"html/template"
+	"io"
 	"net/mail"
 	"net/url"
+	"regexp"
 	"strings"
 
+	"golang.org/x/net/html"
 	"mvdan.cc/xurls/v2"
 )
 
@@ -51,4 +56,38 @@ func FormatURLs(s string) string {
 	buf.WriteString(s[offset:])
 
 	return buf.String()
+}
+
+var hrRe = regexp.MustCompile(`(^|\n)(?:---+|___+)(\n|$)`)
+
+func FormatHR(s string, parseHTML bool) string {
+	const replace = "$1<hr>"
+	switch {
+	case !strings.Contains(s, "---") && !strings.Contains(s, "___"):
+		return s
+	case !parseHTML:
+		return hrRe.ReplaceAllString(s, replace)
+	default:
+		var buf strings.Builder
+		buf.Grow(len(s))
+		z := html.NewTokenizer(strings.NewReader(s))
+		for {
+			switch z.Next() {
+			case html.ErrorToken:
+				if errors.Is(z.Err(), io.EOF) {
+					return buf.String()
+				}
+				return s
+			case html.TextToken:
+				text := z.Text()
+				if bytes.Contains(text, []byte("---")) || bytes.Contains(text, []byte("___")) {
+					buf.Write(hrRe.ReplaceAll(text, []byte(replace)))
+				} else {
+					buf.Write(text)
+				}
+			default:
+				buf.Write(z.Raw())
+			}
+		}
+	}
 }

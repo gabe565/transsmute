@@ -10,6 +10,7 @@ import (
 func (i *Item) TemplateDescription(embed bool) g.Group {
 	desc := i.Description
 	desc = tshtml.Escape(desc)
+	desc = tshtml.FormatHR(desc, false)
 	desc = tshtml.FormatURLs(desc)
 	desc = ythtml.FormatHashtags(desc)
 	desc = ythtml.FormatTimestamps(i.ResourceId.VideoId, desc)

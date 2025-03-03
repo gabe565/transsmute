@@ -64,3 +64,26 @@ func TestNL2BR(t *testing.T) {
 		})
 	}
 }
+
+func TestFormatHR(t *testing.T) {
+	type args struct {
+		s         string
+		parseHTML bool
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{"plain 3 dashes", args{"prefix\n---\nsuffix", false}, "prefix\n<hr>suffix"},
+		{"plain 6 dashes", args{"prefix\n------\nsuffix", false}, "prefix\n<hr>suffix"},
+		{"plain 3 underscores", args{"prefix\n___\nsuffix", false}, "prefix\n<hr>suffix"},
+		{"html", args{"<p>---</p>", true}, "<p><hr></p>"},
+		{"html mixed into content", args{"<p>prefix<br>---<br>suffix</p>", true}, "<p>prefix<br><hr><br>suffix</p>"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.want, FormatHR(tt.args.s, tt.args.parseHTML))
+		})
+	}
+}
