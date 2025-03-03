@@ -55,7 +55,6 @@ func WriteFeed(w http.ResponseWriter, r *http.Request, f *feeds.Feed) error {
 	var buf bytes.Buffer
 	hasher := sha1.New() //nolint:gosec
 	bufWriter := io.MultiWriter(&buf, hasher)
-	var lastModified time.Time
 	switch format {
 	case FormatAtom, FormatUnknown:
 		atomFeed := (&feeds.Atom{Feed: f}).AtomFeed()
@@ -86,14 +85,9 @@ func WriteFeed(w http.ResponseWriter, r *http.Request, f *feeds.Feed) error {
 		http.Error(w, "400 invalid format", http.StatusBadRequest)
 		return nil
 	}
-	if !f.Updated.IsZero() {
-		lastModified = f.Updated
-	} else if !f.Created.IsZero() {
-		lastModified = f.Created
-	}
 
 	w.Header().Set("ETag", `"`+hex.EncodeToString(hasher.Sum(nil))+`"`)
-	http.ServeContent(w, r, "", lastModified, bytes.NewReader(buf.Bytes()))
+	http.ServeContent(w, r, "", time.Time{}, bytes.NewReader(buf.Bytes()))
 	return nil
 }
 
@@ -101,14 +95,12 @@ func WritePodcast(w http.ResponseWriter, r *http.Request, f *podcast.Podcast) er
 	var buf bytes.Buffer
 	hasher := sha1.New() //nolint:gosec
 	bufWriter := io.MultiWriter(&buf, hasher)
-	var lastModified time.Time
 	if err := f.Encode(bufWriter); err != nil {
 		return err
 	}
 	w.Header().Set("Content-Type", "application/xml")
-	lastModified, _ = time.Parse(time.RFC1123, f.PubDate)
 
 	w.Header().Set("ETag", `"`+hex.EncodeToString(hasher.Sum(nil))+`"`)
-	http.ServeContent(w, r, "", lastModified, bytes.NewReader(buf.Bytes()))
+	http.ServeContent(w, r, "", time.Time{}, bytes.NewReader(buf.Bytes()))
 	return nil
 }
