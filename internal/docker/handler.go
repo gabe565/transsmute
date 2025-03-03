@@ -3,7 +3,9 @@ package docker
 import (
 	"errors"
 	"net/http"
+	"regexp"
 	"slices"
+	"strings"
 
 	"gabe565.com/transsmute/internal/feed"
 	"github.com/go-chi/chi/v5"
@@ -18,6 +20,16 @@ import (
 func Handler(registries Registries) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		repo := chi.URLParam(r, "*")
+
+		var filter *regexp.Regexp
+		if v := r.URL.Query().Get("filter"); v != "" {
+			v = strings.ReplaceAll(v, " ", "+")
+			var err error
+			if filter, err = regexp.Compile("^" + v + "$"); err != nil {
+				http.Error(w, "Filter regex invalid", http.StatusBadRequest)
+				return
+			}
+		}
 
 		reg, err := registries.Find(repo)
 		if err != nil {
@@ -63,6 +75,10 @@ func Handler(registries Registries) http.HandlerFunc {
 		}
 
 		for _, tag := range tags {
+			if filter != nil && !filter.MatchString(tag) {
+				continue
+			}
+
 			item := &feeds.Item{
 				Title: tag,
 				Link:  &feeds.Link{Href: reg.GetTagURL(repo, tag).String()},
