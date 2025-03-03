@@ -3,7 +3,7 @@ module gabe565.com/transsmute
 go 1.24.0
 
 require (
-	gabe565.com/utils v0.0.0-20250218053544-40f17d09c725
+	gabe565.com/utils v0.0.0-20250302063333-ede73b14282c
 	github.com/Masterminds/sprig/v3 v3.3.0
 	github.com/bradleyfalzon/ghinstallation/v2 v2.13.0
 	github.com/eduncan911/podcast v1.4.2
