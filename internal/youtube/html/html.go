@@ -12,12 +12,18 @@ import (
 var hashtagRe = regexp.MustCompile(`(^|\s)#([A-Za-z0-9_]+)`)
 
 func FormatHashtags(s string) string {
+	if !strings.Contains(s, "#") {
+		return s
+	}
 	return hashtagRe.ReplaceAllString(s, `$1<a href="https://youtube.com/hashtag/$2">#$2</a>`)
 }
 
 var timestampRe = regexp.MustCompile("([0-9]:)?[0-9]+:[0-9]+")
 
 func FormatTimestamps(id, s string) string {
+	if !strings.Contains(s, ":") {
+		return s
+	}
 	return timestampRe.ReplaceAllStringFunc(s, func(s string) string {
 		cleaned := s
 		if strings.Count(s, ":") == 2 {
