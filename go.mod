@@ -17,7 +17,7 @@ require (
 	golang.org/x/sync v0.11.0
 	golang.org/x/text v0.22.0
 	google.golang.org/api v0.223.0
-	maragu.dev/gomponents v1.0.0
+	maragu.dev/gomponents v1.1.0
 	mvdan.cc/xurls/v2 v2.6.0
 )
 
