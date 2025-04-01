@@ -23,8 +23,8 @@ const (
 	AuthApp
 )
 
-func NewGhcr(conf config.GHCR) (*Ghcr, error) {
-	ghcr := &Ghcr{
+func NewGhcr(conf config.GHCR) (*GHCR, error) {
+	ghcr := &GHCR{
 		username: conf.Username,
 		password: conf.Password,
 
@@ -63,7 +63,7 @@ func NewGhcr(conf config.GHCR) (*Ghcr, error) {
 	return ghcr, nil
 }
 
-type Ghcr struct {
+type GHCR struct {
 	authMethod AuthMethod
 
 	username string
@@ -74,11 +74,11 @@ type Ghcr struct {
 	expiresAt      time.Time
 }
 
-func (g Ghcr) Match(repo string) bool {
+func (g *GHCR) Match(repo string) bool {
 	return strings.HasPrefix(repo, "ghcr.io/")
 }
 
-func (g Ghcr) Authenticator(ctx context.Context, _ string) (authn.Authenticator, error) {
+func (g *GHCR) Authenticator(ctx context.Context, _ string) (authn.Authenticator, error) {
 	if g.authMethod == AuthApp && time.Until(g.expiresAt) < time.Minute {
 		if err := g.RefreshAppToken(ctx); err != nil {
 			return nil, err
@@ -91,19 +91,19 @@ func (g Ghcr) Authenticator(ctx context.Context, _ string) (authn.Authenticator,
 	}, nil
 }
 
-func (g Ghcr) GetRepoURL(repo string) *url.URL {
+func (g *GHCR) GetRepoURL(repo string) *url.URL {
 	return &url.URL{Scheme: "https", Host: "ghcr.io", Path: strings.TrimPrefix(repo, "ghcr.io/")}
 }
 
-func (g Ghcr) GetTagURL(repo, _ string) *url.URL {
+func (g *GHCR) GetTagURL(repo, _ string) *url.URL {
 	return g.GetRepoURL(repo)
 }
 
-func (g Ghcr) GetOwner(repo string) string {
+func (g *GHCR) GetOwner(repo string) string {
 	return strings.SplitN(repo, "/", 3)[1]
 }
 
-func (g *Ghcr) RefreshAppToken(ctx context.Context) error {
+func (g *GHCR) RefreshAppToken(ctx context.Context) error {
 	token, _, err := g.client.Apps.CreateInstallationToken(ctx, g.installationID, &github.InstallationTokenOptions{
 		Permissions: &github.InstallationPermissions{
 			Packages: github.Ptr("read"),

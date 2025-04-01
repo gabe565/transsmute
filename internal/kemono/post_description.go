@@ -24,7 +24,11 @@ func (p *Post) TemplateDescription() g.Group {
 							html.Href(a.URL().String()),
 							func() g.Node {
 								if a.IsImage() {
-									return html.Img(html.Src(a.ThumbURL().String()), html.Alt(a.Name), html.Title(a.Name))
+									return html.Img(
+										html.Src(a.ThumbURL().String()),
+										html.Alt(a.Name),
+										html.Title(a.Name),
+									)
 								}
 								return g.Text(a.Name)
 							}(),

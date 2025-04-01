@@ -138,7 +138,7 @@ func (p Playlist) FeedItems(ctx context.Context) ([]*feeds.Item, error) {
 	return feedItems, nil
 }
 
-func (p *Playlist) URL() *url.URL {
+func (p Playlist) URL() *url.URL {
 	return &url.URL{
 		Scheme:   "https",
 		Host:     "youtube.com",

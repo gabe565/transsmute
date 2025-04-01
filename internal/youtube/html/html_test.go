@@ -17,12 +17,28 @@ func TestFormatHashtags(t *testing.T) {
 	}{
 		{"no change", args{"prefix test suffix"}, "prefix test suffix"},
 		{"hashtag", args{"prefix #test suffix"}, `prefix <a href="https://youtube.com/hashtag/test">#test</a> suffix`},
-		{"no prefix", args{"prefix #test suffix"}, `prefix <a href="https://youtube.com/hashtag/test">#test</a> suffix`},
-		{"multiple", args{"prefix #test #test suffix"}, `prefix <a href="https://youtube.com/hashtag/test">#test</a> <a href="https://youtube.com/hashtag/test">#test</a> suffix`},
+		{
+			"no prefix",
+			args{"prefix #test suffix"},
+			`prefix <a href="https://youtube.com/hashtag/test">#test</a> suffix`,
+		},
+		{
+			"multiple",
+			args{"prefix #test #test suffix"},
+			`prefix <a href="https://youtube.com/hashtag/test">#test</a> <a href="https://youtube.com/hashtag/test">#test</a> suffix`,
+		},
 		{"at start", args{"#test"}, `<a href="https://youtube.com/hashtag/test">#test</a>`},
-		{"after line break", args{"prefix\n#test"}, `prefix` + "\n" + `<a href="https://youtube.com/hashtag/test">#test</a>`},
+		{
+			"after line break",
+			args{"prefix\n#test"},
+			`prefix` + "\n" + `<a href="https://youtube.com/hashtag/test">#test</a>`,
+		},
 		{"after tab", args{"prefix\t#test"}, `prefix` + "\t" + `<a href="https://youtube.com/hashtag/test">#test</a>`},
-		{"url fragment", args{`<a href="https://google.com#test>test</a>`}, `<a href="https://google.com#test>test</a>`},
+		{
+			"url fragment",
+			args{`<a href="https://google.com#test>test</a>`},
+			`<a href="https://google.com#test>test</a>`,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -41,10 +57,26 @@ func TestFormatTimestamps(t *testing.T) {
 		args args
 		want string
 	}{
-		{"seconds", args{"dQw4w9WgXcQ", "prefix 0:30 suffix"}, `prefix <a href="https://youtube.com/watch?t=30s&v=dQw4w9WgXcQ">0:30</a> suffix`},
-		{"minutes", args{"dQw4w9WgXcQ", "prefix 2:00 suffix"}, `prefix <a href="https://youtube.com/watch?t=120s&v=dQw4w9WgXcQ">2:00</a> suffix`},
-		{"hours", args{"dQw4w9WgXcQ", "prefix 2:2:00 suffix"}, `prefix <a href="https://youtube.com/watch?t=7320s&v=dQw4w9WgXcQ">2:2:00</a> suffix`},
-		{"multiple", args{"dQw4w9WgXcQ", "prefix 2:00 2:00 suffix"}, `prefix <a href="https://youtube.com/watch?t=120s&v=dQw4w9WgXcQ">2:00</a> <a href="https://youtube.com/watch?t=120s&v=dQw4w9WgXcQ">2:00</a> suffix`},
+		{
+			"seconds",
+			args{"dQw4w9WgXcQ", "prefix 0:30 suffix"},
+			`prefix <a href="https://youtube.com/watch?t=30s&v=dQw4w9WgXcQ">0:30</a> suffix`,
+		},
+		{
+			"minutes",
+			args{"dQw4w9WgXcQ", "prefix 2:00 suffix"},
+			`prefix <a href="https://youtube.com/watch?t=120s&v=dQw4w9WgXcQ">2:00</a> suffix`,
+		},
+		{
+			"hours",
+			args{"dQw4w9WgXcQ", "prefix 2:2:00 suffix"},
+			`prefix <a href="https://youtube.com/watch?t=7320s&v=dQw4w9WgXcQ">2:2:00</a> suffix`,
+		},
+		{
+			"multiple",
+			args{"dQw4w9WgXcQ", "prefix 2:00 2:00 suffix"},
+			`prefix <a href="https://youtube.com/watch?t=120s&v=dQw4w9WgXcQ">2:00</a> <a href="https://youtube.com/watch?t=120s&v=dQw4w9WgXcQ">2:00</a> suffix`,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
