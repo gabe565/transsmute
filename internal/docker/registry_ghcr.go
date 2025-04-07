@@ -12,7 +12,7 @@ import (
 	"gabe565.com/transsmute/internal/config"
 	"github.com/bradleyfalzon/ghinstallation/v2"
 	"github.com/google/go-containerregistry/pkg/authn"
-	"github.com/google/go-github/v70/github"
+	"github.com/google/go-github/v71/github"
 )
 
 type AuthMethod uint8
