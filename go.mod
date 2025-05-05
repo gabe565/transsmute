@@ -14,8 +14,8 @@ require (
 	github.com/spf13/pflag v1.0.6
 	github.com/stretchr/testify v1.10.0
 	golang.org/x/net v0.38.0
-	golang.org/x/sync v0.12.0
-	golang.org/x/text v0.23.0
+	golang.org/x/sync v0.14.0
+	golang.org/x/text v0.25.0
 	google.golang.org/api v0.228.0
 	maragu.dev/gomponents v1.1.0
 	mvdan.cc/xurls/v2 v2.6.0
