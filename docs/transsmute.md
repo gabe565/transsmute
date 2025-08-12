@@ -26,6 +26,8 @@ transsmute [flags]
   -h, --help                           help for transsmute
       --kemono-enabled                 Kemono API enabled (default true)
       --kemono-hosts stringToString    Kemono API hosts, where the key is the URL prefix and the value is the host (default [kemono=kemono.su])
+      --tls-cert-path string           TLS certificate path for HTTPS listener
+      --tls-key-path string            TLS key path for HTTPS listener
   -v, --version                        version for transsmute
       --youtube-enabled                YouTube API enabled (default true)
       --youtube-key string             YouTube API key

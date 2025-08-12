@@ -2,6 +2,8 @@ package config
 
 type Config struct {
 	ListenAddress string
+	TLSCertPath   string
+	TLSKeyPath    string
 	Docker        Docker
 	YouTube       YouTube
 	Kemono        Kemono

@@ -4,6 +4,8 @@ import "github.com/spf13/cobra"
 
 const (
 	FlagListenAddress = "address"
+	FlagTLSCertPath   = "tls-cert-path"
+	FlagTLSKeyPath    = "tls-key-path"
 
 	FlagDockerEnabled      = "docker-enabled"
 	FlagGHCRUsername       = "ghcr-username"
@@ -24,6 +26,8 @@ const (
 
 func (c *Config) RegisterFlags(cmd *cobra.Command) {
 	cmd.Flags().StringVar(&c.ListenAddress, FlagListenAddress, c.ListenAddress, "Listen address")
+	cmd.Flags().StringVar(&c.TLSCertPath, FlagTLSCertPath, c.TLSCertPath, "TLS certificate path for HTTPS listener")
+	cmd.Flags().StringVar(&c.TLSKeyPath, FlagTLSKeyPath, c.TLSKeyPath, "TLS key path for HTTPS listener")
 
 	cmd.Flags().BoolVar(&c.Docker.Enabled, FlagDockerEnabled, c.Docker.Enabled, "Docker API enabled")
 	cmd.Flags().StringVar(&c.Docker.GHCR.Username, FlagGHCRUsername, c.Docker.GHCR.Username,
