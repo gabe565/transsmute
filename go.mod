@@ -8,7 +8,7 @@ require (
 	github.com/eduncan911/podcast v1.4.2
 	github.com/go-chi/chi/v5 v5.2.1
 	github.com/google/go-containerregistry v0.20.3
-	github.com/google/go-github/v70 v70.0.0
+	github.com/google/go-github/v74 v74.0.0
 	github.com/gorilla/feeds v1.2.0
 	github.com/spf13/cobra v1.9.1
 	github.com/spf13/pflag v1.0.6
