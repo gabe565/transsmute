@@ -3,16 +3,16 @@ module gabe565.com/transsmute
 go 1.24.1
 
 require (
-	gabe565.com/utils v0.0.0-20250302063333-ede73b14282c
+	gabe565.com/utils v0.0.0-20260511235214-4059440fa83b
 	github.com/bradleyfalzon/ghinstallation/v2 v2.14.0
 	github.com/eduncan911/podcast v1.4.2
 	github.com/go-chi/chi/v5 v5.2.1
 	github.com/google/go-containerregistry v0.20.3
 	github.com/google/go-github/v70 v70.0.0
 	github.com/gorilla/feeds v1.2.0
-	github.com/spf13/cobra v1.9.1
-	github.com/spf13/pflag v1.0.6
-	github.com/stretchr/testify v1.10.0
+	github.com/spf13/cobra v1.10.1
+	github.com/spf13/pflag v1.0.10
+	github.com/stretchr/testify v1.11.1
 	golang.org/x/net v0.38.0
 	golang.org/x/sync v0.12.0
 	golang.org/x/text v0.23.0
